@@ -310,6 +310,8 @@ table.caja td.monto{font-family:'Cormorant Garamond',serif;font-size:14px;color:
   <div class="sec-head">
     <div><div class="sec-title">Inventario</div><div class="sec-sub" id="inv-sub"></div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-gold btn-sm" onclick="document.getElementById('csv-import-file').click()">📥 Importar CSV</button>
+      <input type="file" id="csv-import-file" accept=".csv" style="display:none" onchange="importarCSVLoyverse(event)"/>
       <button class="btn btn-outline btn-sm" onclick="exportCSV()">Exportar CSV</button>
       <button class="btn btn-primary btn-sm" onclick="abrirProd(null)">+ Agregar Prenda</button>
     </div>
@@ -779,6 +781,64 @@ function iniciarSincronizacionNube(){
     populateCliSel();
     renderCli();
   });
+}
+
+// ══ IMPORTADOR DE CSV DE LOYVERSE / EXCEL ══
+function importarCSVLoyverse(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    try{
+      const texto = e.target.result;
+      const filas = texto.split('\n');
+      if(filas.length < 2){ toast('❌ Archivo vacío'); return; }
+
+      let procesados = 0;
+      const batch = db.batch();
+
+      for(let i=1; i<filas.length; i++){
+        const linea = filas[i].trim();
+        if(!linea) continue;
+        
+        // Separación por comas respetando comillas
+        const cols = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(',');
+        if(cols.length < 3) continue;
+
+        const limpiar = s => (s||'').replace(/^"|"$/g,'').trim();
+        
+        const nombre = limpiar(cols[0] || cols[1]);
+        const ref = limpiar(cols[1] || cols[0]);
+        const cat = limpiar(cols[2]).toUpperCase() || 'GENERAL';
+        const precio = parseFloat(limpiar(cols[3])) || 0;
+        const costo = parseFloat(limpiar(cols[4])) || 0;
+
+        if(!nombre) continue;
+
+        const docId = nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4);
+        const pRef = db.collection('productos').doc(docId);
+
+        batch.set(pRef, {
+          nombre,
+          ref: ref || docId.slice(-5),
+          cat,
+          precio,
+          costo,
+          track: 'N',
+          stock: 0,
+          variantes: []
+        });
+        procesados++;
+      }
+
+      await batch.commit();
+      toast(`✅ ¡${procesados} prendas importadas a la nube!`);
+    }catch(err){
+      toast('❌ Error al procesar el CSV');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
 }
 
 // ══ NAVEGACIÓN ══
@@ -1368,7 +1428,7 @@ function imprimirCorte(){
     <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
   </body></html>`;
   const w=window.open('','_blank','width=900,height=700');
-  if(!w){toast('Habilita las ventanas emergentes para imprimir');return;}
+  if(!w){toast('Habilita las ventanas emergentes');return;}
   w.document.write(html);
   w.document.close();
 }
