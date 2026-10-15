@@ -1,3 +1,19 @@
+¡Tienes toda la razón! En la versión anterior faltaba habilitar el botón para cambiar o quitar la foto al presionar **"Editar"** en una prenda ya existente.
+
+### 🛠️ ¿Qué mejoré en esta versión?
+
+1. **📷 Cambiar o agregar foto a prendas existentes:** Ahora al dar clic en **"Editar"** en cualquier prenda de tu inventario (sea nueva, importada de Loyverse o ya registrada), verás su foto actual con los botones:
+   - **📷 Cambiar / Tomar Foto** (puedes tomar una nueva con la cámara del cel o subirla de tu galería).
+   - **✕ Quitar Foto** (por si quieres borrarle la foto a esa prenda).
+2. **🔄 Actualización inmediata en la Nube:** Al presionar **"Actualizar"**, la nueva foto se guarda en Firebase Firestore y se actualiza al instante en todos tus celulares y computadoras.
+
+---
+
+### 📋 Código completo actualizado (`index.html`)
+
+Abre tu archivo `index.html` en GitHub, **selecciona todo, borra y pega este código completo**:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -601,8 +617,11 @@ table.inv tr:hover td{background:#FDF0F4;}
 
     <div class="fg" style="align-items:center;text-align:center;">
       <div class="f-lbl">Foto de la prenda</div>
-      <div id="p-foto-preview" style="width:90px;height:90px;border-radius:8px;background:var(--blush);display:flex;align-items:center;justify-content:center;font-size:32px;margin:6px 0;background-size:cover;background-position:center;border:1px dashed var(--rose);">📷</div>
-      <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('p-foto-file').click()">Subir o Tomar Foto</button>
+      <div id="p-foto-preview" style="width:100px;height:100px;border-radius:10px;background:var(--blush);display:flex;align-items:center;justify-content:center;font-size:32px;margin:8px 0;background-size:cover;background-position:center;border:1.5px dashed var(--rose);">📷</div>
+      <div style="display:flex;gap:6px;justify-content:center;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('p-foto-file').click()">📷 Cambiar / Tomar Foto</button>
+        <button type="button" class="btn btn-danger btn-sm" id="btn-del-foto" style="display:none;" onclick="quitarFotoPrenda()">✕ Quitar</button>
+      </div>
       <input type="file" id="p-foto-file" accept="image/*" capture="environment" style="display:none;" onchange="procesarFotoPrenda(event)"/>
     </div>
 
@@ -703,7 +722,7 @@ let prods = [];
 let ventas = [];
 let clientes = [];
 let gastos = [];
-let tkt=[], descPct=0, editPId=null, editCId=null, tempFotoData=null;
+let tkt=[], descPct=0, editPId=null, editCId=null, tempFotoData='';
 let apartadoSeleccionado = null;
 let fCatQ='', fCatC='', fInvQ='', fInvC='', fInvS='';
 let fHP={per:'hoy',estado:''}, cajaPer='hoy';
@@ -715,7 +734,6 @@ const dateStr=iso=>{const d=new Date(iso);return isNaN(d)?'--':d.toLocaleDateStr
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
 
-// ══ LIMPIADOR DE NOMBRES DE PRENDAS (SIN GUIONES) ══
 function formatearNombrePrenda(str){
   if(!str) return 'Prenda Sin Nombre';
   let txt = String(str).trim();
@@ -895,7 +913,21 @@ async function importarCSVLoyverse(event){
   event.target.value = '';
 }
 
-// ══ PROCESAR FOTO PRENDA ══
+// ══ PROCESAR Y PREVISUALIZAR FOTO DE PRENDA ══
+function mostrarPreviewFoto(url){
+  const prev = document.getElementById('p-foto-preview');
+  const btnDel = document.getElementById('btn-del-foto');
+  if(url){
+    prev.style.backgroundImage = `url(${url})`;
+    prev.textContent = '';
+    if(btnDel) btnDel.style.display = 'inline-flex';
+  } else {
+    prev.style.backgroundImage = 'none';
+    prev.textContent = '📷';
+    if(btnDel) btnDel.style.display = 'none';
+  }
+}
+
 function procesarFotoPrenda(event){
   const file = event.target.files[0];
   if(!file) return;
@@ -905,20 +937,24 @@ function procesarFotoPrenda(event){
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      const maxDim = 280;
+      const maxDim = 320;
       let w = img.width, h = img.height;
       if (w > h) { if (w > maxDim) { h *= maxDim / w; w = maxDim; } }
       else { if (h > maxDim) { w *= maxDim / h; h = maxDim; } }
       canvas.width = w; canvas.height = h;
       ctx.drawImage(img, 0, 0, w, h);
-      tempFotoData = canvas.toDataURL('image/jpeg', 0.65);
-      const prev = document.getElementById('p-foto-preview');
-      prev.style.backgroundImage = `url(${tempFotoData})`;
-      prev.textContent = '';
+      tempFotoData = canvas.toDataURL('image/jpeg', 0.7);
+      mostrarPreviewFoto(tempFotoData);
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+function quitarFotoPrenda(){
+  tempFotoData = '';
+  mostrarPreviewFoto('');
+  document.getElementById('p-foto-file').value = '';
 }
 
 // ══ NAVEGACIÓN ══
@@ -1302,13 +1338,14 @@ function mostrarTicketTermico(v){
   document.getElementById('ov-ticket-print').classList.add('open');
 }
 
-// ══ GESTIÓN DE PRODUCTOS EN NUBE ══
+// ══ GESTIÓN DE PRODUCTOS EN NUBE CON FOTO CORREGIDA ══
 function toggleVariantesUI(track){
   document.getElementById('p-var-container').style.display=track==='Y'?'block':'none';
   if(track==='Y'&&document.getElementById('var-builder-list').children.length===0){
     agregarFilaVariante('CH','Rosa',1); agregarFilaVariante('M','Negro',1);
   }
 }
+
 function agregarFilaVariante(talla='',color='',stock=0){
   const list=document.getElementById('var-builder-list');
   const div=document.createElement('div');
@@ -1319,13 +1356,14 @@ function agregarFilaVariante(talla='',color='',stock=0){
     <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`;
   list.appendChild(div);
 }
+
 function abrirProd(id){
-  editPId=id; tempFotoData = null;
+  editPId=id; 
+  tempFotoData = '';
+  document.getElementById('p-foto-file').value = '';
   document.getElementById('prod-modal-title').textContent=id?'Editar prenda':'Nueva prenda';
   document.getElementById('prod-modal-btn').textContent=id?'Actualizar':'Guardar Prenda';
   document.getElementById('var-builder-list').innerHTML='';
-  const prev = document.getElementById('p-foto-preview');
-  prev.style.backgroundImage = 'none'; prev.textContent = '📷';
 
   if(id){
     const p=prods.find(x=>x.id===id); if(!p) return;
@@ -1335,11 +1373,10 @@ function abrirProd(id){
     document.getElementById('p-precio').value=p.precio;
     document.getElementById('p-costo').value=p.costo;
     document.getElementById('p-track').value=p.track;
-    if(p.fotoUrl){
-      prev.style.backgroundImage = `url(${p.fotoUrl})`;
-      prev.textContent = '';
-      tempFotoData = p.fotoUrl;
-    }
+
+    tempFotoData = p.fotoUrl || '';
+    mostrarPreviewFoto(tempFotoData);
+
     toggleVariantesUI(p.track);
     if(p.variantes&&p.variantes.length) p.variantes.forEach(v=>agregarFilaVariante(v.talla,v.color,v.stock));
     else if(p.track==='Y') agregarFilaVariante('Unitalla','Único',p.stock||0);
@@ -1350,10 +1387,13 @@ function abrirProd(id){
     document.getElementById('p-precio').value='';
     document.getElementById('p-costo').value='';
     document.getElementById('p-track').value='N';
+    tempFotoData = '';
+    mostrarPreviewFoto('');
     toggleVariantesUI('N');
   }
   document.getElementById('ov-prod').classList.add('open');
 }
+
 async function guardarProd(){
   let nombre=document.getElementById('p-nombre').value.trim();
   nombre = formatearNombrePrenda(nombre);
@@ -1364,6 +1404,7 @@ async function guardarProd(){
   const costo=parseFloat(document.getElementById('p-costo').value)||0;
   const track=document.getElementById('p-track').value;
   if(!nombre){toast('Ingresa el nombre');return;}
+
   let variantes=[],totalStock=0;
   if(track==='Y'){
     document.querySelectorAll('#var-builder-list .var-row').forEach(r=>{
@@ -1373,23 +1414,31 @@ async function guardarProd(){
       variantes.push({talla:t,color:c,stock:s}); totalStock+=s;
     });
   }
+
   const prodData = {nombre,cat,ref,precio,costo,track,variantes,stock:totalStock, fotoUrl: tempFotoData||''};
-  if(editPId){
-    await db.collection('productos').doc(editPId).update(prodData);
-    toast('Prenda actualizada en la nube');
-  } else {
-    const docId=nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4);
-    await db.collection('productos').doc(docId).set(prodData);
-    toast('Prenda agregada a la nube ✨');
+
+  try{
+    if(editPId){
+      await db.collection('productos').doc(editPId).update(prodData);
+      toast('Prenda actualizada en la nube ✨');
+    } else {
+      const docId=nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4);
+      await db.collection('productos').doc(docId).set(prodData);
+      toast('Prenda agregada a la nube ✨');
+    }
+    closeOv('ov-prod');
+  }catch(e){
+    toast('❌ Error al guardar prenda');
   }
-  closeOv('ov-prod');
 }
+
 async function borrarProd(id){
   if(confirm('¿Eliminar esta prenda del catálogo?')){
     await db.collection('productos').doc(id).delete();
     toast('Prenda eliminada');
   }
 }
+
 function filtInv(q){fInvQ=q;renderInv();}
 function filtInvCat(c){fInvC=c;renderInv();}
 function filtInvStk(s){fInvS=s;renderInv();}
@@ -1819,3 +1868,4 @@ iniciarSincronizacionNube();
 </script>
 </body>
 </html>
+```
