@@ -602,4 +602,1198 @@ table.inv tr:hover td{background:#FDF0F4;}
     <div class="fg" style="align-items:center;text-align:center;">
       <div class="f-lbl">Foto de la prenda</div>
       <div id="p-foto-preview" style="width:90px;height:90px;border-radius:8px;background:var(--blush);display:flex;align-items:center;justify-content:center;font-size:32px;margin:6px 0;background-size:cover;background-position:center;border:1px dashed var(--rose);">📷</div>
-      <button 
+      <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('p-foto-file').click()">Subir o Tomar Foto</button>
+      <input type="file" id="p-foto-file" accept="image/*" capture="environment" style="display:none;" onchange="procesarFotoPrenda(event)"/>
+    </div>
+
+    <div class="fg"><div class="f-lbl">Nombre de la prenda</div><input class="f-inp" id="p-nombre" placeholder="Ej: Blusa Escote Cuadrado"/></div>
+    <div class="fg-row" style="margin-top:8px;">
+      <div class="fg"><div class="f-lbl">Categoría</div>
+        <select class="f-sel" id="p-cat">
+          <option value="BLUSAS">BLUSAS</option><option value="VESTIDOS">VESTIDOS</option>
+          <option value="CONJUNTOS">CONJUNTOS</option><option value="PANTALONES">PANTALONES</option>
+          <option value="FALDAS">FALDAS</option><option value="BODYS">BODYS</option>
+          <option value="SUETERS">SUETERS</option><option value="SHORTS">SHORTS</option>
+          <option value="SETS">SETS</option><option value="BOLSAS">BOLSAS</option>
+          <option value="MALLAS">MALLAS</option><option value="PLAYERAS">PLAYERAS</option>
+          <option value="PIJAMAS">PIJAMAS</option><option value="CORSETS">CORSETS</option>
+          <option value="ENSAMBLES">ENSAMBLES</option><option value="CINTURONES">CINTURONES</option>
+          <option value="TRAJES DE BAÑO">TRAJES DE BAÑO</option><option value="SOMBREROS">SOMBREROS</option>
+        </select>
+      </div>
+      <div class="fg"><div class="f-lbl">REF / Código de barras</div><input class="f-inp" id="p-ref" placeholder="Ej: SHA0045"/></div>
+    </div>
+    <div class="fg-row" style="margin-top:8px;">
+      <div class="fg"><div class="f-lbl">Precio venta (MXN)</div><input class="f-inp" id="p-precio" type="number" placeholder="250"/></div>
+      <div class="fg"><div class="f-lbl">Costo compra (MXN)</div><input class="f-inp" id="p-costo" type="number" placeholder="130"/></div>
+    </div>
+    <div class="fg" style="margin-top:8px;">
+      <div class="f-lbl">¿Controlar stock por Tallas / Colores?</div>
+      <select class="f-sel" id="p-track" onchange="toggleVariantesUI(this.value)">
+        <option value="N">No (Unitalla / Sin control de inventario)</option>
+        <option value="Y">Sí (Control detallado por Talla y Color)</option>
+      </select>
+    </div>
+    <div id="p-var-container" style="display:none;margin-top:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span class="f-lbl">Variantes de Talla y Color:</span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="agregarFilaVariante('Unitalla','Único',1)">+ Agregar Variante</button>
+      </div>
+      <div class="var-builder" id="var-builder-list"></div>
+    </div>
+    <div class="modal-btns" style="margin-top:16px;">
+      <button class="m-cancel" onclick="closeOv('ov-prod')">Cancelar</button>
+      <button class="m-confirm" id="prod-modal-btn" onclick="guardarProd()">Guardar Prenda</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CLIENTE -->
+<div class="overlay" id="ov-cliente">
+  <div class="modal modal-lg">
+    <h3 id="cli-modal-title">Nuevo cliente</h3>
+    <div class="fg-row">
+      <div class="fg"><div class="f-lbl">Nombre</div><input class="f-inp" id="c-nombre" placeholder="Nombre completo"/></div>
+      <div class="fg"><div class="f-lbl">Teléfono / WhatsApp</div><input class="f-inp" id="c-tel" placeholder="33..." type="tel"/></div>
+    </div>
+    <div class="fg-row" style="margin-top:8px;">
+      <div class="fg"><div class="f-lbl">Tipo</div>
+        <select class="f-sel" id="c-tipo"><option value="Menudeo">Menudeo</option><option value="Mayoreo">Mayoreo</option></select>
+      </div>
+      <div class="fg"><div class="f-lbl">Ciudad / Colonia</div><input class="f-inp" id="c-ciudad" placeholder="Guadalajara..."/></div>
+    </div>
+    <div class="fg" style="margin-top:8px;"><div class="f-lbl">Notas</div><input class="f-inp" id="c-notas" placeholder="Preferencias, tallas..."/></div>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="closeOv('ov-cliente')">Cancelar</button>
+      <button class="m-confirm" onclick="guardarCliente()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SCANNER CÁMARA -->
+<div class="overlay" id="ov-scanner">
+  <div class="modal" style="text-align:center;">
+    <h3>Escanear código de barras</h3>
+    <div id="reader" style="width:100%;max-width:320px;margin:0 auto;border-radius:10px;overflow:hidden;background:#000;"></div>
+    <p style="font-size:11px;color:var(--muted);margin-top:10px;">Apunta la cámara a la etiqueta</p>
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="m-cancel" onclick="cerrarEscaner()">Cerrar Cámara</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ CONFIGURACIÓN FIRESTORE ══
+const firebaseConfig = {
+  apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
+  authDomain: "saray-ha-pos.firebaseapp.com",
+  projectId: "saray-ha-pos",
+  storageBucket: "saray-ha-pos.firebasestorage.app",
+  messagingSenderId: "910404250860",
+  appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ══ ESTADO GLOBAL ══
+let prods = [];
+let ventas = [];
+let clientes = [];
+let gastos = [];
+let tkt=[], descPct=0, editPId=null, editCId=null, tempFotoData=null;
+let apartadoSeleccionado = null;
+let fCatQ='', fCatC='', fInvQ='', fInvC='', fInvS='';
+let fHP={per:'hoy',estado:''}, cajaPer='hoy';
+let html5QrCode = null;
+
+const fmt=n=>'$'+Number(n||0).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
+const timeStr=iso=>{const d=new Date(iso);return isNaN(d)?'--:--':d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});};
+const dateStr=iso=>{const d=new Date(iso);return isNaN(d)?'--':d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});};
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+
+function generarSiguienteRefSHA(){
+  let maxNum = 0;
+  prods.forEach(p=>{
+    if(p.ref && typeof p.ref === 'string' && p.ref.toUpperCase().startsWith('SHA')){
+      const num = parseInt(p.ref.toUpperCase().replace('SHA','')) || 0;
+      if(num > maxNum) maxNum = num;
+    }
+  });
+  return 'SHA' + String(maxNum + 1).padStart(4, '0');
+}
+
+// ══ SINCRONIZACIÓN FIRESTORE NUBE ══
+function iniciarSincronizacionNube(){
+  db.collection('productos').onSnapshot(snapshot=>{
+    prods = [];
+    snapshot.forEach(doc=>prods.push({id:doc.id, ...doc.data()}));
+    renderCat();
+    renderInv();
+  });
+
+  db.collection('ventas').orderBy('fecha','desc').onSnapshot(snapshot=>{
+    ventas = [];
+    snapshot.forEach(doc=>ventas.push({id:doc.id, ...doc.data()}));
+    renderHist();
+    renderCaja();
+  });
+
+  db.collection('clientes').onSnapshot(snapshot=>{
+    clientes = [];
+    snapshot.forEach(doc=>clientes.push({id:doc.id, ...doc.data()}));
+    populateCliSel();
+    renderCli();
+  });
+
+  db.collection('gastos').orderBy('fecha','desc').onSnapshot(snapshot=>{
+    gastos = [];
+    snapshot.forEach(doc=>gastos.push({id:doc.id, ...doc.data()}));
+    renderCaja();
+  });
+}
+
+// ══ VACIAR E IMPORTAR ══
+async function vaciarInventarioNube(){
+  if(!confirm('⚠️ ¿Deseas eliminar TODO el inventario de la nube?')) return;
+  if(!confirm('⚠️ Confirmación final: Se borrarán todas las prendas.')) return;
+  toast('⏳ Borrando inventario...');
+  try{
+    const snapshot = await db.collection('productos').get();
+    const batch = db.batch();
+    snapshot.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+    toast('🗑️ Inventario vaciado');
+  }catch(e){ toast('❌ Error al vaciar'); }
+}
+
+async function importarCSVLoyverse(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    try{
+      let contenido = e.target.result;
+      if (contenido.charCodeAt(0) === 0xFEFF) contenido = contenido.substr(1);
+      const lineas = contenido.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      if(lineas.length < 2){ toast('❌ Archivo sin datos'); return; }
+
+      const cabeceraRaw = lineas[0];
+      const numComas = (cabeceraRaw.match(/,/g) || []).length;
+      const numPuntosComas = (cabeceraRaw.match(/;/g) || []).length;
+      const delimitador = numPuntosComas > numComas ? ';' : ',';
+
+      const parseCSVLine = (line) => {
+        const arr = [];
+        let cur = '', inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const c = line[i];
+          if (c === '"') {
+            if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+            else inQuotes = !inQuotes;
+          } else if (c === delimitador && !inQuotes) {
+            arr.push(cur.trim()); cur = '';
+          } else cur += c;
+        }
+        arr.push(cur.trim());
+        return arr.map(s => s.replace(/^"|"$/g, '').trim());
+      };
+
+      const headers = parseCSVLine(cabeceraRaw).map(h => h.toLowerCase());
+      let idxNombre = headers.findIndex(h => h.includes('artículo') || h.includes('nombre') || h.includes('item'));
+      let idxRef = headers.findIndex(h => h.includes('código') || h.includes('barcode') || h.includes('sku'));
+      let idxCat = headers.findIndex(h => h.includes('categoría') || h.includes('category'));
+      let idxPrecio = headers.findIndex(h => h === 'precio' || h === 'price' || (h.includes('precio') && !h.includes('criterio')));
+      let idxCosto = headers.findIndex(h => h.includes('costo') || h.includes('cost'));
+      let idxStock = headers.findIndex(h => h.includes('stock') || h.includes('inventario'));
+
+      if (idxNombre === -1) idxNombre = 1;
+      if (idxCat === -1) idxCat = 2;
+      if (idxPrecio === -1) idxPrecio = 6;
+
+      const vaciar = confirm(`¿Deseas BORRAR lo existente antes de importar ${lineas.length-1} filas?`);
+      toast('⏳ Procesando e importando...');
+
+      if(vaciar){
+        const oldSnap = await db.collection('productos').get();
+        const bDelete = db.batch();
+        oldSnap.forEach(doc => bDelete.delete(doc.ref));
+        await bDelete.commit();
+      }
+
+      let contadorSHA = 1;
+      let batch = db.batch(), ops = 0, procesados = 0;
+
+      for(let i = 1; i < lineas.length; i++){
+        const col = parseCSVLine(lineas[i]);
+        if(!col || col.length < 2) continue;
+
+        const nombre = col[idxNombre] || col[0] || '';
+        if(!nombre || nombre.toLowerCase().includes('total')) continue;
+
+        let ref = idxRef !== -1 && col[idxRef] ? col[idxRef].trim() : '';
+        if(!ref || ref === '-' || ref === '0'){
+          ref = 'SHA' + String(contadorSHA).padStart(4, '0');
+          contadorSHA++;
+        }
+
+        const cat = (idxCat !== -1 && col[idxCat] ? col[idxCat] : 'GENERAL').toUpperCase();
+        const precio = parseFloat((col[idxPrecio] || '0').replace(/[^0-9.]/g, '')) || 0;
+        const costo = parseFloat((col[idxCosto] || '0').replace(/[^0-9.]/g, '')) || 0;
+        const stockVal = parseInt((col[idxStock] || '0').replace(/[^0-9]/g, '')) || 0;
+
+        const docId = nombre.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + i;
+        const pRef = db.collection('productos').doc(docId);
+
+        batch.set(pRef, {
+          nombre, ref, cat, precio, costo,
+          track: stockVal > 0 ? 'Y' : 'N',
+          stock: stockVal,
+          fotoUrl: '',
+          variantes: stockVal > 0 ? [{talla:'Unitalla', color:'Único', stock:stockVal}] : []
+        });
+
+        procesados++; ops++;
+        if(ops >= 400){ await batch.commit(); batch = db.batch(); ops = 0; }
+      }
+      if(ops > 0) await batch.commit();
+      toast(`✅ ¡${procesados} prendas cargadas en la nube!`);
+    }catch(err){ toast('❌ Error al procesar CSV'); }
+  };
+  reader.readAsText(file, 'UTF-8');
+  event.target.value = '';
+}
+
+// ══ PROCESAR FOTO PRENDA ══
+function procesarFotoPrenda(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const maxDim = 280;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > maxDim) { h *= maxDim / w; w = maxDim; } }
+      else { if (h > maxDim) { w *= maxDim / h; h = maxDim; } }
+      canvas.width = w; canvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      tempFotoData = canvas.toDataURL('image/jpeg', 0.65);
+      const prev = document.getElementById('p-foto-preview');
+      prev.style.backgroundImage = `url(${tempFotoData})`;
+      prev.textContent = '';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ══ NAVEGACIÓN ══
+function goTo(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const tv=document.getElementById('view-'+id);
+  if(tv) tv.classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='venta')      renderCat();
+  if(id==='inventario') renderInv();
+  if(id==='clientes')   renderCli();
+  if(id==='historial')  renderHist();
+  if(id==='caja')       renderCaja();
+}
+
+// ══ CATÁLOGO ══
+function filtCat(q){fCatQ=q;renderCat();}
+function filtCatCat(c){fCatC=c;renderCat();}
+function renderCat(){
+  let l=prods;
+  if(fCatQ){const q=fCatQ.toLowerCase();l=l.filter(p=>p.nombre.toLowerCase().includes(q)||p.ref.toLowerCase().includes(q));}
+  if(fCatC) l=l.filter(p=>p.cat===fCatC);
+  document.getElementById('cat-count').textContent=l.length+' prendas disponibles';
+  const g=document.getElementById('prod-grid');
+  if(!l.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:36px;color:var(--muted);font-style:italic;">Sin prendas encontradas</div>';return;}
+  g.innerHTML=l.map(p=>{
+    const totalStk = p.track==='Y' ? (p.variantes&&p.variantes.length ? p.variantes.reduce((s,v)=>s+v.stock,0) : p.stock) : 0;
+    const agotado=p.track==='Y' && totalStk<=0;
+    const sc=p.track==='N'?'no-track':totalStk<=0?'stk-zero':totalStk<=3?'stk-low':'stk-ok';
+    const sl=p.track==='N'?'Disponible':totalStk<=0?'Agotado':totalStk<=3?`⚠ ${totalStk} pzas`:`${totalStk} pzas`;
+    const imgHtml = p.fotoUrl ? `<img src="${p.fotoUrl}" class="pc-img"/>` : `<div class="pc-img">👗</div>`;
+    return `<div class="prod-card${agotado?' agotado':''}" onclick="iniciarAgregarTkt('${p.id}')">
+      ${imgHtml}
+      <div class="pc-cat">${p.cat}</div>
+      <div class="pc-name">${p.nombre}</div>
+      <div class="pc-price">${fmt(p.precio)}</div>
+      <div class="pc-stock ${sc}">${sl}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══ TICKET ══
+function iniciarAgregarTkt(id){
+  const p=prods.find(x=>x.id===id);
+  if(!p) return;
+  if(p.track==='Y' && p.variantes && p.variantes.length>0){
+    document.getElementById('var-prod-title').textContent=p.nombre;
+    document.getElementById('var-prod-price').textContent=`Precio: ${fmt(p.precio)} · REF: ${p.ref}`;
+    document.getElementById('var-options-list').innerHTML=p.variantes.map((v,idx)=>{
+      const sin = v.stock<=0;
+      return `<button class="btn btn-outline" style="justify-content:space-between;padding:12px;${sin?'opacity:0.4;':''}" ${sin?'disabled':''} onclick="addTktConVariante('${p.id}',${idx})">
+        <span><strong>Talla: ${v.talla}</strong> · Color: ${v.color}</span>
+        <span style="color:${v.stock>0?'var(--success)':'var(--danger)'};font-weight:600;">${v.stock} disp.</span>
+      </button>`;
+    }).join('');
+    document.getElementById('ov-variante').classList.add('open');
+  } else addTktSimple(p);
+}
+function addTktConVariante(id,varIdx){
+  const p=prods.find(x=>x.id===id); if(!p) return;
+  const v=p.variantes[varIdx];
+  if(v.stock<=0){toast('Variante sin stock');return;}
+  const key=`${p.id}_${v.talla}_${v.color}`;
+  const ex=tkt.find(x=>x.key===key);
+  if(ex){ if(ex.qty>=v.stock){toast('Límite de stock alcanzado');return;} ex.qty++; }
+  else tkt.push({key,id:p.id,nombre:p.nombre,cat:p.cat,precio:p.precio,costo:p.costo||0,talla:v.talla,color:v.color,qty:1,track:p.track,varIdx});
+  closeOv('ov-variante'); renderTkt();
+}
+function addTktSimple(p){
+  if(p.track==='Y' && p.stock<=0){toast('Sin stock disponible');return;}
+  const key=`${p.id}_Unitalla_Único`;
+  const ex=tkt.find(x=>x.key===key);
+  if(ex){ if(p.track==='Y'&&ex.qty>=p.stock){toast('No hay más stock');return;} ex.qty++; }
+  else tkt.push({key,id:p.id,nombre:p.nombre,cat:p.cat,precio:p.precio,costo:p.costo||0,talla:'Unitalla',color:'Único',qty:1,track:p.track,varIdx:null});
+  renderTkt();
+}
+function qTkt(key,d){
+  const it=tkt.find(x=>x.key===key); if(!it) return;
+  const p=prods.find(x=>x.id===it.id);
+  if(d>0 && p && p.track==='Y'){
+    const max=(it.varIdx!==null&&p.variantes&&p.variantes[it.varIdx])?p.variantes[it.varIdx].stock:p.stock;
+    if(it.qty>=max){toast('Límite de stock alcanzado');return;}
+  }
+  it.qty+=d;
+  if(it.qty<=0) tkt=tkt.filter(x=>x.key!==key);
+  renderTkt();
+}
+function delTkt(key){tkt=tkt.filter(x=>x.key!==key);renderTkt();}
+function limpiarTkt(){tkt=[];descPct=0;document.getElementById('desc-pct').value='';renderTkt();}
+function renderTkt(){
+  const cont=document.getElementById('tkt-items');
+  if(!tkt.length) cont.innerHTML='<div class="tkt-empty">Toca una prenda para agregarla</div>';
+  else cont.innerHTML=tkt.map(it=>`
+    <div class="tkt-item">
+      <div class="ti-info">
+        <div class="ti-name">${it.nombre}</div>
+        <div class="ti-var">${(it.talla!=='Unitalla'||it.color!=='Único')?`[${it.talla} | ${it.color}]`:''}</div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qbtn" onclick="qTkt('${it.key}',-1)">−</button>
+        <span style="font-size:12px;min-width:18px;text-align:center;font-weight:600">${it.qty}</span>
+        <button class="qbtn" onclick="qTkt('${it.key}',1)">+</button>
+      </div>
+      <div class="ti-price">${fmt(it.precio*it.qty)}</div>
+      <button class="ti-del" onclick="delTkt('${it.key}')">✕</button>
+    </div>`).join('');
+  const sub=tkt.reduce((s,i)=>s+i.precio*i.qty,0);
+  const dm=sub*descPct/100, total=sub-dm;
+  document.getElementById('t-sub').textContent=fmt(sub);
+  document.getElementById('t-total').textContent=fmt(total);
+  const dr=document.getElementById('t-desc-row');
+  if(descPct>0){dr.style.display='flex';document.getElementById('t-desc-lbl').textContent=`Descuento (${descPct}%)`;document.getElementById('t-desc-val').textContent='−'+fmt(dm);}
+  else dr.style.display='none';
+  document.getElementById('cobrar-btn').disabled=!tkt.length;
+  document.getElementById('wa-btn').style.display=tkt.length?'block':'none';
+}
+function aplicarDesc(){const v=parseFloat(document.getElementById('desc-pct').value)||0;descPct=Math.min(100,Math.max(0,v));renderTkt();if(descPct>0)toast(`Descuento ${descPct}% aplicado`);}
+function getTotal(){const sub=tkt.reduce((s,i)=>s+i.precio*i.qty,0);return sub-sub*descPct/100;}
+
+// ══ COBRO (CON APARTADO Y PAGOS COMBINADOS) ══
+function abrirCobro(){
+  const total = getTotal();
+  document.getElementById('m-total-val').textContent=fmt(total);
+  document.getElementById('m-recibido').value='';
+  document.getElementById('m-cambio').textContent='$0.00';
+  document.getElementById('m-metodo').value='Efectivo';
+  document.getElementById('m-tipo-transaccion').value='Completada';
+  document.getElementById('m-anticipo').value='';
+  
+  // Fecha límite por defecto (15 días)
+  const fechaLim = new Date();
+  fechaLim.setDate(fechaLim.getDate() + 15);
+  document.getElementById('m-fecha-limite').value = fechaLim.toISOString().split('T')[0];
+
+  toggleTipoTransaccion('Completada');
+  toggleMetodoPago('Efectivo');
+  document.getElementById('ov-cobro').classList.add('open');
+}
+
+function toggleTipoTransaccion(v){
+  const secApartado = document.getElementById('sec-apartado');
+  if(v==='Apartado'){
+    secApartado.style.display='block';
+    calcPendienteApartado();
+  } else {
+    secApartado.style.display='none';
+  }
+}
+
+function toggleMetodoPago(v){
+  document.getElementById('ef-sec').style.display = v==='Efectivo'?'block':'none';
+  document.getElementById('comb-sec').style.display = v==='Combinado'?'block':'none';
+}
+
+function calcPendienteApartado(){
+  const total = getTotal();
+  const ant = parseFloat(document.getElementById('m-anticipo').value || 0);
+  const pend = Math.max(0, total - ant);
+  document.getElementById('lbl-saldo-pendiente').textContent = `Saldo pendiente: ${fmt(pend)}`;
+}
+
+function calcCambio(){
+  const total=getTotal();
+  const rec=parseFloat(document.getElementById('m-recibido').value||0);
+  const c=rec-total;
+  const el=document.getElementById('m-cambio');
+  el.textContent=fmt(c>0?c:0);
+  el.style.color=rec>=total?'var(--success)':'var(--danger)';
+}
+
+async function confirmarVenta(){
+  const total = getTotal();
+  const tipoTrans = document.getElementById('m-tipo-transaccion').value;
+  const metodo = document.getElementById('m-metodo').value;
+  const cid = document.getElementById('tkt-cliente').value;
+  const cc = cid ? clientes.find(c=>c.id==cid) : null;
+
+  if(tipoTrans==='Apartado' && !cid){
+    toast('⚠️ Selecciona un cliente para registrar un apartado');
+    return;
+  }
+
+  let recibido = total;
+  let cambio = 0;
+  let montoEfectivo = 0;
+  let montoDigital = 0;
+
+  if(tipoTrans==='Apartado'){
+    const ant = parseFloat(document.getElementById('m-anticipo').value || 0);
+    if(ant <= 0){ toast('Ingresa el monto del anticipo'); return; }
+    recibido = ant;
+  }
+
+  if(metodo==='Efectivo'){
+    const recEfe = parseFloat(document.getElementById('m-recibido').value)||recibido;
+    if(recEfe < recibido){ toast('⚠️ Monto recibido menor al cobro'); return; }
+    cambio = Math.max(0, recEfe - recibido);
+    montoEfectivo = recibido;
+  } else if(metodo==='Combinado'){
+    montoEfectivo = parseFloat(document.getElementById('m-comb-efectivo').value) || 0;
+    montoDigital = parseFloat(document.getElementById('m-comb-tarjeta').value) || 0;
+    if((montoEfectivo + montoDigital) < recibido){
+      toast('⚠️ La suma del pago combinado es menor al cobro');
+      return;
+    }
+  } else {
+    montoDigital = recibido;
+  }
+
+  const sub = tkt.reduce((s,i)=>s+i.precio*i.qty,0);
+  const tipo = document.getElementById('tipo-venta').value;
+  const saldoPendiente = tipoTrans==='Apartado' ? Math.max(0, total - recibido) : 0;
+
+  const venta = {
+    folio: (tipoTrans==='Apartado'?'APT-':'T-') + Date.now().toString().slice(-6),
+    fecha: new Date().toISOString(),
+    items: tkt.map(i=>({...i})),
+    subtotal: sub,
+    descuento: descPct,
+    total,
+    estado: tipoTrans==='Apartado' ? 'Apartado' : 'Completada',
+    metodo,
+    montoEfectivo,
+    montoDigital,
+    recibido,
+    cambio,
+    saldoPendiente,
+    fechaLimite: tipoTrans==='Apartado' ? document.getElementById('m-fecha-limite').value : '',
+    abonos: tipoTrans==='Apartado' ? [{fecha: new Date().toISOString(), monto: recibido, metodo}] : [],
+    tipo,
+    cid: cid||'',
+    cnombre: cc ? cc.nombre : '',
+    ctel: cc ? cc.tel : ''
+  };
+
+  try{
+    const vDoc = await db.collection('ventas').add(venta);
+    venta.id = vDoc.id;
+
+    // Descontar inventario
+    for(const it of tkt){
+      const p = prods.find(x=>x.id===it.id);
+      if(p && p.track==='Y'){
+        if(it.varIdx!==null && p.variantes && p.variantes[it.varIdx]){
+          p.variantes[it.varIdx].stock = Math.max(0, p.variantes[it.varIdx].stock - it.qty);
+          p.stock = p.variantes.reduce((s,v)=>s+v.stock, 0);
+        } else {
+          p.stock = Math.max(0, p.stock - it.qty);
+        }
+        await db.collection('productos').doc(p.id).update({
+          stock: p.stock,
+          variantes: p.variantes || []
+        });
+      }
+    }
+
+    closeOv('ov-cobro');
+    limpiarTkt();
+    toast(tipoTrans==='Apartado' ? '¡Apartado registrado en la nube! 🏷️' : '¡Venta completada en la nube! ☁️✨');
+    mostrarTicketTermico(venta);
+  }catch(e){ toast('❌ Error al registrar transacción'); }
+}
+
+// ══ ABONOS A APARTADOS ══
+function abrirModalAbono(ventaId){
+  const v = ventas.find(x=>x.id==ventaId);
+  if(!v) return;
+  apartadoSeleccionado = v;
+  document.getElementById('abono-cliente-lbl').textContent = `Cliente: ${v.cnombre} · Folio: ${v.folio}`;
+  document.getElementById('abono-pendiente-lbl').textContent = fmt(v.saldoPendiente);
+  document.getElementById('abono-monto').value = '';
+  document.getElementById('ov-abono').classList.add('open');
+}
+
+async function guardarAbono(){
+  if(!apartadoSeleccionado) return;
+  const monto = parseFloat(document.getElementById('abono-monto').value) || 0;
+  const metodo = document.getElementById('abono-metodo').value;
+  if(monto <= 0){ toast('Ingresa un monto válido'); return; }
+  if(monto > apartadoSeleccionado.saldoPendiente){ toast('El abono no puede ser mayor al saldo pendiente'); return; }
+
+  const nuevoPendiente = Math.max(0, apartadoSeleccionado.saldoPendiente - monto);
+  const nuevoEstado = nuevoPendiente === 0 ? 'Liquidado' : 'Apartado';
+  const abonosActuales = apartadoSeleccionado.abonos || [];
+  abonosActuales.push({ fecha: new Date().toISOString(), monto, metodo });
+
+  try{
+    await db.collection('ventas').doc(apartadoSeleccionado.id).update({
+      saldoPendiente: nuevoPendiente,
+      estado: nuevoEstado,
+      abonos: abonosActuales
+    });
+    closeOv('ov-abono');
+    toast(nuevoEstado==='Liquidado' ? '🎉 ¡Apartado totalmente liquidado!' : '✅ Abono registrado');
+  }catch(e){ toast('❌ Error al registrar abono'); }
+}
+
+// ══ GASTOS DEL LOCAL ══
+function abrirGasto(){
+  document.getElementById('gasto-monto').value = '';
+  document.getElementById('gasto-notas').value = '';
+  document.getElementById('ov-gasto').classList.add('open');
+}
+
+async function guardarGasto(){
+  const concepto = document.getElementById('gasto-concepto').value;
+  const monto = parseFloat(document.getElementById('gasto-monto').value) || 0;
+  const notas = document.getElementById('gasto-notas').value.trim();
+  if(monto <= 0){ toast('Ingresa un monto válido para el gasto'); return; }
+
+  try{
+    await db.collection('gastos').add({
+      concepto,
+      monto,
+      notas,
+      fecha: new Date().toISOString()
+    });
+    closeOv('ov-gasto');
+    toast('💸 Gasto registrado');
+  }catch(e){ toast('❌ Error al guardar gasto'); }
+}
+
+async function borrarGasto(id){
+  if(confirm('¿Deseas eliminar este registro de gasto?')){
+    await db.collection('gastos').doc(id).delete();
+    toast('Gasto eliminado');
+  }
+}
+
+// ══ TICKET DE VENTA O APARTADO ══
+function verTicketPorId(id){const v=ventas.find(x=>x.id==id);if(v)mostrarTicketTermico(v);}
+function mostrarTicketTermico(v){
+  const esApt = v.estado==='Apartado'||v.estado==='Liquidado';
+  document.getElementById('ticket-print-body').innerHTML=`
+    <div class="tp-center tp-bold" style="font-size:15px;letter-spacing:1px;">SARAY HA</div>
+    <div class="tp-center" style="font-size:10px;">BOUTIQUE DE MODA</div>
+    <div class="tp-line"></div>
+    <div class="tp-row"><span>${esApt?'TICKET APARTADO':'TICKET DE VENTA'}</span><span>${v.folio||'-'}</span></div>
+    <div class="tp-row"><span>Fecha: ${dateStr(v.fecha)}</span><span>${timeStr(v.fecha)}</span></div>
+    ${v.cnombre?`<div class="tp-row"><span>Cliente:</span><span class="tp-bold">${v.cnombre}</span></div>`:''}
+    <div class="tp-line"></div>
+    ${(v.items||[]).map(i=>`
+      <div style="margin:4px 0;">
+        <div class="tp-row"><span>${i.qty}x ${i.nombre}</span><span>${fmt(i.precio*i.qty)}</span></div>
+        ${(i.talla&&i.talla!=='Unitalla')||(i.color&&i.color!=='Único')?`<div style="font-size:9.5px;color:#555;">&nbsp;&nbsp;Talla: ${i.talla} | Color: ${i.color}</div>`:''}
+      </div>`).join('')}
+    <div class="tp-line"></div>
+    <div class="tp-row"><span>Subtotal:</span><span>${fmt(v.subtotal)}</span></div>
+    ${v.descuento>0?`<div class="tp-row"><span>Descuento (${v.descuento}%):</span><span>−${fmt(v.subtotal*v.descuento/100)}</span></div>`:''}
+    <div class="tp-row tp-bold" style="font-size:14px;"><span>TOTAL PRENDAS:</span><span>${fmt(v.total)}</span></div>
+    
+    ${esApt?`
+      <div class="tp-line"></div>
+      <div class="tp-row"><span>Anticipo / Abonos:</span><span class="tp-bold">${fmt(v.total - v.saldoPendiente)}</span></div>
+      <div class="tp-row tp-bold" style="font-size:13px;color:#856404;"><span>SALDO PENDIENTE:</span><span>${fmt(v.saldoPendiente)}</span></div>
+      ${v.fechaLimite?`<div class="tp-row" style="font-size:10px;"><span>Fecha Límite:</span><span><b>${v.fechaLimite}</b></span></div>`:''}
+    `:''}
+
+    <div class="tp-line"></div>
+    <div class="tp-row"><span>Método: ${v.metodo}</span></div>
+    ${v.metodo==='Efectivo'?`<div class="tp-row"><span>Recibido:</span><span>${fmt(v.recibido)}</span></div>
+      <div class="tp-row tp-bold"><span>Cambio:</span><span>${fmt(v.cambio)}</span></div>`:''}
+    <div class="tp-line"></div>
+    <div class="tp-center" style="font-size:10px;margin-top:6px;">✨ ¡Gracias por tu compra! ✨</div>
+    <div class="tp-center tp-bold" style="font-size:9px;color:#333;margin-top:2px;">No hay cambios ni devoluciones</div>`;
+    
+  document.getElementById('ticket-wa-btn').onclick=()=>{
+    let msg=`🛍️ *SARAY HA Boutique — ${esApt?'Apartado':'Ticket'} ${v.folio||''}*\n📅 ${dateStr(v.fecha)} ${timeStr(v.fecha)}\n`;
+    if(v.cnombre) msg+=`👤 ${v.cnombre}\n`;
+    msg+=`----------------------------\n`;
+    (v.items||[]).forEach(i=>{msg+=`• ${i.qty}x ${i.nombre} ${i.talla&&i.talla!=='Unitalla'?`(${i.talla}/${i.color})`:''} — ${fmt(i.precio*i.qty)}\n`;});
+    msg+=`----------------------------\n💰 *TOTAL: ${fmt(v.total)}*\n`;
+    if(esApt){
+      msg+=`Abonado: ${fmt(v.total - v.saldoPendiente)}\n`;
+      msg+=`⚠️ *SALDO PENDIENTE: ${fmt(v.saldoPendiente)}*\n`;
+      if(v.fechaLimite) msg+=`Fecha Límite: ${v.fechaLimite}\n`;
+    }
+    msg+=`\n✨ ¡Gracias por tu preferencia! ✨\nNo hay cambios ni devoluciones`;
+    const url=v.ctel?`https://wa.me/52${v.ctel.replace(/[^0-9]/g,'')}?text=${encodeURIComponent(msg)}`:`https://wa.me/?text=${encodeURIComponent(msg)}`;
+    window.open(url,'_blank');
+  };
+  document.getElementById('ov-ticket-print').classList.add('open');
+}
+
+// ══ PRODUCTOS ══
+function toggleVariantesUI(track){
+  document.getElementById('p-var-container').style.display=track==='Y'?'block':'none';
+  if(track==='Y'&&document.getElementById('var-builder-list').children.length===0){
+    agregarFilaVariante('CH','Rosa',1); agregarFilaVariante('M','Negro',1);
+  }
+}
+function agregarFilaVariante(talla='',color='',stock=0){
+  const list=document.getElementById('var-builder-list');
+  const div=document.createElement('div');
+  div.className='var-row';
+  div.innerHTML=`<input type="text" placeholder="Talla" value="${talla}" style="flex:1" class="v-talla"/>
+    <input type="text" placeholder="Color" value="${color}" style="flex:1" class="v-color"/>
+    <input type="number" placeholder="Stock" value="${stock}" style="width:65px;" class="v-stock"/>
+    <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+  list.appendChild(div);
+}
+function abrirProd(id){
+  editPId=id; tempFotoData = null;
+  document.getElementById('prod-modal-title').textContent=id?'Editar prenda':'Nueva prenda';
+  document.getElementById('prod-modal-btn').textContent=id?'Actualizar':'Guardar Prenda';
+  document.getElementById('var-builder-list').innerHTML='';
+  const prev = document.getElementById('p-foto-preview');
+  prev.style.backgroundImage = 'none'; prev.textContent = '📷';
+
+  if(id){
+    const p=prods.find(x=>x.id===id); if(!p) return;
+    document.getElementById('p-nombre').value=p.nombre;
+    document.getElementById('p-cat').value=p.cat;
+    document.getElementById('p-ref').value=p.ref;
+    document.getElementById('p-precio').value=p.precio;
+    document.getElementById('p-costo').value=p.costo;
+    document.getElementById('p-track').value=p.track;
+    if(p.fotoUrl){
+      prev.style.backgroundImage = `url(${p.fotoUrl})`;
+      prev.textContent = '';
+      tempFotoData = p.fotoUrl;
+    }
+    toggleVariantesUI(p.track);
+    if(p.variantes&&p.variantes.length) p.variantes.forEach(v=>agregarFilaVariante(v.talla,v.color,v.stock));
+    else if(p.track==='Y') agregarFilaVariante('Unitalla','Único',p.stock||0);
+  } else {
+    document.getElementById('p-nombre').value='';
+    document.getElementById('p-cat').value='BLUSAS';
+    document.getElementById('p-ref').value=generarSiguienteRefSHA();
+    document.getElementById('p-precio').value='';
+    document.getElementById('p-costo').value='';
+    document.getElementById('p-track').value='N';
+    toggleVariantesUI('N');
+  }
+  document.getElementById('ov-prod').classList.add('open');
+}
+async function guardarProd(){
+  const nombre=document.getElementById('p-nombre').value.trim();
+  const cat=document.getElementById('p-cat').value;
+  let ref=document.getElementById('p-ref').value.trim();
+  if(!ref) ref = generarSiguienteRefSHA();
+  const precio=parseFloat(document.getElementById('p-precio').value)||0;
+  const costo=parseFloat(document.getElementById('p-costo').value)||0;
+  const track=document.getElementById('p-track').value;
+  if(!nombre){toast('Ingresa el nombre');return;}
+  let variantes=[],totalStock=0;
+  if(track==='Y'){
+    document.querySelectorAll('#var-builder-list .var-row').forEach(r=>{
+      const t=r.querySelector('.v-talla').value.trim()||'Unitalla';
+      const c=r.querySelector('.v-color').value.trim()||'Único';
+      const s=parseInt(r.querySelector('.v-stock').value)||0;
+      variantes.push({talla:t,color:c,stock:s}); totalStock+=s;
+    });
+  }
+  const prodData = {nombre,cat,ref,precio,costo,track,variantes,stock:totalStock, fotoUrl: tempFotoData||''};
+  if(editPId){
+    await db.collection('productos').doc(editPId).update(prodData);
+    toast('Prenda actualizada');
+  } else {
+    const docId=nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4);
+    await db.collection('productos').doc(docId).set(prodData);
+    toast('Prenda agregada ✨');
+  }
+  closeOv('ov-prod');
+}
+async function borrarProd(id){
+  if(confirm('¿Eliminar esta prenda del catálogo?')){
+    await db.collection('productos').doc(id).delete();
+    toast('Prenda eliminada');
+  }
+}
+function filtInv(q){fInvQ=q;renderInv();}
+function filtInvCat(c){fInvC=c;renderInv();}
+function filtInvStk(s){fInvS=s;renderInv();}
+function renderInv(){
+  let l=prods;
+  if(fInvQ){const q=fInvQ.toLowerCase();l=l.filter(p=>p.nombre.toLowerCase().includes(q)||p.ref.toLowerCase().includes(q)||p.cat.toLowerCase().includes(q));}
+  if(fInvC) l=l.filter(p=>p.cat===fInvC);
+  if(fInvS==='low') l=l.filter(p=>p.track==='Y'&&p.stock>0&&p.stock<5);
+  if(fInvS==='zero') l=l.filter(p=>p.track==='Y'&&p.stock<=0);
+  const total=prods.filter(p=>p.track==='Y').reduce((s,p)=>s+p.stock,0);
+  document.getElementById('inv-sub').textContent=`${l.length} prendas · ${total} pzas en stock`;
+  const tb=document.getElementById('inv-tbody');
+  if(!l.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--muted);font-style:italic;">No se encontraron prendas</td></tr>';return;}
+  tb.innerHTML=l.map(p=>{
+    const totalStk=p.track==='Y'?(p.variantes&&p.variantes.length?p.variantes.reduce((s,v)=>s+v.stock,0):p.stock):0;
+    const sc=p.track==='N'?'notrack':totalStk<=0?'zero':totalStk<5?'low':'ok';
+    const badges=p.variantes&&p.variantes.length
+      ? p.variantes.map(v=>`<span class="var-pill">${v.talla}/${v.color}: <b>${v.stock}</b></span>`).join('')
+      : `<span class="stk-badge ${sc}">${p.track==='N'?'Unitalla / Libre':totalStk+' pzas'}</span>`;
+    const imgT = p.fotoUrl ? `<img src="${p.fotoUrl}" class="inv-thumb"/>` : `<div class="inv-thumb">👗</div>`;
+    return `<tr>
+      <td>${imgT}</td>
+      <td><span style="font-family:monospace;font-size:11px;color:var(--muted);">${p.ref}</span></td>
+      <td><strong>${p.nombre}</strong></td>
+      <td><span class="cat-pill">${p.cat}</span></td>
+      <td class="precio-cell">${fmt(p.precio)}</td>
+      <td class="costo-cell">${fmt(p.costo)}</td>
+      <td>${badges}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="abrirProd('${p.id}')">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="borrarProd('${p.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══ CLIENTES EN NUBE ══
+function populateCliSel(){
+  const s=document.getElementById('tkt-cliente'); if(!s) return;
+  const v=s.value;
+  s.innerHTML='<option value="">— Cliente (opcional) —</option>'+clientes.map(c=>`<option value="${c.id}">${c.nombre}${c.tipo==='Mayoreo'?' ★':''}</option>`).join('');
+  s.value=v;
+}
+function filtCli(q){renderCli(q);}
+function renderCli(q=''){
+  let l=clientes;
+  if(q){const query=q.toLowerCase();l=l.filter(c=>c.nombre.toLowerCase().includes(query)||(c.tel||'').includes(query));}
+  document.getElementById('cli-sub').textContent=`${clientes.length} clientes registrados`;
+  const grid=document.getElementById('cli-grid');
+  if(!l.length){grid.innerHTML='<div class="no-data" style="grid-column:1/-1;">No hay clientes registrados</div>';return;}
+  grid.innerHTML=l.map(c=>{
+    const coms=ventas.filter(v=>v.cid==c.id);
+    const totalG=coms.reduce((s,v)=>s+v.total,0);
+    return `<div class="cli-card">
+      <div class="cc-name">${c.nombre}</div>
+      <div class="cc-tel">📱 ${c.tel||'Sin teléfono'}</div>
+      <span class="cc-tipo ${c.tipo==='Mayoreo'?'cc-mayor':'cc-menud'}">${c.tipo}</span>
+      <div style="font-size:10px;color:var(--muted);">${c.ciudad||''} · ${c.notas||'Sin notas'}</div>
+      <div class="cc-stats">
+        <div><div class="cc-stat-val">${coms.length}</div><div class="cc-stat-lbl">Compras</div></div>
+        <div><div class="cc-stat-val">${fmt(totalG)}</div><div class="cc-stat-lbl">Total gastado</div></div>
+      </div>
+      <div class="cc-actions">
+        ${c.tel?`<button class="wa-mini" onclick="window.open('https://wa.me/52${c.tel.replace(/[^0-9]/g,'')}','_blank')">WhatsApp</button>`:''}
+        <button class="btn btn-outline btn-sm" onclick="abrirCliente('${c.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="borrarCliente('${c.id}')">✕</button>
+      </div></div>`;
+  }).join('');
+}
+function abrirCliente(id){
+  editCId=id;
+  document.getElementById('cli-modal-title').textContent=id?'Editar cliente':'Nuevo cliente';
+  if(id){
+    const c=clientes.find(x=>x.id==id); if(!c) return;
+    document.getElementById('c-nombre').value=c.nombre;
+    document.getElementById('c-tel').value=c.tel||'';
+    document.getElementById('c-tipo').value=c.tipo;
+    document.getElementById('c-ciudad').value=c.ciudad||'';
+    document.getElementById('c-notas').value=c.notas||'';
+  } else {
+    document.getElementById('c-nombre').value='';
+    document.getElementById('c-tel').value='';
+    document.getElementById('c-tipo').value='Menudeo';
+    document.getElementById('c-ciudad').value='';
+    document.getElementById('c-notas').value='';
+  }
+  document.getElementById('ov-cliente').classList.add('open');
+}
+async function guardarCliente(){
+  const nombre=document.getElementById('c-nombre').value.trim();
+  const tel=document.getElementById('c-tel').value.trim();
+  const tipo=document.getElementById('c-tipo').value;
+  const ciudad=document.getElementById('c-ciudad').value.trim();
+  const notas=document.getElementById('c-notas').value.trim();
+  if(!nombre){toast('Ingresa al menos el nombre');return;}
+  const cData = {nombre,tel,tipo,ciudad,notas};
+  if(editCId){
+    await db.collection('clientes').doc(editCId).update(cData);
+    toast('Cliente actualizado');
+  } else {
+    await db.collection('clientes').add(cData);
+    toast('Cliente guardado ✨');
+  }
+  closeOv('ov-cliente');
+}
+async function borrarCliente(id){
+  if(confirm('¿Eliminar cliente?')){
+    await db.collection('clientes').doc(id).delete();
+    toast('Cliente eliminado');
+  }
+}
+
+// ══ HISTORIAL ══
+function filtrarPorPeriodo(arr,per){
+  const now=new Date();
+  return arr.filter(item=>{
+    const d=new Date(item.fecha);
+    if(isNaN(d.getTime())) return per==='todo';
+    if(per==='hoy') return d.toDateString()===now.toDateString();
+    if(per==='semana'){const s=new Date(now);s.setDate(now.getDate()-7);return d>=s;}
+    if(per==='mes') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    return true;
+  });
+}
+function setHP(k,v){fHP[k]=v;renderHist();}
+function renderHist(){
+  let l=filtrarPorPeriodo(ventas,fHP.per);
+  if(fHP.estado) l=l.filter(v=>(v.estado||'Completada')===fHP.estado);
+  const vl=document.getElementById('vlist');
+  if(!l.length){vl.innerHTML='<div class="no-data">No hay registros para este filtro</div>';return;}
+  vl.innerHTML=l.map(v=>{
+    const items=v.items||[];
+    const itemsStr=items.map(i=>`${i.qty}x ${i.nombre}${i.talla&&i.talla!=='Unitalla'?` [${i.talla}/${i.color}]`:''}`).join(', ');
+    const costoTotal=items.reduce((s,i)=>s+((i.costo||0)*i.qty),0);
+    const ganancia=v.total-costoTotal;
+    const esApt = v.estado==='Apartado';
+    return `<div class="vcard">
+      <div class="vc-date">${dateStr(v.fecha)}<br/>${timeStr(v.fecha)}</div>
+      <div class="vc-detail">
+        <strong>${itemsStr||'Sin detalle'}</strong>
+        <div class="vc-cli">${v.cnombre?'👤 '+v.cnombre:'Venta general'} · <em>${v.metodo||''}</em> · Folio: ${v.folio||'-'}</div>
+        <span class="${esApt?'vc-badge-apartado':'vc-badge'}">${v.estado||'Completada'}</span>
+        ${esApt?`<div style="font-size:10px;color:#856404;font-weight:600;margin-top:2px;">Saldo Pendiente: ${fmt(v.saldoPendiente)}</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:4px;">
+          <button class="btn btn-outline btn-sm" onclick="verTicketPorId('${v.id}')">🧾 Ticket</button>
+          ${esApt?`<button class="btn btn-primary btn-sm" onclick="abrirModalAbono('${v.id}')">+ Abono</button>`:''}
+        </div>
+      </div>
+      <div>
+        <div class="vc-total">${fmt(v.total)}</div>
+        <div class="vc-ganancia">+${fmt(ganancia)} ganancia</div>
+      </div></div>`;
+  }).join('');
+}
+
+// ══ CAJA, GASTOS Y GRÁFICAS ══
+function setCajaPer(p){cajaPer=p;renderCaja();}
+function renderCaja(){
+  const vs=filtrarPorPeriodo(ventas,cajaPer);
+  const gs=filtrarPorPeriodo(gastos,cajaPer);
+
+  document.getElementById('caja-fecha').textContent=new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  
+  const totalVentas=vs.reduce((s,v)=>s+(v.total||0),0);
+  const totalEfe=vs.reduce((s,v)=>s+(v.montoEfectivo || (v.metodo==='Efectivo'?v.total:0)),0);
+  const totalDigital=vs.reduce((s,v)=>s+(v.montoDigital || (v.metodo!=='Efectivo'?v.total:0)),0);
+  const totalCostoRopa=vs.reduce((s,v)=>s+(v.items||[]).reduce((x,i)=>x+((i.costo||0)*i.qty),0),0);
+  const totalGastosLocal=gs.reduce((s,g)=>s+(g.monto||0),0);
+  
+  const gananciaReal = (totalVentas - totalCostoRopa) - totalGastosLocal;
+
+  document.getElementById('caja-stats').innerHTML=`
+    <div class="sc"><div class="sc-lbl">Ventas totales</div><div class="sc-val">${fmt(totalVentas)}</div><div class="sc-sub">${vs.length} transacciones</div></div>
+    <div class="sc"><div class="sc-lbl">Efectivo en caja</div><div class="sc-val">${fmt(totalEfe)}</div></div>
+    <div class="sc"><div class="sc-lbl">Tarjeta / Transf</div><div class="sc-val">${fmt(totalDigital)}</div></div>
+    <div class="sc"><div class="sc-lbl">Gastos del local</div><div class="sc-val negative">−${fmt(totalGastosLocal)}</div><div class="sc-sub">${gs.length} registros</div></div>
+    <div class="sc"><div class="sc-lbl">Ganancia Real Neta</div><div class="sc-val ${gananciaReal>=0?'positive':'negative'}">${fmt(gananciaReal)}</div><div class="sc-sub">Limpia para ti</div></div>`;
+
+  // Render Gráfica Días de la Semana
+  renderGraficaSemana(vs);
+
+  // Tabla Ganancias por Prenda
+  const map={};
+  vs.forEach(v=>(v.items||[]).forEach(it=>{
+    const k=it.nombre;
+    if(!map[k]) map[k]={nombre:it.nombre,cat:it.cat||'-',pzas:0,ventas:0,costo:0};
+    map[k].pzas+=it.qty;
+    map[k].ventas+=it.precio*it.qty;
+    map[k].costo+=(it.costo||0)*it.qty;
+  }));
+  const arr=Object.values(map).sort((a,b)=>b.ventas-a.ventas);
+  const ptb=document.getElementById('rep-prenda-tbody');
+  if(!arr.length){
+    ptb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:var(--muted);font-style:italic;">Sin ventas en el periodo</td></tr>';
+  } else {
+    ptb.innerHTML=arr.map(p=>{
+      const gan=p.ventas-p.costo;
+      const margen=p.ventas>0?(gan/p.ventas*100).toFixed(1)+'%':'0%';
+      return `<tr>
+        <td><strong>${p.nombre}</strong></td>
+        <td><span class="cat-pill">${p.cat}</span></td>
+        <td class="num">${p.pzas}</td>
+        <td class="num">${fmt(p.ventas)}</td>
+        <td class="num" style="color:var(--muted);">${fmt(p.costo)}</td>
+        <td class="num gan-positive">${fmt(gan)}</td>
+        <td class="num" style="font-weight:600;">${margen}</td></tr>`;
+    }).join('')+`<tr class="rep-total-row">
+        <td colspan="2">TOTALES</td>
+        <td class="num">${arr.reduce((s,p)=>s+p.pzas,0)}</td>
+        <td class="num">${fmt(totalVentas)}</td>
+        <td class="num">${fmt(totalCostoRopa)}</td>
+        <td class="num gan-positive">${fmt(totalVentas-totalCostoRopa)}</td>
+        <td class="num">${totalVentas>0?((totalVentas-totalCostoRopa)/totalVentas*100).toFixed(1)+'%':'0%'}</td></tr>`;
+  }
+
+  // Tabla Gastos
+  const gtb = document.getElementById('gastos-tbody');
+  if(!gs.length){
+    gtb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:18px;color:var(--muted);font-style:italic;">No hay gastos registrados en este periodo</td></tr>';
+  } else {
+    gtb.innerHTML = gs.map(g=>`
+      <tr>
+        <td>${dateStr(g.fecha)} ${timeStr(g.fecha)}</td>
+        <td><strong>${g.concepto}</strong></td>
+        <td><span style="font-size:10px;color:var(--muted);">${g.notas||'-'}</span></td>
+        <td class="num" style="color:var(--danger);font-weight:600;">−${fmt(g.monto)}</td>
+        <td><button class="btn btn-danger btn-sm" onclick="borrarGasto('${g.id}')">✕</button></td>
+      </tr>
+    `).join('');
+  }
+
+  // Tabla Ventas
+  const ctb=document.getElementById('caja-tbody');
+  if(!vs.length){
+    ctb.innerHTML='<tr><td colspan="7" style="text-align:center;padding:18px;color:var(--muted);font-style:italic;">No hay tickets emitidos</td></tr>';
+  } else {
+    vs.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+    ctb.innerHTML=vs.map(v=>`
+      <tr>
+        <td>${timeStr(v.fecha)}</td>
+        <td>${v.cnombre||'Público general'}</td>
+        <td>${(v.items||[]).map(i=>`${i.qty}x ${i.nombre}${i.talla&&i.talla!=='Unitalla'?` (${i.talla})`:''}`).join('<br/>')||'-'}</td>
+        <td><span class="${v.estado==='Apartado'?'vc-badge-apartado':'vc-badge'}">${v.estado||'Completada'}</span></td>
+        <td>${v.metodo||'Efectivo'}</td>
+        <td class="monto">${fmt(v.total)}</td>
+        <td><button class="btn btn-outline btn-sm" onclick="verTicketPorId('${v.id}')">🧾 Ver</button></td>
+      </tr>`).join('');
+  }
+}
+
+function renderGraficaSemana(vs){
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const totDias = [0,0,0,0,0,0,0];
+  vs.forEach(v=>{
+    const d = new Date(v.fecha);
+    if(!isNaN(d.getTime())) totDias[d.getDay()] += (v.total||0);
+  });
+  const maxV = Math.max(...totDias, 1);
+  const container = document.getElementById('chart-week-bars');
+  container.innerHTML = totDias.map((val, idx)=>{
+    const pct = Math.round((val / maxV) * 100);
+    return `
+      <div class="chart-col">
+        <div style="font-size:8px;color:var(--muted);">${val>0?fmt(val):''}</div>
+        <div class="chart-bar-fill" style="height:${pct}%;"></div>
+        <div class="chart-lbl">${dias[idx]}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ══ IMPRESIÓN DEL CORTE ══
+function imprimirCorte(){
+  const vs=filtrarPorPeriodo(ventas,cajaPer).slice();
+  const gs=filtrarPorPeriodo(gastos,cajaPer).slice();
+  const totalVentas=vs.reduce((s,v)=>s+(v.total||0),0);
+  const totalEfe=vs.reduce((s,v)=>s+(v.montoEfectivo || (v.metodo==='Efectivo'?v.total:0)),0);
+  const totalDigital=vs.reduce((s,v)=>s+(v.montoDigital || (v.metodo!=='Efectivo'?v.total:0)),0);
+  const totalCostoRopa=vs.reduce((s,v)=>s+(v.items||[]).reduce((x,i)=>x+((i.costo||0)*i.qty),0),0);
+  const totalGastos=gs.reduce((s,g)=>s+(g.monto||0),0);
+  const gananciaReal = (totalVentas - totalCostoRopa) - totalGastos;
+  const totalPzas=vs.reduce((s,v)=>s+(v.items||[]).reduce((x,i)=>x+i.qty,0),0);
+
+  const periodoTxt = cajaPer==='hoy'?'DÍA':cajaPer==='semana'?'SEMANA':cajaPer==='mes'?'MES':'HISTÓRICO';
+  const fechaTxt = new Date().toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const horaTxt = new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+
+  const map={};
+  vs.forEach(v=>(v.items||[]).forEach(it=>{
+    const k=it.nombre;
+    if(!map[k]) map[k]={nombre:it.nombre,cat:it.cat||'-',pzas:0,ventas:0,costo:0};
+    map[k].pzas+=it.qty;
+    map[k].ventas+=it.precio*it.qty;
+    map[k].costo+=(it.costo||0)*it.qty;
+  }));
+  const arr=Object.values(map).sort((a,b)=>b.ventas-a.ventas);
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+    <title>Corte de Caja - SARAY HA</title>
+    <style>
+      body{font-family:'Courier New',monospace;color:#000;padding:20px;max-width:800px;margin:0 auto;font-size:12px;}
+      h1{text-align:center;font-size:22px;margin-bottom:4px;letter-spacing:3px;}
+      h2{text-align:center;font-size:11px;color:#666;margin-bottom:14px;font-weight:normal;letter-spacing:2px;}
+      h3{font-size:14px;margin:18px 0 8px 0;border-bottom:2px solid #000;padding-bottom:4px;}
+      .meta{text-align:center;font-size:11px;margin-bottom:18px;}
+      table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px;}
+      th,td{padding:5px 8px;text-align:left;border-bottom:1px solid #ccc;}
+      th{background:#eee;font-weight:bold;text-transform:uppercase;font-size:10px;}
+      .num{text-align:right;font-family:'Courier New',monospace;}
+      .totals{background:#f3f3f3;font-weight:bold;}
+      .totals td{border-top:2px solid #000;border-bottom:2px solid #000;}
+      .resumen{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:14px;}
+      .box{border:1px solid #000;padding:10px;}
+      .box-lbl{font-size:9px;text-transform:uppercase;color:#555;letter-spacing:1px;}
+      .box-val{font-size:18px;font-weight:bold;margin-top:4px;}
+      .footer{text-align:center;margin-top:30px;font-size:10px;color:#555;border-top:1px dashed #999;padding-top:10px;}
+      @media print{@page{margin:1cm;}}
+    </style></head><body>
+    <h1>SARAY HA</h1>
+    <h2>BOUTIQUE DE MODA — CORTE DE CAJA PRO</h2>
+    <div class="meta">Reporte: <b>${periodoTxt}</b><br/>Generado: ${fechaTxt} · ${horaTxt}</div>
+    <div class="resumen">
+      <div class="box"><div class="box-lbl">Ventas totales</div><div class="box-val">${fmt(totalVentas)}</div><div style="font-size:10px;color:#666;">${vs.length} tickets · ${totalPzas} pzas</div></div>
+      <div class="box"><div class="box-lbl">Ganancia Real Neta</div><div class="box-val">${fmt(gananciaReal)}</div><div style="font-size:10px;color:#666;">Limpia para ti</div></div>
+      <div class="box"><div class="box-lbl">Efectivo en caja</div><div class="box-val">${fmt(totalEfe)}</div></div>
+      <div class="box"><div class="box-lbl">Tarjeta / Transf.</div><div class="box-val">${fmt(totalDigital)}</div></div>
+      <div class="box" style="grid-column:span 2;"><div class="box-lbl">Gastos del Local</div><div class="box-val" style="color:#d9534f;">−${fmt(totalGastos)}</div></div>
+    </div>
+    <h3>GANANCIAS POR PRENDA</h3>
+    <table>
+      <thead><tr><th>Prenda</th><th>Cat.</th><th class="num">Pzas</th><th class="num">Ventas</th><th class="num">Costo</th><th class="num">Ganancia</th><th class="num">Margen</th></tr></thead>
+      <tbody>
+        ${arr.length?arr.map(p=>{const g=p.ventas-p.costo;const m=p.ventas>0?(g/p.ventas*100).toFixed(1)+'%':'0%';return `<tr><td>${p.nombre}</td><td>${p.cat}</td><td class="num">${p.pzas}</td><td class="num">${fmt(p.ventas)}</td><td class="num">${fmt(p.costo)}</td><td class="num">${fmt(g)}</td><td class="num">${m}</td></tr>`;}).join(''):'<tr><td colspan="7" style="text-align:center;padding:20px;color:#888;">Sin ventas en el periodo</td></tr>'}
+        ${arr.length?`<tr class="totals"><td colspan="2">TOTALES</td><td class="num">${arr.reduce((s,p)=>s+p.pzas,0)}</td><td class="num">${fmt(totalVentas)}</td><td class="num">${fmt(totalCostoRopa)}</td><td class="num">${fmt(totalVentas-totalCostoRopa)}</td><td class="num">${totalVentas>0?((totalVentas-totalCostoRopa)/totalVentas*100).toFixed(1)+'%':'0%'}</td></tr>`:''}
+      </tbody>
+    </table>
+    <h3>GASTOS DEL LOCAL</h3>
+    <table>
+      <thead><tr><th>Fecha</th><th>Concepto</th><th>Notas</th><th class="num">Monto</th></tr></thead>
+      <tbody>
+        ${gs.length?gs.map(g=>`<tr><td>${dateStr(g.fecha)} ${timeStr(g.fecha)}</td><td>${g.concepto}</td><td>${g.notas||'-'}</td><td class="num">−${fmt(g.monto)}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;padding:14px;color:#888;">Sin gastos registrados</td></tr>'}
+      </tbody>
+    </table>
+    <div class="footer">✨ Reporte generado por SARAY HA POS Pro ✨<br/>_____________________________<br/>Firma del responsable</div>
+    <script>window.onload=function(){setTimeout(function(){window.print();},300);};<\/script>
+  </body></html>`;
+  const w=window.open('','_blank','width=900,height=700');
+  if(!w){toast('Habilita las ventanas emergentes');return;}
+  w.document.write(html);
+  w.document.close();
+}
+
+// ══ ESCÁNER DE CÁMARA ══
+function buscarPorRef(codigo){
+  const cod = String(codigo).trim().toLowerCase();
+  const p=prods.find(x=>String(x.ref).trim().toLowerCase()===cod || String(x.id).toLowerCase()===cod);
+  if(p){
+    iniciarAgregarTkt(p.id);
+    toast('✅ '+p.nombre+' agregada');
+  } else {
+    toast('❌ Código no encontrado: '+codigo);
+  }
+}
+
+function abrirEscaner(){
+  document.getElementById('ov-scanner').classList.add('open');
+  try{
+    html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 250, height: 150 } },
+      (decodedText) => {
+        cerrarEscaner();
+        buscarPorRef(decodedText);
+      },
+      (error) => {}
+    ).catch(err => {
+      toast('Cámara no disponible. Usa código manual.');
+      cerrarEscaner();
+      const code = prompt('Ingresa el código / REF de la prenda:');
+      if(code) buscarPorRef(code);
+    });
+  }catch(e){
+    toast('Cámara no compatible');
+    cerrarEscaner();
+  }
+}
+
+function cerrarEscaner(){
+  if(html5QrCode){
+    html5QrCode.stop().then(()=>{
+      html5QrCode.clear();
+      closeOv('ov-scanner');
+    }).catch(()=>{ closeOv('ov-scanner'); });
+  } else { closeOv('ov-scanner'); }
+}
+
+let scanBuffer='', scanTimer=null;
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('view-venta').classList.contains('active')) return;
+  if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.key==='Enter'){
+    if(scanBuffer.length>2) buscarPorRef(scanBuffer.trim());
+    scanBuffer=''; clearTimeout(scanTimer);
+  } else if(e.key.length===1){
+    scanBuffer+=e.key;
+    clearTimeout(scanTimer);
+    scanTimer=setTimeout(()=>{scanBuffer='';},300);
+  }
+});
+
+function exportCSV(){
+  let csv='\uFEFFREF,Prenda,Categoría,Precio,Costo,Stock_Total,Variantes\n';
+  prods.forEach(p=>{
+    const vs=p.variantes?p.variantes.map(v=>`${v.talla}:${v.color}(${v.stock})`).join(' | '):'';
+    csv+=`"${p.ref}","${p.nombre.replace(/"/g,'""')}","${p.cat}",${p.precio},${p.costo},${p.stock},"${vs}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`inventario_saray_ha_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+function enviarWA(){
+  let msg='🛍 *SARAY HA Boutique* — Cotización\n\n';
+  tkt.forEach(it=>msg+=`• ${it.nombre}${it.talla!=='Unitalla'?` (${it.talla}/${it.color})`:''} x${it.qty} — ${fmt(it.precio*it.qty)}\n`);
+  msg+=`\n💰 *Total: ${fmt(getTotal())}*\n\n¡Gracias por tu preferencia! ✨`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ══ INICIO ══
+iniciarSincronizacionNube();
+</script>
+</body>
+</html>
