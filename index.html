@@ -486,7 +486,7 @@ table.caja td.monto{font-family:'Cormorant Garamond',serif;font-size:14px;color:
           <option value="BLUSAS">BLUSAS</option><option value="VESTIDOS">VESTIDOS</option>
           <option value="CONJUNTOS">CONJUNTOS</option><option value="PANTALONES">PANTALONES</option>
           <option value="FALDAS">FALDAS</option><option value="BODYS">BODYS</option>
-          <option value="SUETERS">SUETERS</option><option value="SHORTS">SHORTS</option>
+          <option value="SUETERS">SUETERS</option><option value="SHORTS">Shorts</option>
           <option value="SETS">SETS</option><option value="BOLSAS">BOLSAS</option>
           <option value="MALLAS">MALLAS</option><option value="PLAYERAS">PLAYERAS</option>
           <option value="PIJAMAS">PIJAMAS</option><option value="CORSETS">CORSETS</option>
@@ -647,22 +647,81 @@ async function vaciarInventarioNube(){
   }
 }
 
-// ══ IMPORTADOR INTELIGENTE DE CSV DE LOYVERSE ══
-function importarCSVLoyverse(event){
+// ══ IMPORTADOR ROBUSTO MULTIFORMATO DE LOYVERSE / EXCEL ══
+async function importarCSVLoyverse(event){
   const file = event.target.files[0];
   if(!file) return;
-
-  const confirmarVaciar = confirm('¿Deseas BORRAR todo el inventario de prueba antes de importar este archivo de Loyverse?\n\n- [Aceptar]: Borra lo viejo y sube lo nuevo de Loyverse.\n- [Cancelar]: Conserva lo actual y agrega lo nuevo.');
 
   const reader = new FileReader();
   reader.onload = async function(e){
     try{
-      toast('⏳ Procesando CSV de Loyverse...');
-      const texto = e.target.result;
-      const filas = texto.split(/\r?\n/);
-      if(filas.length < 2){ toast('❌ Archivo sin datos'); return; }
+      let contenido = e.target.result;
+      
+      // Remover BOM de UTF-8 si existe
+      if (contenido.charCodeAt(0) === 0xFEFF) {
+        contenido = contenido.substr(1);
+      }
 
-      // Si aceptó vaciar, borramos primero en Firebase
+      const lineas = contenido.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      if(lineas.length < 2){ toast('❌ Archivo sin datos suficientes'); return; }
+
+      // Auto-detectar delimitador (, o ;)
+      const cabeceraRaw = lineas[0];
+      const numComas = (cabeceraRaw.match(/,/g) || []).length;
+      const numPuntosComas = (cabeceraRaw.match(/;/g) || []).length;
+      const delimitador = numPuntosComas > numComas ? ';' : ',';
+
+      // Parser CSV seguro que maneja comillas y comas internas
+      const parseCSVLine = (line) => {
+        const arr = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const c = line[i];
+          if (c === '"') {
+            if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+            else { inQuotes = !inQuotes; }
+          } else if (c === delimitador && !inQuotes) {
+            arr.push(cur.trim());
+            cur = '';
+          } else {
+            cur += c;
+          }
+        }
+        arr.push(cur.trim());
+        return arr.map(s => s.replace(/^"|"$/g, '').trim());
+      };
+
+      const headers = parseCSVLine(cabeceraRaw).map(h => h.toLowerCase());
+
+      // Mapeo inteligente de columnas
+      let idxNombre = headers.findIndex(h => h === 'nombre del artículo' || h === 'nombre' || h === 'item name' || h === 'handle');
+      if (idxNombre === -1) idxNombre = headers.findIndex(h => h.includes('nombre') || h.includes('item'));
+
+      let idxBarcode = headers.findIndex(h => h === 'código de barras' || h === 'barcode');
+      let idxSKU = headers.findIndex(h => h === 'sku');
+      let idxRef = idxBarcode !== -1 ? idxBarcode : (idxSKU !== -1 ? idxSKU : headers.findIndex(h => h.includes('código') || h.includes('ref')));
+
+      let idxCat = headers.findIndex(h => h === 'categoría' || h === 'category' || h.includes('categor'));
+
+      // Ignorar "Criterio de precio" y buscar la columna "Precio" real
+      let idxPrecio = headers.findIndex(h => h === 'precio' || h === 'price');
+      if (idxPrecio === -1) idxPrecio = headers.findIndex(h => h.includes('precio') && !h.includes('criterio'));
+
+      let idxCosto = headers.findIndex(h => h === 'costo' || h === 'cost');
+      let idxStock = headers.findIndex(h => h === 'en stock' || h === 'in stock' || h === 'stock' || h.includes('stock'));
+
+      // Fallbacks por posición si no coinciden los encabezados
+      if (idxNombre === -1) idxNombre = 1;
+      if (idxCat === -1) idxCat = 2;
+      if (idxPrecio === -1) idxPrecio = 6;
+      if (idxCosto === -1) idxCosto = 7;
+      if (idxRef === -1) idxRef = 9;
+
+      const confirmarVaciar = confirm(`Se encontraron ${lineas.length - 1} filas en el archivo.\n\n¿Deseas BORRAR el inventario de prueba de la nube antes de importar las prendas de Loyverse?\n\n• [Aceptar]: Borra lo viejo y sube lo nuevo de Loyverse.\n• [Cancelar]: Conserva lo actual y agrega lo de Loyverse.`);
+
+      toast('⏳ Procesando e importando a la nube...');
+
       if(confirmarVaciar){
         const oldSnap = await db.collection('productos').get();
         const bDelete = db.batch();
@@ -671,7 +730,6 @@ function importarCSVLoyverse(event){
       }
 
       let contadorSHA = 1;
-      // Calcular último SHA si se conservan prendas
       if(!confirmarVaciar){
         prods.forEach(p=>{
           if(p.ref && p.ref.toUpperCase().startsWith('SHA')){
@@ -681,66 +739,34 @@ function importarCSVLoyverse(event){
         });
       }
 
-      // Buscar nombres de columnas en la cabecera
-      const cabecera = filas[0].toLowerCase();
-      const separador = cabecera.includes(';') ? ';' : ',';
-      
-      const funcionParseLinea = (linea) => {
-        const resultado = [];
-        let dentroComillas = false;
-        let campo = '';
-        for(let c of linea){
-          if(c === '"') dentroComillas = !dentroComillas;
-          else if(c === separador && !dentroComillas){
-            resultado.push(campo.trim());
-            campo = '';
-          } else campo += c;
-        }
-        resultado.push(campo.trim());
-        return resultado.map(s => s.replace(/^"|"$/g,'').trim());
-      };
-
-      const colsCabecera = funcionParseLinea(filas[0]);
-      
-      // Mapear posiciones de columnas Loyverse
-      let idxNombre = colsCabecera.findIndex(c => c.includes('artículo') || c.includes('nombre') || c.includes('name') || c.includes('item'));
-      let idxRef = colsCabecera.findIndex(c => c.includes('código') || c.includes('barcode') || c.includes('sku') || c.includes('ref'));
-      let idxCat = colsCabecera.findIndex(c => c.includes('categoría') || c.includes('category'));
-      let idxPrecio = colsCabecera.findIndex(c => c.includes('precio') || c.includes('price'));
-      let idxCosto = colsCabecera.findIndex(c => c.includes('costo') || c.includes('cost'));
-      let idxStock = colsCabecera.findIndex(c => c.includes('stock') || c.includes('inventario') || c.includes('existencia'));
-
-      if(idxNombre === -1) idxNombre = 0;
-      if(idxRef === -1) idxRef = 1;
-      if(idxCat === -1) idxCat = 2;
-      if(idxPrecio === -1) idxPrecio = 3;
-      if(idxCosto === -1) idxCosto = 4;
-
       let procesados = 0;
       let batch = db.batch();
-      let operacionesEnBatch = 0;
+      let ops = 0;
 
-      for(let i = 1; i < filas.length; i++){
-        if(!filas[i].trim()) continue;
-        const col = funcionParseLinea(filas[i]);
+      for(let i = 1; i < lineas.length; i++){
+        const col = parseCSVLine(lineas[i]);
         if(!col || col.length < 2) continue;
 
-        const nombre = col[idxNombre] || '';
-        if(!nombre || nombre.toLowerCase().includes('total')) continue;
+        const nombre = col[idxNombre] || col[0] || '';
+        if(!nombre || nombre.toLowerCase() === 'nombre' || nombre.toLowerCase().includes('total')) continue;
 
-        let ref = (col[idxRef] || '').trim();
-        // Si no trae código de barras en Loyverse, le asignamos secuencia SHA
+        let ref = idxRef !== -1 && col[idxRef] ? col[idxRef].trim() : '';
         if(!ref || ref === '-' || ref === '0'){
           ref = 'SHA' + String(contadorSHA).padStart(4, '0');
           contadorSHA++;
         }
 
-        const cat = (col[idxCat] || 'GENERAL').toUpperCase();
-        const precio = parseFloat((col[idxPrecio] || '0').replace(/[^0-9.]/g,'')) || 0;
-        const costo = parseFloat((col[idxCosto] || '0').replace(/[^0-9.]/g,'')) || 0;
-        const stockVal = idxStock !== -1 ? parseInt((col[idxStock] || '0').replace(/[^0-9]/g,'')) || 0 : 0;
+        const cat = (idxCat !== -1 && col[idxCat] ? col[idxCat] : 'GENERAL').toUpperCase() || 'GENERAL';
+        
+        let precioRaw = idxPrecio !== -1 && col[idxPrecio] ? col[idxPrecio] : '0';
+        let costoRaw = idxCosto !== -1 && col[idxCosto] ? col[idxCosto] : '0';
+        let stockRaw = idxStock !== -1 && col[idxStock] ? col[idxStock] : '0';
 
-        const docId = nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4)+'-'+procesados;
+        const precio = parseFloat(precioRaw.replace(/[^0-9.]/g, '')) || 0;
+        const costo = parseFloat(costoRaw.replace(/[^0-9.]/g, '')) || 0;
+        const stockVal = parseInt(stockRaw.replace(/[^0-9]/g, '')) || 0;
+
+        const docId = nombre.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + i;
         const pRef = db.collection('productos').doc(docId);
 
         batch.set(pRef, {
@@ -755,26 +781,31 @@ function importarCSVLoyverse(event){
         });
 
         procesados++;
-        operacionesEnBatch++;
+        ops++;
 
-        // Firebase permite máx 500 operaciones por batch
-        if(operacionesEnBatch >= 400){
+        if(ops >= 400){
           await batch.commit();
           batch = db.batch();
-          operacionesEnBatch = 0;
+          ops = 0;
         }
       }
 
-      if(operacionesEnBatch > 0){
+      if(ops > 0){
         await batch.commit();
       }
 
-      toast(`✅ ¡${procesados} prendas cargadas desde Loyverse!`);
+      if(procesados > 0){
+        toast(`✅ ¡${procesados} prendas cargadas desde Loyverse a la nube!`);
+      } else {
+        alert('No se pudieron leer las prendas. Verifica que el archivo sea el exportado directamente de Loyverse.');
+      }
+
     }catch(err){
-      toast('❌ Error al leer archivo de Loyverse');
+      console.error(err);
+      toast('❌ Error al procesar el archivo CSV');
     }
   };
-  reader.readAsText(file);
+  reader.readAsText(file, 'UTF-8');
   event.target.value = '';
 }
 
@@ -967,7 +998,7 @@ async function confirmarVenta(){
   }
 }
 
-// ══ TICKET DE VENTA ══
+// ══ TICKET CON LEYENDA ACTUALIZADA ══
 function verTicketPorId(id){const v=ventas.find(x=>x.id==id);if(v)mostrarTicketTermico(v);}
 function mostrarTicketTermico(v){
   document.getElementById('ticket-print-body').innerHTML=`
@@ -1043,7 +1074,6 @@ function abrirProd(id){
   } else {
     document.getElementById('p-nombre').value='';
     document.getElementById('p-cat').value='BLUSAS';
-    // Sugerir automático SHA
     document.getElementById('p-ref').value=generarSiguienteRefSHA();
     document.getElementById('p-precio').value='';
     document.getElementById('p-costo').value='';
