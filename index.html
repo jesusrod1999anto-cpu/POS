@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>SARAY HA — Boutique POS Pro</title>
 
-<!-- Configuración App Android -->
+<!-- Configuración de App para Android -->
 <meta name="theme-color" content="#4A1535"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -33,6 +33,7 @@
 html,body{height:100%;background:var(--cream);color:var(--charcoal);font-family:'Montserrat',sans-serif;font-size:14px;overscroll-behavior-y:contain;}
 body{display:flex;flex-direction:column;min-height:100vh;}
 
+/* NAV */
 .topnav{background:var(--nav-bg);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;min-height:54px;box-shadow:0 2px 18px rgba(74,21,53,0.5);flex-wrap:wrap;gap:8px;}
 .brand{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;letter-spacing:0.18em;font-style:italic;background:linear-gradient(135deg,#FFD6E8,#FFB3CF,#F0D98A);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
 .brand-sub{font-size:9px;display:block;letter-spacing:0.26em;font-style:normal;background:linear-gradient(135deg,#F5C6D6,#E8D0F0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin-top:-2px;font-family:'Montserrat',sans-serif;font-weight:300;}
@@ -259,10 +260,10 @@ table.inv tr:hover td{background:#FDF0F4;}
   <div class="nav-tabs">
     <button class="nav-btn active" onclick="goTo('venta',this)">🛍 Venta</button>
     <button class="nav-btn" onclick="goTo('encargos',this)">🚚 Encargos</button>
-    <button class="nav-btn" onclick="goTo('inventario',this)">📦 Inv.</button>
-    <button class="nav-btn" onclick="goTo('proveedores',this)">🏬 Prov.</button>
-    <button class="nav-btn" onclick="goTo('clientes',this)">👥 Cli.</button>
-    <button class="nav-btn" onclick="goTo('historial',this)">📋 Hist.</button>
+    <button class="nav-btn" onclick="goTo('inventario',this)">📦 Inventario</button>
+    <button class="nav-btn" onclick="goTo('proveedores',this)">🏬 Proveedores</button>
+    <button class="nav-btn" onclick="goTo('clientes',this)">👥 Clientes</button>
+    <button class="nav-btn" onclick="goTo('historial',this)">📋 Historial</button>
     <button class="nav-btn" onclick="goTo('caja',this)">💰 Caja</button>
   </div>
   <div style="display:flex;align-items:center;gap:6px;">
@@ -730,7 +731,7 @@ table.inv tr:hover td{background:#FDF0F4;}
   </div>
 </div>
 
-<!-- MODAL PRODUCTO CON FOTO Y TALLAS -->
+<!-- MODAL PRODUCTO CON FOTO CORREGIDO -->
 <div class="overlay" id="ov-prod">
   <div class="modal modal-lg">
     <h3 id="prod-modal-title">Nueva prenda</h3>
@@ -1378,6 +1379,20 @@ function quitarFotoPrenda(){
   tempFotoData = '';
   mostrarPreviewFoto('');
   document.getElementById('p-foto-file').value = '';
+}
+
+// ══ NAVEGACIÓN ══
+function goTo(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const tv=document.getElementById('view-'+id);
+  if(tv) tv.classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='venta')      renderCat();
+  if(id==='inventario') renderInv();
+  if(id==='clientes')   renderCli();
+  if(id==='historial')  renderHist();
+  if(id==='caja')       renderCaja();
 }
 
 // ══ CATÁLOGO ══
