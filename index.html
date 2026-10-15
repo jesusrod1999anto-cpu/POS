@@ -310,6 +310,7 @@ table.caja td.monto{font-family:'Cormorant Garamond',serif;font-size:14px;color:
   <div class="sec-head">
     <div><div class="sec-title">Inventario</div><div class="sec-sub" id="inv-sub"></div></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-danger btn-sm" onclick="vaciarInventarioNube()" title="Borrar todo para subir nuevo CSV">🗑️ Vaciar Inventario</button>
       <button class="btn btn-gold btn-sm" onclick="document.getElementById('csv-import-file').click()">📥 Importar CSV</button>
       <input type="file" id="csv-import-file" accept=".csv" style="display:none" onchange="importarCSVLoyverse(event)"/>
       <button class="btn btn-outline btn-sm" onclick="exportCSV()">Exportar CSV</button>
@@ -493,7 +494,7 @@ table.caja td.monto{font-family:'Cormorant Garamond',serif;font-size:14px;color:
           <option value="TRAJES DE BAÑO">TRAJES DE BAÑO</option><option value="SOMBREROS">SOMBREROS</option>
         </select>
       </div>
-      <div class="fg"><div class="f-lbl">REF / Código de barras</div><input class="f-inp" id="p-ref" placeholder="10001"/></div>
+      <div class="fg"><div class="f-lbl">REF / Código de barras (Auto SHA)</div><input class="f-inp" id="p-ref" placeholder="Ej: SHA0045"/></div>
     </div>
     <div class="fg-row" style="margin-top:8px;">
       <div class="fg"><div class="f-lbl">Precio venta (MXN)</div><input class="f-inp" id="p-precio" type="number" placeholder="250"/></div>
@@ -571,168 +572,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ══ 118 PRODUCTOS BASE DE SARAY HA ══
-const PRODS_BASE=[
-  {id:'blusa-argollas',ref:'10113',nombre:'Blusa Argollas',cat:'BLUSAS',precio:210,costo:109,track:'N',stock:0,variantes:[]},
-  {id:'blusa-asimetrica-de-un-hombro',ref:'10126',nombre:'Blusa Asimétrica de un Hombro',cat:'BLUSAS',precio:200,costo:80,track:'Y',stock:2,variantes:[{talla:'CH',color:'Negro',stock:1},{talla:'M',color:'Rosa',stock:1}]},
-  {id:'blusa-basica',ref:'10089',nombre:'Blusa Básica',cat:'BLUSAS',precio:195,costo:95,track:'N',stock:0,variantes:[]},
-  {id:'blusa-basica-corta-manga-larga',ref:'10088',nombre:'Blusa Básica Corta Manga Larga',cat:'BLUSAS',precio:85,costo:45,track:'N',stock:0,variantes:[]},
-  {id:'blusa-basica-rayas',ref:'10019',nombre:'Blusa Básica Rayas',cat:'BLUSAS',precio:200,costo:99,track:'N',stock:0,variantes:[]},
-  {id:'blusa-brillosa',ref:'10022',nombre:'Blusa Brillosa',cat:'BLUSAS',precio:200,costo:130,track:'N',stock:0,variantes:[]},
-  {id:'blusa-campesina-corrugada',ref:'10076',nombre:'Blusa Campesina Corrugada',cat:'BLUSAS',precio:220,costo:120,track:'N',stock:0,variantes:[]},
-  {id:'blusa-campesina-mono',ref:'10062',nombre:'Blusa Campesina Moño',cat:'BLUSAS',precio:250,costo:139,track:'N',stock:0,variantes:[]},
-  {id:'blusa-casual-channel',ref:'10009',nombre:'Blusa Casual Channel',cat:'BLUSAS',precio:295,costo:175,track:'N',stock:0,variantes:[]},
-  {id:'blusa-casual-dior',ref:'10011',nombre:'Blusa Casual Dior',cat:'BLUSAS',precio:295,costo:175,track:'N',stock:0,variantes:[]},
-  {id:'blusa-casual-mono',ref:'10010',nombre:'Blusa Casual Moño',cat:'BLUSAS',precio:295,costo:119,track:'N',stock:0,variantes:[]},
-  {id:'blusa-coronas',ref:'10101',nombre:'Blusa Coronas',cat:'BLUSAS',precio:275,costo:129,track:'N',stock:0,variantes:[]},
-  {id:'blusa-corta-cierre',ref:'10013',nombre:'Blusa Corta Cierre',cat:'BLUSAS',precio:265,costo:165,track:'N',stock:0,variantes:[]},
-  {id:'blusa-corta-con-piedras',ref:'10083',nombre:'Blusa Corta Con Piedras',cat:'BLUSAS',precio:200,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'blusa-corta-vestir',ref:'10051',nombre:'Blusa Corta Vestir',cat:'BLUSAS',precio:225,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'blusa-curvy-botones',ref:'10018',nombre:'Blusa Curvy Botones',cat:'BLUSAS',precio:200,costo:130,track:'N',stock:0,variantes:[]},
-  {id:'blusa-de-cuello',ref:'10014',nombre:'Blusa de Cuello',cat:'BLUSAS',precio:265,costo:165,track:'N',stock:0,variantes:[]},
-  {id:'blusa-de-vestir',ref:'10061',nombre:'Blusa De Vestir',cat:'BLUSAS',precio:185,costo:85,track:'N',stock:0,variantes:[]},
-  {id:'blusa-encaje-mangas',ref:'10106',nombre:'Blusa Encaje Mangas',cat:'BLUSAS',precio:285,costo:89,track:'N',stock:0,variantes:[]},
-  {id:'blusa-escote-cuadrado',ref:'10128',nombre:'Blusa Escote Cuadrado',cat:'BLUSAS',precio:265,costo:115,track:'Y',stock:4,variantes:[{talla:'CH',color:'Blanco',stock:2},{talla:'M',color:'Negro',stock:2}]},
-  {id:'blusa-floral-curvy',ref:'10064',nombre:'Blusa Floral Curvy',cat:'BLUSAS',precio:200,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'blusa-hawai-azul',ref:'10080',nombre:'Blusa Hawai Azul',cat:'BLUSAS',precio:275,costo:129,track:'N',stock:0,variantes:[]},
-  {id:'blusa-hoja-hombro',ref:'10115',nombre:'Blusa Hoja Hombro',cat:'BLUSAS',precio:250,costo:139,track:'N',stock:0,variantes:[]},
-  {id:'blusa-hojas',ref:'10102',nombre:'Blusa Hojas',cat:'BLUSAS',precio:310,costo:149,track:'N',stock:0,variantes:[]},
-  {id:'blusa-hombro-herraje',ref:'002',nombre:'Blusa Hombro Herraje',cat:'BLUSAS',precio:250,costo:160,track:'N',stock:0,variantes:[]},
-  {id:'blusa-manga-larga-basica',ref:'10015',nombre:'Blusa Manga Larga Básica',cat:'BLUSAS',precio:250,costo:130,track:'N',stock:0,variantes:[]},
-  {id:'blusa-manga-larga-escote-cuadrado',ref:'10129',nombre:'Blusa Manga Larga Escote Cuadrado',cat:'BLUSAS',precio:240,costo:80,track:'Y',stock:5,variantes:[{talla:'CH',color:'Negro',stock:2},{talla:'M',color:'Rosa',stock:3}]},
-  {id:'blusa-mono',ref:'10107',nombre:'Blusa Moño',cat:'BLUSAS',precio:250,costo:99,track:'N',stock:0,variantes:[]},
-  {id:'blusa-piedras-ck',ref:'10085',nombre:'Blusa Piedras CK',cat:'BLUSAS',precio:245,costo:145,track:'N',stock:0,variantes:[]},
-  {id:'blusa-polka',ref:'10108',nombre:'Blusa Polka',cat:'BLUSAS',precio:330,costo:227,track:'N',stock:0,variantes:[]},
-  {id:'blusa-satin',ref:'10008',nombre:'Blusa Satín',cat:'BLUSAS',precio:295,costo:150,track:'N',stock:0,variantes:[]},
-  {id:'blusa-satin-unitalla',ref:'10012',nombre:'Blusa Satín Unitalla',cat:'BLUSAS',precio:295,costo:150,track:'N',stock:0,variantes:[]},
-  {id:'top-halter-de-tul',ref:'10130',nombre:'Top Halter de Tul',cat:'BLUSAS',precio:250,costo:120,track:'Y',stock:3,variantes:[{talla:'CH',color:'Negro',stock:1},{talla:'M',color:'Nude',stock:2}]},
-  {id:'top-halter-fruncido',ref:'10127',nombre:'Top Halter Fruncido con Abertura',cat:'BLUSAS',precio:230,costo:125,track:'Y',stock:3,variantes:[{talla:'CH',color:'Rojo',stock:1},{talla:'M',color:'Blanco',stock:2}]},
-  {id:'body-con-manga',ref:'10090',nombre:'Body Con Manga',cat:'BODYS',precio:250,costo:130,track:'N',stock:0,variantes:[]},
-  {id:'body-de-encaje-floral',ref:'SH000024',nombre:'Body de Encaje Floral',cat:'BODYS',precio:275,costo:129,track:'Y',stock:2,variantes:[{talla:'CH',color:'Negro',stock:1},{talla:'M',color:'Negro',stock:1}]},
-  {id:'body-de-encaje-floral-combinado',ref:'SH000025',nombre:'Body de Encaje Floral Combinado',cat:'BODYS',precio:285,costo:139,track:'Y',stock:1,variantes:[{talla:'M',color:'Combinado',stock:1}]},
-  {id:'body-floral-manga-larga',ref:'SH000027',nombre:'Body Floral Manga Larga',cat:'BODYS',precio:275,costo:129,track:'Y',stock:1,variantes:[{talla:'M',color:'Floral',stock:1}]},
-  {id:'body-manga-larga',ref:'004',nombre:'Body Manga Larga',cat:'BODYS',precio:260,costo:125,track:'N',stock:0,variantes:[]},
-  {id:'body-manga-larga-encaje',ref:'001',nombre:'Body Manga Larga Encaje',cat:'BODYS',precio:285,costo:140,track:'N',stock:0,variantes:[]},
-  {id:'body-manga-larga-premium',ref:'005',nombre:'Body Manga Larga Premium',cat:'BODYS',precio:285,costo:180,track:'N',stock:0,variantes:[]},
-  {id:'body-manga-larga-unitalla',ref:'10122',nombre:'Body Manga Larga Unitalla',cat:'BODYS',precio:285,costo:135,track:'Y',stock:5,variantes:[{talla:'Unitalla',color:'Negro',stock:3},{talla:'Unitalla',color:'Vino',stock:2}]},
-  {id:'blusa-body-manga-larga-xl',ref:'10131',nombre:'Blusa Body Manga Larga XL',cat:'BODYS',precio:310,costo:150,track:'Y',stock:3,variantes:[{talla:'XL',color:'Negro',stock:3}]},
-  {id:'bolsa-hl5053',ref:'10117',nombre:'Bolsa HL5053',cat:'BOLSAS',precio:550,costo:359,track:'N',stock:0,variantes:[]},
-  {id:'bolsa-hl6033',ref:'10116',nombre:'Bolsa HL6033',cat:'BOLSAS',precio:450,costo:359,track:'N',stock:0,variantes:[]},
-  {id:'bolsa-yd6083',ref:'10118',nombre:'Bolsa YD6083',cat:'BOLSAS',precio:550,costo:339,track:'N',stock:0,variantes:[]},
-  {id:'cartera-unibella',ref:'10119',nombre:'Cartera Unibella',cat:'BOLSAS',precio:250,costo:149,track:'N',stock:0,variantes:[]},
-  {id:'chaleco',ref:'10066',nombre:'Chaleco',cat:'SUETERS',precio:285,costo:150,track:'N',stock:0,variantes:[]},
-  {id:'chaleco-bordado',ref:'SH003',nombre:'Chaleco Bordado',cat:'SUETERS',precio:380,costo:230,track:'N',stock:0,variantes:[]},
-  {id:'chaleco-texturizado',ref:'10123',nombre:'Chaleco Texturizado con Botones',cat:'SUETERS',precio:430,costo:280,track:'N',stock:0,variantes:[]},
-  {id:'chamarra-florida',ref:'10067',nombre:'Chamarra Florida',cat:'SUETERS',precio:395,costo:240,track:'N',stock:0,variantes:[]},
-  {id:'sueter-minnie',ref:'10068',nombre:'Suéter Minnie Mouse',cat:'SUETERS',precio:250,costo:120,track:'N',stock:0,variantes:[]},
-  {id:'torera-gamuza',ref:'10065',nombre:'Torera Gamuza',cat:'SUETERS',precio:275,costo:175,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-botones',ref:'10105',nombre:'Conjunto Botones',cat:'CONJUNTOS',precio:350,costo:149,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-botones-negro',ref:'10121',nombre:'Conjunto Botones Negro',cat:'CONJUNTOS',precio:395,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-brillos',ref:'10048',nombre:'Conjunto Brillos',cat:'CONJUNTOS',precio:400,costo:395,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-chaleco',ref:'10052',nombre:'Conjunto Chaleco',cat:'CONJUNTOS',precio:265,costo:165,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-con-encaje',ref:'10104',nombre:'Conjunto Con Encaje',cat:'CONJUNTOS',precio:400,costo:210,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-corrugado',ref:'10025',nombre:'Conjunto Corrugado',cat:'CONJUNTOS',precio:395,costo:200,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-curvy-short',ref:'10017',nombre:'Conjunto Curvy Short y Blusa',cat:'CONJUNTOS',precio:330,costo:200,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-mezclilla-manga-corta',ref:'SH000021',nombre:'Conjunto de Mezclilla Manga Corta',cat:'CONJUNTOS',precio:580,costo:380,track:'Y',stock:2,variantes:[{talla:'CH',color:'Azul',stock:1},{talla:'M',color:'Azul',stock:1}]},
-  {id:'conjunto-mezclilla-curvy',ref:'SH000023',nombre:'Conjunto Mezclilla Manga Larga Curvy',cat:'CONJUNTOS',precio:650,costo:450,track:'Y',stock:1,variantes:[{talla:'G',color:'Azul',stock:1}]},
-  {id:'conjunto-falda-blanco',ref:'10120',nombre:'Conjunto Falda Blanco',cat:'CONJUNTOS',precio:450,costo:295,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-figuras',ref:'10098',nombre:'Conjunto Figuras',cat:'CONJUNTOS',precio:390,costo:239,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-negro-botones',ref:'10026',nombre:'Conjunto Negro Botones',cat:'CONJUNTOS',precio:395,costo:210,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-ornamentos',ref:'10100',nombre:'Conjunto Ornamentos',cat:'CONJUNTOS',precio:400,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-rayas-short',ref:'006',nombre:'Conjunto Rayas Short',cat:'CONJUNTOS',precio:350,costo:200,track:'N',stock:0,variantes:[]},
-  {id:'conjunto-v',ref:'10097',nombre:'Conjunto V',cat:'CONJUNTOS',precio:395,costo:159,track:'N',stock:0,variantes:[]},
-  {id:'corset-encaje',ref:'10084',nombre:'Corset Encaje',cat:'CORSETS',precio:250,costo:150,track:'N',stock:0,variantes:[]},
-  {id:'ensamble-tejido',ref:'10027',nombre:'Ensamble Tejido',cat:'ENSAMBLES',precio:310,costo:139,track:'N',stock:0,variantes:[]},
-  {id:'fajo-de-rueda',ref:'10134',nombre:'Fajo de Rueda',cat:'CINTURONES',precio:495,costo:345,track:'N',stock:0,variantes:[]},
-  {id:'fajo-disco',ref:'10133',nombre:'Fajo Disco',cat:'CINTURONES',precio:430,costo:250,track:'N',stock:0,variantes:[]},
-  {id:'fajo-metalico-eco',ref:'SH000016',nombre:'Fajo Metálico Eco',cat:'CINTURONES',precio:190,costo:90,track:'Y',stock:2,variantes:[{talla:'Unitalla',color:'Oro',stock:1},{talla:'Unitalla',color:'Plata',stock:1}]},
-  {id:'fajo-ovalos',ref:'10135',nombre:'Fajo Óvalos',cat:'CINTURONES',precio:440,costo:260,track:'N',stock:0,variantes:[]},
-  {id:'falda-con-bolsas',ref:'10092',nombre:'Falda Con Bolsas',cat:'FALDAS',precio:240,costo:139,track:'N',stock:0,variantes:[]},
-  {id:'falda-mezclilla-encaje',ref:'SH000020',nombre:'Falda de Mezclilla con Encaje',cat:'FALDAS',precio:350,costo:199,track:'Y',stock:1,variantes:[{talla:'M',color:'Azul',stock:1}]},
-  {id:'falda-mezclilla-a',ref:'10058',nombre:'Falda Mezclilla (A)',cat:'FALDAS',precio:285,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'falda-mezclilla-b',ref:'10059',nombre:'Falda Mezclilla (B)',cat:'FALDAS',precio:285,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'falda-perlas',ref:'10078',nombre:'Falda Perlas',cat:'FALDAS',precio:335,costo:235,track:'N',stock:0,variantes:[]},
-  {id:'falda-short-mezclilla',ref:'SH000022',nombre:'Falda Short de Mezclilla con Bolsillos',cat:'FALDAS',precio:350,costo:199,track:'Y',stock:2,variantes:[{talla:'CH',color:'Azul',stock:1},{talla:'M',color:'Azul',stock:1}]},
-  {id:'falda-vinil-perlas',ref:'10079',nombre:'Falda Vinil Perlas Negras',cat:'FALDAS',precio:150,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'jeans-pedreria',ref:'10124',nombre:'Jeans con Pedrería',cat:'PANTALONES',precio:550,costo:250,track:'Y',stock:3,variantes:[{talla:'T5',color:'Azul',stock:1},{talla:'T7',color:'Azul',stock:2}]},
-  {id:'malla-piedras',ref:'10056',nombre:'Malla Piedras',cat:'MALLAS',precio:350,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'malla-vibora',ref:'10057',nombre:'Malla Víbora',cat:'MALLAS',precio:275,costo:175,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-agorss',ref:'10055',nombre:'Pantalón Mezclilla Agorss T#7',cat:'PANTALONES',precio:450,costo:275,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-fj-a',ref:'10053',nombre:'Pantalón Mezclilla Free Jeans (A)',cat:'PANTALONES',precio:395,costo:245,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-fj-b',ref:'10054',nombre:'Pantalón Mezclilla Free Jeans (B)',cat:'PANTALONES',precio:395,costo:245,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-piedras-a',ref:'0011',nombre:'Pantalón Mezclilla Piedras (A)',cat:'PANTALONES',precio:450,costo:335,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-piedras-b',ref:'10002',nombre:'Pantalón Mezclilla Piedras (B)',cat:'PANTALONES',precio:565,costo:395,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-t7-a',ref:'10000',nombre:'Pantalón Mezclilla T#7 (A)',cat:'PANTALONES',precio:450,costo:275,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-t7-b',ref:'10001',nombre:'Pantalón Mezclilla T#7 (B)',cat:'PANTALONES',precio:450,costo:275,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-mezclilla-t5',ref:'0012',nombre:'Pantalón Mezclilla T#5',cat:'PANTALONES',precio:450,costo:275,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-vinil',ref:'10096',nombre:'Pantalón Vinil',cat:'PANTALONES',precio:395,costo:275,track:'N',stock:0,variantes:[]},
-  {id:'pantalon-vinil-verde',ref:'10093',nombre:'Pantalón Vinil Verde',cat:'PANTALONES',precio:310,costo:210,track:'N',stock:0,variantes:[]},
-  {id:'pants-rayas',ref:'10050',nombre:'Pants Rayas',cat:'PANTALONES',precio:185,costo:85,track:'N',stock:0,variantes:[]},
-  {id:'pijama-corazones',ref:'10069',nombre:'Pijama Corazones',cat:'PIJAMAS',precio:185,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'pijama-satin',ref:'10091',nombre:'Pijama Satín',cat:'PIJAMAS',precio:185,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'playera-oversize',ref:'10016',nombre:'Playera Oversize',cat:'PLAYERAS',precio:195,costo:85,track:'N',stock:0,variantes:[]},
-  {id:'salida-de-banio',ref:'008',nombre:'Salida de Baño',cat:'TRAJES DE BAÑO',precio:240,costo:130,track:'N',stock:0,variantes:[]},
-  {id:'traje-de-banio-tejido',ref:'007',nombre:'Traje de Baño Tejido',cat:'TRAJES DE BAÑO',precio:285,costo:170,track:'N',stock:0,variantes:[]},
-  {id:'set-falda-lentejuela',ref:'10087',nombre:'Set Falda Lentejuela c/Body',cat:'SETS',precio:265,costo:165,track:'N',stock:0,variantes:[]},
-  {id:'set-falda-y-body',ref:'10086',nombre:'Set Falda y Body',cat:'SETS',precio:385,costo:285,track:'N',stock:0,variantes:[]},
-  {id:'set-plizado-falda',ref:'10070',nombre:'Set Plizado Falda',cat:'SETS',precio:350,costo:245,track:'N',stock:0,variantes:[]},
-  {id:'set-short-rayas',ref:'10099',nombre:'Set Short Rayas',cat:'SETS',precio:330,costo:179,track:'N',stock:0,variantes:[]},
-  {id:'short-c-fajo',ref:'10060',nombre:'Short c/Fajo',cat:'SHORTS',precio:335,costo:185,track:'N',stock:0,variantes:[]},
-  {id:'short-vinil-cafe',ref:'10094',nombre:'Short Vinil Café',cat:'SHORTS',precio:285,costo:185,track:'N',stock:0,variantes:[]},
-  {id:'texana',ref:'10132',nombre:'Texana',cat:'SOMBREROS',precio:350,costo:150,track:'Y',stock:3,variantes:[{talla:'Unitalla',color:'Negro',stock:2},{talla:'Unitalla',color:'Café',stock:1}]},
-  {id:'vestido-abertura',ref:'10112',nombre:'Vestido Abertura',cat:'VESTIDOS',precio:310,costo:155,track:'N',stock:0,variantes:[]},
-  {id:'vestido-barbas',ref:'10049',nombre:'Vestido Barbas',cat:'VESTIDOS',precio:290,costo:190,track:'N',stock:0,variantes:[]},
-  {id:'vestido-basico-a',ref:'10063',nombre:'Vestido Básico (A)',cat:'VESTIDOS',precio:100,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-basico-b',ref:'10077',nombre:'Vestido Básico (B)',cat:'VESTIDOS',precio:195,costo:100,track:'N',stock:0,variantes:[]},
-  {id:'vestido-brilloso',ref:'10023',nombre:'Vestido Brilloso',cat:'VESTIDOS',precio:200,costo:130,track:'N',stock:0,variantes:[]},
-  {id:'vestido-cierre-centro',ref:'10047',nombre:'Vestido Cierre Al Centro',cat:'VESTIDOS',precio:395,costo:295,track:'N',stock:0,variantes:[]},
-  {id:'vestido-con-bolsas',ref:'10081',nombre:'Vestido Con Bolsas',cat:'VESTIDOS',precio:100,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-coral',ref:'0010',nombre:'Vestido Coral',cat:'VESTIDOS',precio:450,costo:305,track:'N',stock:0,variantes:[]},
-  {id:'vestido-corrugado-lados',ref:'0009',nombre:'Vestido Corrugado Lados',cat:'VESTIDOS',precio:310,costo:189,track:'N',stock:0,variantes:[]},
-  {id:'vestido-cruzado-a',ref:'10071',nombre:'Vestido Cruzado (A)',cat:'VESTIDOS',precio:100,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-cruzado-b',ref:'10072',nombre:'Vestido Cruzado (B)',cat:'VESTIDOS',precio:100,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-cuello-v-flores',ref:'10075',nombre:'Vestido Cuello en V Flores',cat:'VESTIDOS',precio:285,costo:185,track:'N',stock:0,variantes:[]},
-  {id:'vestido-de-mezclilla',ref:'10125',nombre:'Vestido de Mezclilla',cat:'VESTIDOS',precio:330,costo:200,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mezclilla-corto',ref:'SH000026',nombre:'Vestido de Mezclilla Corto',cat:'VESTIDOS',precio:410,costo:260,track:'Y',stock:2,variantes:[{talla:'CH',color:'Azul',stock:1},{talla:'M',color:'Azul',stock:1}]},
-  {id:'vestido-encaje',ref:'10037',nombre:'Vestido Encaje',cat:'VESTIDOS',precio:450,costo:365,track:'N',stock:0,variantes:[]},
-  {id:'vestido-encaje-manga-corta',ref:'10036',nombre:'Vestido Encaje Manga Corta',cat:'VESTIDOS',precio:310,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'vestido-encaje-manga-larga',ref:'10035',nombre:'Vestido Encaje Manga Larga',cat:'VESTIDOS',precio:330,costo:209,track:'N',stock:0,variantes:[]},
-  {id:'vestido-encaje-polka',ref:'10111',nombre:'Vestido Encaje Polka',cat:'VESTIDOS',precio:295,costo:145,track:'N',stock:0,variantes:[]},
-  {id:'vestido-estampado-flores',ref:'10114',nombre:'Vestido Estampado Flores',cat:'VESTIDOS',precio:350,costo:219,track:'N',stock:0,variantes:[]},
-  {id:'vestido-floreado',ref:'10003',nombre:'Vestido Floreado',cat:'VESTIDOS',precio:350,costo:240,track:'N',stock:0,variantes:[]},
-  {id:'vestido-flores-azules',ref:'10038',nombre:'Vestido Flores Azules',cat:'VESTIDOS',precio:350,costo:285,track:'N',stock:0,variantes:[]},
-  {id:'vestido-flores-corrugado',ref:'10041',nombre:'Vestido Flores Corrugado',cat:'VESTIDOS',precio:275,costo:170,track:'N',stock:0,variantes:[]},
-  {id:'vestido-flores-negro',ref:'10031',nombre:'Vestido Flores Negro',cat:'VESTIDOS',precio:150,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-flores-rosa',ref:'10032',nombre:'Vestido Flores Rosa',cat:'VESTIDOS',precio:150,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-flores-verdes',ref:'10030',nombre:'Vestido Flores Verdes',cat:'VESTIDOS',precio:150,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-halter',ref:'003',nombre:'Vestido Halter',cat:'VESTIDOS',precio:285,costo:160,track:'N',stock:0,variantes:[]},
-  {id:'vestido-halter-mini',ref:'10040',nombre:'Vestido Halter Mini',cat:'VESTIDOS',precio:265,costo:160,track:'N',stock:0,variantes:[]},
-  {id:'vestido-haute',ref:'10109',nombre:'Vestido Haute',cat:'VESTIDOS',precio:375,costo:154,track:'N',stock:0,variantes:[]},
-  {id:'vestido-herraje-centro',ref:'10020',nombre:'Vestido Herraje Al Centro',cat:'VESTIDOS',precio:395,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'vestido-herraje-oro',ref:'10021',nombre:'Vestido Herraje Lado Oro',cat:'VESTIDOS',precio:450,costo:265,track:'N',stock:0,variantes:[]},
-  {id:'vestido-juliette',ref:'10043',nombre:'Vestido Juliette',cat:'VESTIDOS',precio:285,costo:150,track:'N',stock:0,variantes:[]},
-  {id:'vestido-lapiz',ref:'10042',nombre:'Vestido Lápiz',cat:'VESTIDOS',precio:285,costo:170,track:'N',stock:0,variantes:[]},
-  {id:'vestido-largo-mezclilla',ref:'10095',nombre:'Vestido Largo Mezclilla',cat:'VESTIDOS',precio:450,costo:310,track:'N',stock:0,variantes:[]},
-  {id:'vestido-linea',ref:'10044',nombre:'Vestido Línea',cat:'VESTIDOS',precio:310,costo:189,track:'N',stock:0,variantes:[]},
-  {id:'vestido-marmol-a',ref:'10073',nombre:'Vestido Mármol (A)',cat:'VESTIDOS',precio:185,costo:85,track:'N',stock:0,variantes:[]},
-  {id:'vestido-marmol-b',ref:'10074',nombre:'Vestido Mármol (B)',cat:'VESTIDOS',precio:185,costo:85,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mesh-bolas',ref:'10024',nombre:'Vestido Mesh Bolas',cat:'VESTIDOS',precio:350,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mesh-brillos',ref:'10007',nombre:'Vestido Mesh Brillos',cat:'VESTIDOS',precio:395,costo:209,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mesh-brush',ref:'10082',nombre:'Vestido Mesh con Brush',cat:'VESTIDOS',precio:130,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mesh-leopardo',ref:'10029',nombre:'Vestido Mesh Leopardo',cat:'VESTIDOS',precio:310,costo:210,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mezclilla-a',ref:'10045',nombre:'Vestido Mezclilla',cat:'VESTIDOS',precio:450,costo:350,track:'N',stock:0,variantes:[]},
-  {id:'vestido-mezclilla-corrugado',ref:'10046',nombre:'Vestido Mezclilla Corrugado',cat:'VESTIDOS',precio:285,costo:170,track:'N',stock:0,variantes:[]},
-  {id:'vestido-polka',ref:'10110',nombre:'Vestido Polka',cat:'VESTIDOS',precio:390,costo:250,track:'N',stock:0,variantes:[]},
-  {id:'vestido-rayas',ref:'10034',nombre:'Vestido Rayas',cat:'VESTIDOS',precio:185,costo:85,track:'N',stock:0,variantes:[]},
-  {id:'vestido-relieve',ref:'10028',nombre:'Vestido Relieve',cat:'VESTIDOS',precio:295,costo:189,track:'N',stock:0,variantes:[]},
-  {id:'vestido-rombos',ref:'10103',nombre:'Vestido Rombos',cat:'VESTIDOS',precio:400,costo:199,track:'N',stock:0,variantes:[]},
-  {id:'vestido-rosa-flores',ref:'10033',nombre:'Vestido Rosa con Flores',cat:'VESTIDOS',precio:150,costo:50,track:'N',stock:0,variantes:[]},
-  {id:'vestido-strapless-a',ref:'10004',nombre:'Vestido Strapless (A)',cat:'VESTIDOS',precio:285,costo:170,track:'N',stock:0,variantes:[]},
-  {id:'vestido-strapless-b',ref:'10039',nombre:'Vestido Strapless (B)',cat:'VESTIDOS',precio:285,costo:170,track:'N',stock:0,variantes:[]},
-  {id:'vestido-t90-manga-larga',ref:'10006',nombre:'Vestido T90 Manga Larga',cat:'VESTIDOS',precio:395,costo:189,track:'N',stock:0,variantes:[]},
-  {id:'vestido-t91-manga-corta',ref:'10005',nombre:'Vestido T91 Manga Corta',cat:'VESTIDOS',precio:285,costo:179,track:'N',stock:0,variantes:[]}
-];
-
 // ══ ESTADO GLOBAL ══
 let prods = [];
 let ventas = [];
@@ -748,22 +587,27 @@ const dateStr=iso=>{const d=new Date(iso);return isNaN(d)?'--':d.toLocaleDateStr
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
 function closeOv(id){document.getElementById(id).classList.remove('open');}
 
+// ══ GENERADOR AUTOMÁTICO DE SECUENCIA SHA0001 ══
+function generarSiguienteRefSHA(){
+  let maxNum = 0;
+  prods.forEach(p=>{
+    if(p.ref && typeof p.ref === 'string' && p.ref.toUpperCase().startsWith('SHA')){
+      const num = parseInt(p.ref.toUpperCase().replace('SHA','')) || 0;
+      if(num > maxNum) maxNum = num;
+    }
+  });
+  const siguiente = maxNum + 1;
+  return 'SHA' + String(siguiente).padStart(4, '0');
+}
+
 // ══ SINCRONIZACIÓN CON FIRESTORE ══
 function iniciarSincronizacionNube(){
   db.collection('productos').onSnapshot(snapshot=>{
-    if(snapshot.empty){
-      const batch = db.batch();
-      PRODS_BASE.forEach(p=>{
-        const ref = db.collection('productos').doc(p.id);
-        batch.set(ref, p);
-      });
-      batch.commit().then(()=>toast('☁️ Catálogo subido a la nube'));
-    } else {
-      prods = [];
-      snapshot.forEach(doc=>prods.push({id:doc.id, ...doc.data()}));
-      renderCat();
-      renderInv();
-    }
+    prods = [];
+    snapshot.forEach(doc=>prods.push({id:doc.id, ...doc.data()}));
+    renderCat();
+    renderInv();
+    document.getElementById('cat-count').textContent = prods.length + ' prendas disponibles';
   }, err=>{
     document.getElementById('sync-status').textContent='🟡 Modo local';
   });
@@ -783,58 +627,151 @@ function iniciarSincronizacionNube(){
   });
 }
 
-// ══ IMPORTADOR DE CSV DE LOYVERSE / EXCEL ══
+// ══ VACIAR INVENTARIO COMPLETO EN LA NUBE ══
+async function vaciarInventarioNube(){
+  if(!confirm('⚠️ ¿ATENCIÓN: Estás segura de eliminar TODO el inventario actual de la nube?\n\nEsta acción borrará todas las prendas registradas para dejar la base limpia.')) return;
+  if(!confirm('⚠️ ¿Confirmas por segunda vez que deseas VACIAR TODO TU CATÁLOGO?')) return;
+
+  toast('⏳ Borrando inventario de la nube...');
+  try{
+    const snapshot = await db.collection('productos').get();
+    const batch = db.batch();
+    snapshot.forEach(doc => batch.delete(doc.ref));
+    await batch.commit();
+    prods = [];
+    renderCat();
+    renderInv();
+    toast('🗑️ Inventario vaciado correctamente');
+  }catch(e){
+    toast('❌ Error al vaciar inventario');
+  }
+}
+
+// ══ IMPORTADOR INTELIGENTE DE CSV DE LOYVERSE ══
 function importarCSVLoyverse(event){
   const file = event.target.files[0];
   if(!file) return;
+
+  const confirmarVaciar = confirm('¿Deseas BORRAR todo el inventario de prueba antes de importar este archivo de Loyverse?\n\n- [Aceptar]: Borra lo viejo y sube lo nuevo de Loyverse.\n- [Cancelar]: Conserva lo actual y agrega lo nuevo.');
+
   const reader = new FileReader();
   reader.onload = async function(e){
     try{
+      toast('⏳ Procesando CSV de Loyverse...');
       const texto = e.target.result;
-      const filas = texto.split('\n');
-      if(filas.length < 2){ toast('❌ Archivo vacío'); return; }
+      const filas = texto.split(/\r?\n/);
+      if(filas.length < 2){ toast('❌ Archivo sin datos'); return; }
+
+      // Si aceptó vaciar, borramos primero en Firebase
+      if(confirmarVaciar){
+        const oldSnap = await db.collection('productos').get();
+        const bDelete = db.batch();
+        oldSnap.forEach(doc => bDelete.delete(doc.ref));
+        await bDelete.commit();
+      }
+
+      let contadorSHA = 1;
+      // Calcular último SHA si se conservan prendas
+      if(!confirmarVaciar){
+        prods.forEach(p=>{
+          if(p.ref && p.ref.toUpperCase().startsWith('SHA')){
+            const n = parseInt(p.ref.toUpperCase().replace('SHA','')) || 0;
+            if(n >= contadorSHA) contadorSHA = n + 1;
+          }
+        });
+      }
+
+      // Buscar nombres de columnas en la cabecera
+      const cabecera = filas[0].toLowerCase();
+      const separador = cabecera.includes(';') ? ';' : ',';
+      
+      const funcionParseLinea = (linea) => {
+        const resultado = [];
+        let dentroComillas = false;
+        let campo = '';
+        for(let c of linea){
+          if(c === '"') dentroComillas = !dentroComillas;
+          else if(c === separador && !dentroComillas){
+            resultado.push(campo.trim());
+            campo = '';
+          } else campo += c;
+        }
+        resultado.push(campo.trim());
+        return resultado.map(s => s.replace(/^"|"$/g,'').trim());
+      };
+
+      const colsCabecera = funcionParseLinea(filas[0]);
+      
+      // Mapear posiciones de columnas Loyverse
+      let idxNombre = colsCabecera.findIndex(c => c.includes('artículo') || c.includes('nombre') || c.includes('name') || c.includes('item'));
+      let idxRef = colsCabecera.findIndex(c => c.includes('código') || c.includes('barcode') || c.includes('sku') || c.includes('ref'));
+      let idxCat = colsCabecera.findIndex(c => c.includes('categoría') || c.includes('category'));
+      let idxPrecio = colsCabecera.findIndex(c => c.includes('precio') || c.includes('price'));
+      let idxCosto = colsCabecera.findIndex(c => c.includes('costo') || c.includes('cost'));
+      let idxStock = colsCabecera.findIndex(c => c.includes('stock') || c.includes('inventario') || c.includes('existencia'));
+
+      if(idxNombre === -1) idxNombre = 0;
+      if(idxRef === -1) idxRef = 1;
+      if(idxCat === -1) idxCat = 2;
+      if(idxPrecio === -1) idxPrecio = 3;
+      if(idxCosto === -1) idxCosto = 4;
 
       let procesados = 0;
-      const batch = db.batch();
+      let batch = db.batch();
+      let operacionesEnBatch = 0;
 
-      for(let i=1; i<filas.length; i++){
-        const linea = filas[i].trim();
-        if(!linea) continue;
-        
-        // Separación por comas respetando comillas
-        const cols = linea.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || linea.split(',');
-        if(cols.length < 3) continue;
+      for(let i = 1; i < filas.length; i++){
+        if(!filas[i].trim()) continue;
+        const col = funcionParseLinea(filas[i]);
+        if(!col || col.length < 2) continue;
 
-        const limpiar = s => (s||'').replace(/^"|"$/g,'').trim();
-        
-        const nombre = limpiar(cols[0] || cols[1]);
-        const ref = limpiar(cols[1] || cols[0]);
-        const cat = limpiar(cols[2]).toUpperCase() || 'GENERAL';
-        const precio = parseFloat(limpiar(cols[3])) || 0;
-        const costo = parseFloat(limpiar(cols[4])) || 0;
+        const nombre = col[idxNombre] || '';
+        if(!nombre || nombre.toLowerCase().includes('total')) continue;
 
-        if(!nombre) continue;
+        let ref = (col[idxRef] || '').trim();
+        // Si no trae código de barras en Loyverse, le asignamos secuencia SHA
+        if(!ref || ref === '-' || ref === '0'){
+          ref = 'SHA' + String(contadorSHA).padStart(4, '0');
+          contadorSHA++;
+        }
 
-        const docId = nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4);
+        const cat = (col[idxCat] || 'GENERAL').toUpperCase();
+        const precio = parseFloat((col[idxPrecio] || '0').replace(/[^0-9.]/g,'')) || 0;
+        const costo = parseFloat((col[idxCosto] || '0').replace(/[^0-9.]/g,'')) || 0;
+        const stockVal = idxStock !== -1 ? parseInt((col[idxStock] || '0').replace(/[^0-9]/g,'')) || 0 : 0;
+
+        const docId = nombre.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now().toString().slice(-4)+'-'+procesados;
         const pRef = db.collection('productos').doc(docId);
 
         batch.set(pRef, {
           nombre,
-          ref: ref || docId.slice(-5),
+          ref,
           cat,
           precio,
           costo,
-          track: 'N',
-          stock: 0,
-          variantes: []
+          track: stockVal > 0 ? 'Y' : 'N',
+          stock: stockVal,
+          variantes: stockVal > 0 ? [{talla:'Unitalla', color:'Único', stock:stockVal}] : []
         });
+
         procesados++;
+        operacionesEnBatch++;
+
+        // Firebase permite máx 500 operaciones por batch
+        if(operacionesEnBatch >= 400){
+          await batch.commit();
+          batch = db.batch();
+          operacionesEnBatch = 0;
+        }
       }
 
-      await batch.commit();
-      toast(`✅ ¡${procesados} prendas importadas a la nube!`);
+      if(operacionesEnBatch > 0){
+        await batch.commit();
+      }
+
+      toast(`✅ ¡${procesados} prendas cargadas desde Loyverse!`);
     }catch(err){
-      toast('❌ Error al procesar el CSV');
+      toast('❌ Error al leer archivo de Loyverse');
     }
   };
   reader.readAsText(file);
@@ -1030,7 +967,7 @@ async function confirmarVenta(){
   }
 }
 
-// ══ TICKET CON LEYENDA ACTUALIZADA ══
+// ══ TICKET DE VENTA ══
 function verTicketPorId(id){const v=ventas.find(x=>x.id==id);if(v)mostrarTicketTermico(v);}
 function mostrarTicketTermico(v){
   document.getElementById('ticket-print-body').innerHTML=`
@@ -1106,7 +1043,8 @@ function abrirProd(id){
   } else {
     document.getElementById('p-nombre').value='';
     document.getElementById('p-cat').value='BLUSAS';
-    document.getElementById('p-ref').value=Date.now().toString().slice(-5);
+    // Sugerir automático SHA
+    document.getElementById('p-ref').value=generarSiguienteRefSHA();
     document.getElementById('p-precio').value='';
     document.getElementById('p-costo').value='';
     document.getElementById('p-track').value='N';
@@ -1117,11 +1055,12 @@ function abrirProd(id){
 async function guardarProd(){
   const nombre=document.getElementById('p-nombre').value.trim();
   const cat=document.getElementById('p-cat').value;
-  const ref=document.getElementById('p-ref').value.trim();
+  let ref=document.getElementById('p-ref').value.trim();
+  if(!ref) ref = generarSiguienteRefSHA();
   const precio=parseFloat(document.getElementById('p-precio').value)||0;
   const costo=parseFloat(document.getElementById('p-costo').value)||0;
   const track=document.getElementById('p-track').value;
-  if(!nombre||!ref){toast('Ingresa nombre y REF');return;}
+  if(!nombre){toast('Ingresa el nombre');return;}
   let variantes=[],totalStock=0;
   if(track==='Y'){
     document.querySelectorAll('#var-builder-list .var-row').forEach(r=>{
