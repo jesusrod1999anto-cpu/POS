@@ -17,7 +17,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Manifest PWA Web Data URL -->
+  <!-- Manifest PWA -->
   <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1e2229","theme_color":"#8b4255","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
 
   <style>
@@ -100,14 +100,23 @@
     .btn-whatsapp:hover { background-color: #1eb857; }
     .btn-danger { background-color: var(--danger); color: #fff; }
     .btn-success { background-color: var(--success); color: #fff; }
+    .btn-outline { background-color: transparent; border: 2px solid #cbd5e1; color: var(--text-dark); }
+    .btn-outline:hover { background-color: #f1f5f9; }
 
-    /* TARJETAS DE ENCARGO NUEVAS */
+    /* ESTADO VACÍO (EMPTY STATE) */
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 3.5rem; color: #cbd5e1; margin-bottom: 15px; }
+    .empty-state h3 { font-size: 1.2rem; color: var(--text-dark); margin-bottom: 5px; }
+    .empty-state p { font-size: 0.95rem; }
+
+    /* TARJETAS DE ENCARGO */
     .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 18px; }
     .card-item { background: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid #e2e8f0; display: flex; flex-direction: column; transition: transform 0.2s; }
     .card-item:hover { transform: translateY(-3px); }
     
-    .card-media { position: relative; width: 100%; height: 200px; background-color: #e9ecef; }
+    .card-media { position: relative; width: 100%; height: 220px; background-color: #e9ecef; }
     .card-media img { width: 100%; height: 100%; object-fit: cover; }
+    .card-date { position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; }
     
     .status-badge { position: absolute; top: 12px; right: 12px; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
     .badge-pendiente { background-color: #fff3cd; color: #856404; }
@@ -115,41 +124,60 @@
     .badge-entregado { background-color: #cce5ff; color: #004085; }
     .badge-cancelado { background-color: #f8d7da; color: #721c24; }
 
-    .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .card-title { font-size: 1.05rem; font-weight: 700; color: var(--bg-dark); margin-bottom: 4px; }
-    .card-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+    .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-title { font-size: 1.1rem; font-weight: 700; color: var(--bg-dark); margin-bottom: 4px; }
+    .card-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
 
-    .info-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 5px 0; border-bottom: 1px dashed #edf2f7; }
+    .info-row { display: flex; justify-content: space-between; font-size: 0.88rem; padding: 6px 0; border-bottom: 1px dashed #edf2f7; }
     .info-row:last-child { border-bottom: none; }
     .info-label { color: var(--text-muted); }
     .info-val { font-weight: 600; color: var(--text-dark); }
 
-    /* TABLAS */
-    .table-box { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow-x: auto; margin-top: 18px; border: 1px solid #e2e8f0; }
+    /* TABLAS Y PROVEEDORES */
+    .supplier-section { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow: hidden; margin-top: 20px; border: 1px solid #e2e8f0; }
+    .supplier-header { background: var(--bg-dark); color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .supplier-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .supplier-budget { background: rgba(139, 66, 85, 0.25); color: #ffb8c6; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: 700; border: 1px solid rgba(139, 66, 85, 0.5); }
+    
+    .table-responsive { overflow-x: auto; }
     table.custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-    table.custom-table th { background: var(--bg-dark); color: #fff; padding: 14px 18px; font-weight: 600; border-bottom: 3px solid var(--primary); }
-    table.custom-table td { padding: 14px 18px; border-bottom: 1px solid #edf2f7; }
-    table.custom-table tr:hover { background-color: #f8fafc; }
+    table.custom-table th { background: #f8fafc; color: var(--text-muted); padding: 12px 20px; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; }
+    table.custom-table td { padding: 14px 20px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+    table.custom-table tr:hover { background-color: #f1f5f9; }
 
     /* MODALES */
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.65); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-    .modal-overlay.active { display: flex; }
-    .modal-box { background: #fff; border-radius: var(--border-radius); width: 100%; max-width: 580px; max-height: 90vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
-    .modal-header { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--bg-dark); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 10px; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; opacity: 0; transition: opacity 0.3s ease; }
+    .modal-overlay.active { display: flex; opacity: 1; }
+    .modal-box { background: #fff; border-radius: var(--border-radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); transform: translateY(20px); transition: transform 0.3s ease; }
+    .modal-overlay.active .modal-box { transform: translateY(0); }
     
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--text-dark); }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.95rem; }
-    .form-group input:focus { outline: none; border-color: var(--primary); }
+    .modal-header { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--bg-dark); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #edf2f7; padding-bottom: 12px; }
+    
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
+    .form-control { width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; transition: border-color 0.2s; background: #f8fafc; }
+    .form-control:focus { outline: none; border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(139, 66, 85, 0.1); }
+
+    .balance-highlight { padding: 15px; background: #fdf2f2; border-radius: 8px; border: 1px dashed #fecaca; font-weight: 600; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
 
     /* STATS / CAJA */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-bottom: 22px; }
-    .stat-card { background: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-left: 5px solid var(--primary); border: 1px solid #e2e8f0; border-left-width: 5px; }
-    .stat-card h3 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
-    .stat-card .value { font-size: 1.6rem; font-weight: 700; color: var(--bg-dark); }
+    .stat-card { background: #fff; padding: 22px; border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid #e2e8f0; border-left: 5px solid var(--primary); display: flex; flex-direction: column; gap: 8px; }
+    .stat-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin: 0; font-weight: 600; letter-spacing: 0.5px; }
+    .stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--bg-dark); }
+
+    /* NOTIFICACIONES TOAST */
+    #toast-container { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+    .toast { background: #333; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateY(20px); transition: all 0.3s ease; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: var(--success); }
+    .toast.danger { background: var(--danger); }
   </style>
 </head>
 <body>
+
+  <!-- CONTENEDOR DE NOTIFICACIONES -->
+  <div id="toast-container"></div>
 
   <!-- ENCABEZADO -->
   <header>
@@ -173,10 +201,11 @@
 
     <!-- 1. ENCARGOS -->
     <section id="tab-encargos" class="tab-content active">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <h2>Pedidos Bajo Pedido</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+        <h2>Registro de Pedidos</h2>
         <button class="btn btn-primary" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> Nuevo Encargo</button>
       </div>
+      <p style="color:var(--text-muted); font-size:0.95rem;">Lunes a miércoles: Ingresa los pedidos y anticipos de tus clientas.</p>
 
       <div class="cards-grid" id="encargos-cards-container">
         <!-- Carga dinámica -->
@@ -185,30 +214,22 @@
 
     <!-- 2. SURTIDO -->
     <section id="tab-surtido" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Lista de Surtido por Proveedor</h2>
+      <div style="margin-bottom: 20px;">
+        <h2>Lista de Compras (Agrupada)</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem;">Jueves: Revisa el presupuesto total necesario por proveedor para ir a surtir.</p>
+      </div>
       
-      <div class="table-box">
-        <table class="custom-table">
-          <thead>
-            <tr>
-              <th>Foto</th>
-              <th>Prenda / Detalles</th>
-              <th>Clienta</th>
-              <th>Proveedor</th>
-              <th>Costo Compra</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
-          <tbody id="surtido-table-body">
-            <!-- Carga dinámica -->
-          </tbody>
-        </table>
+      <div id="supplier-surtido-container">
+        <!-- Carga dinámica por proveedor -->
       </div>
     </section>
 
     <!-- 3. ENTREGAS -->
     <section id="tab-entregas" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Paquetes Listos para Entrega</h2>
+      <div style="margin-bottom: 20px;">
+        <h2>Paquetes Listos para Entrega</h2>
+        <p style="color:var(--text-muted); font-size:0.95rem;">Viernes a domingo: Cobra el saldo restante y marca los productos como entregados.</p>
+      </div>
 
       <div class="cards-grid" id="entregas-cards-container">
         <!-- Carga dinámica -->
@@ -217,7 +238,7 @@
 
     <!-- 4. RESUMEN FINANCIERO -->
     <section id="tab-resumen" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Reporte Financiero de Encargos</h2>
+      <h2 style="margin-bottom: 15px;">Reporte Financiero</h2>
       
       <div class="stats-grid">
         <div class="stat-card">
@@ -237,6 +258,18 @@
           <div class="value" id="st-profit">$0.00</div>
         </div>
       </div>
+
+      <!-- SECCIÓN DE REINICIO DE SISTEMA -->
+      <div style="margin-top: 40px; padding: 25px; background: #fff; border-radius: var(--border-radius); border: 1px solid #fecaca; text-align: center; box-shadow: var(--shadow);">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; color: var(--danger); margin-bottom: 15px;"></i>
+        <h3 style="color: var(--text-dark); margin-bottom: 10px;">Zona de Peligro: Reiniciar Sistema</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
+          Utiliza este botón para <strong>borrar absolutamente todas las pruebas y encargos registrados</strong>. Esto dejará tu sistema de Encargos en ceros para empezar a trabajar de manera real. Esta acción no se puede deshacer.
+        </p>
+        <button class="btn btn-danger" style="padding: 12px 25px; font-size: 1rem;" onclick="resetSystem()">
+          <i class="fa-solid fa-trash-can"></i> Borrar Toda la Información
+        </button>
+      </div>
     </section>
 
   </main>
@@ -246,69 +279,69 @@
     <div class="modal-box">
       <div class="modal-header">
         <span id="modal-order-title">Nuevo Encargo</span>
-        <button onclick="closeModal('modal-order')" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+        <button type="button" onclick="closeModal('modal-order')" style="background:none; border:none; font-size:1.5rem; color:var(--text-muted); cursor:pointer;">&times;</button>
       </div>
       <form id="form-order" onsubmit="saveOrder(event)">
         <input type="hidden" id="ord-id">
 
         <div class="form-group">
-          <label>Nombre de la Clienta *</label>
-          <input type="text" id="ord-client" required placeholder="Ej: María López">
+          <label><i class="fa-solid fa-user" style="color:var(--primary); margin-right:5px;"></i> Nombre de la Clienta *</label>
+          <input type="text" id="ord-client" class="form-control" required placeholder="Ej: María López">
         </div>
 
         <div class="form-group">
-          <label>Teléfono / WhatsApp (Opcional)</label>
-          <input type="text" id="ord-phone" placeholder="Dejar vacío si no se tiene">
+          <label><i class="fa-brands fa-whatsapp" style="color:var(--whatsapp); margin-right:5px;"></i> Teléfono / WhatsApp (Opcional)</label>
+          <input type="text" id="ord-phone" class="form-control" placeholder="Dejar vacío si no se tiene">
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
           <div class="form-group">
             <label>Prenda / Producto *</label>
-            <input type="text" id="ord-item" required placeholder="Ej: Vestido Gala">
+            <input type="text" id="ord-item" class="form-control" required placeholder="Ej: Vestido Gala">
           </div>
           <div class="form-group">
             <label>Talla y Color *</label>
-            <input type="text" id="ord-details" required placeholder="Ej: Talla M / Rojo">
+            <input type="text" id="ord-details" class="form-control" required placeholder="Ej: Talla M / Rojo">
           </div>
         </div>
 
         <div class="form-group">
-          <label>Proveedor *</label>
-          <input type="text" id="ord-supplier" required placeholder="Ej: Pasarela / San Juan">
+          <label><i class="fa-solid fa-store" style="color:var(--text-muted); margin-right:5px;"></i> Proveedor de Origen *</label>
+          <input type="text" id="ord-supplier" class="form-control" required placeholder="Ej: Pasarela / San Juan">
         </div>
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:12px;">
           <div class="form-group">
-            <label>Costo Compra ($) *</label>
-            <input type="number" step="0.01" id="ord-cost" required oninput="calcBalances()">
+            <label>Costo Compra ($)</label>
+            <input type="number" step="0.01" id="ord-cost" class="form-control" required oninput="calcBalances()">
           </div>
           <div class="form-group">
-            <label>Precio Venta ($) *</label>
-            <input type="number" step="0.01" id="ord-price" required oninput="calcBalances()">
+            <label>Precio Venta ($)</label>
+            <input type="number" step="0.01" id="ord-price" class="form-control" required oninput="calcBalances()">
           </div>
           <div class="form-group">
-            <label>Anticipo ($) *</label>
-            <input type="number" step="0.01" id="ord-advance" required oninput="calcBalances()">
+            <label>Anticipo ($)</label>
+            <input type="number" step="0.01" id="ord-advance" class="form-control" required oninput="calcBalances()">
           </div>
         </div>
 
-        <div class="form-group" style="padding:12px; background:#f8fafc; border-radius:6px; border:1px solid #e2e8f0; font-weight:600; display:flex; justify-content:space-between; align-items:center;">
+        <div class="balance-highlight">
           <span>Saldo Pendiente por Cobrar:</span>
-          <span id="ord-balance-display" style="color:var(--danger); font-size:1.1rem; font-weight:700;">$0.00</span>
+          <span id="ord-balance-display" style="color:var(--danger); font-size:1.2rem; font-weight:800;">$0.00</span>
         </div>
 
-        <div class="form-group">
-          <label>Fotografía (Opcional)</label>
-          <input type="file" accept="image/*" id="ord-photo-input" onchange="previewOrderPhoto(event)">
+        <div class="form-group" style="margin-top: 15px;">
+          <label><i class="fa-solid fa-camera" style="color:var(--text-muted); margin-right:5px;"></i> Fotografía (Opcional)</label>
+          <input type="file" accept="image/*" id="ord-photo-input" class="form-control" style="padding: 8px;" onchange="previewOrderPhoto(event)">
           <input type="hidden" id="ord-photo-url">
-          <div style="margin-top:10px; text-align:center;">
-            <img id="ord-photo-preview" src="" style="max-height:120px; border-radius:8px; display:none;">
+          <div style="margin-top:12px; text-align:center;">
+            <img id="ord-photo-preview" src="" style="max-height:140px; border-radius:10px; display:none; box-shadow:var(--shadow);">
           </div>
         </div>
 
-        <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
-          <button type="button" class="btn btn-dark" onclick="closeModal('modal-order')">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar Encargo</button>
+        <div style="margin-top:25px; display:flex; justify-content:flex-end; gap:12px;">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modal-order')">Cancelar</button>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Guardar Encargo</button>
         </div>
       </form>
     </div>
@@ -316,7 +349,7 @@
 
   <!-- LÓGICA JAVASCRIPT -->
   <script>
-    // FIREBASE CONFIG
+    // FIREBASE CONFIGURACIÓN
     const firebaseConfig = {
       apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
       authDomain: "saray-ha-pos.firebaseapp.com",
@@ -332,8 +365,29 @@
 
     let state = { encargos: [] };
 
+    // FUNCIÓN DE NOTIFICACIONES (TOAST)
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icon = type === 'success' ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-exclamation"></i>';
+      toast.innerHTML = `${icon} <span>${message}</span>`;
+      
+      container.appendChild(toast);
+      
+      // Mostrar
+      setTimeout(() => toast.classList.add('show'), 10);
+      
+      // Ocultar y remover
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
     function initListeners() {
-      db.collection('encargos_pedidos').onSnapshot(snap => {
+      db.collection('encargos_pedidos').orderBy('fecha', 'desc').onSnapshot(snap => {
         state.encargos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderEncargos();
         renderSurtido();
@@ -349,10 +403,10 @@
       const dot = document.getElementById('sync-dot');
       const text = document.getElementById('sync-text');
       if (online) {
-        dot.classList.remove('offline');
+        dot.className = 'status-dot';
         text.innerText = "Sincronizado";
       } else {
-        dot.classList.add('offline');
+        dot.className = 'status-dot offline';
         text.innerText = "Modo Offline";
       }
     }
@@ -377,7 +431,6 @@
     function previewOrderPhoto(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = function(e) {
         const img = new Image();
@@ -389,7 +442,6 @@
           canvas.width = maxW;
           canvas.height = img.height * scale;
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
           const base64 = canvas.toDataURL('image/jpeg', 0.7);
           document.getElementById('ord-photo-url').value = base64;
           const prev = document.getElementById('ord-photo-preview');
@@ -427,69 +479,110 @@
         anticipo: advance,
         saldo: Math.max(0, price - advance),
         fotoUrl: document.getElementById('ord-photo-url').value,
-        estado: 'Pendiente',
-        fecha: new Date().toISOString()
       };
 
-      if (id) {
-        await db.collection('encargos_pedidos').doc(id).update(data);
-      } else {
-        await db.collection('encargos_pedidos').add(data);
+      try {
+        if (id) {
+          await db.collection('encargos_pedidos').doc(id).update(data);
+          showToast("Encargo actualizado exitosamente");
+        } else {
+          data.estado = 'Pendiente';
+          data.fecha = new Date().toISOString();
+          await db.collection('encargos_pedidos').add(data);
+          showToast("Encargo guardado exitosamente");
+        }
+        closeModal('modal-order');
+      } catch(err) {
+        showToast("Error al guardar", "danger");
       }
-      closeModal('modal-order');
     }
 
-    // RENDER ENCARGOS (TARJETAS LIMPIAS)
+    // BORRADO TOTAL
+    async function resetSystem() {
+      if(!confirm("⚠️ ADVERTENCIA: ¿Estás totalmente segura de que quieres BORRAR TODOS los encargos y pruebas? Esta acción no se puede deshacer.")) return;
+      if(!confirm("Por seguridad, confirma una vez más: ¿Eliminar toda la base de datos de Encargos?")) return;
+
+      try {
+        const snapshot = await db.collection('encargos_pedidos').get();
+        if(snapshot.empty) {
+          showToast("El sistema ya está vacío.", "success");
+          return;
+        }
+
+        // Eliminar en lote
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => {
+          batch.delete(doc.ref);
+        });
+        await batch.commit();
+
+        showToast("¡Sistema reiniciado y limpio correctamente!", "success");
+      } catch (err) {
+        console.error(err);
+        showToast("Error al reiniciar el sistema", "danger");
+      }
+    }
+
+    // 1. RENDER ENCARGOS
     function renderEncargos() {
       const container = document.getElementById('encargos-cards-container');
       container.innerHTML = '';
 
       const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
+      
       if (pendientes.length === 0) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; margin-top:30px;">No hay encargos pendientes registrados.</p>';
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <i class="fa-solid fa-clipboard-check"></i>
+            <h3>No hay encargos pendientes</h3>
+            <p>Registra un nuevo pedido para comenzar la semana.</p>
+          </div>
+        `;
         return;
       }
 
       pendientes.forEach(p => {
+        const fecha = new Date(p.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
         const card = document.createElement('div');
         card.className = 'card-item';
         card.innerHTML = `
           <div class="card-media">
-            <img src="${p.fotoUrl || 'https://via.placeholder.com/300x200?text=SARAY+HA'}" alt="${p.prenda}">
+            <img src="${p.fotoUrl || 'https://via.placeholder.com/400x300?text=Sin+Foto'}" alt="${p.prenda}">
             <span class="status-badge badge-pendiente">${p.estado}</span>
+            <span class="card-date"><i class="fa-regular fa-calendar"></i> ${fecha}</span>
           </div>
           <div class="card-body">
             <div>
               <div class="card-title">${p.prenda}</div>
-              <div class="card-subtitle">Clienta: ${p.cliente} (${p.detalles})</div>
+              <div class="card-subtitle"><i class="fa-solid fa-user-tag"></i> ${p.cliente} (${p.detalles})</div>
               
               <div class="info-row">
-                <span class="info-label">Proveedor:</span>
+                <span class="info-label">Proveedor</span>
                 <span class="info-val">${p.proveedor}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Costo Compra:</span>
+                <span class="info-label">Costo Compra</span>
                 <span class="info-val">$${p.costo.toFixed(2)}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Precio Venta:</span>
-                <span class="info-val" style="color:var(--primary); font-weight:bold;">$${p.precio.toFixed(2)}</span>
+                <span class="info-label">Precio Venta</span>
+                <span class="info-val" style="color:var(--primary);">$${p.precio.toFixed(2)}</span>
               </div>
               <div class="info-row">
-                <span class="info-label">Anticipo:</span>
+                <span class="info-label">Anticipo</span>
                 <span class="info-val" style="color:var(--success);">$${p.anticipo.toFixed(2)}</span>
               </div>
-              <div class="info-row">
-                <span class="info-label">Saldo Pendiente:</span>
-                <span class="info-val" style="color:var(--danger); font-size:1rem;">$${p.saldo.toFixed(2)}</span>
+              <div class="info-row" style="background:#fff5f5; padding:5px; margin-top:4px; border-radius:4px;">
+                <span class="info-label" style="color:var(--danger);">Saldo</span>
+                <span class="info-val" style="color:var(--danger); font-size:1.1rem;">$${p.saldo.toFixed(2)}</span>
               </div>
             </div>
 
-            <div style="display:flex; gap:8px; margin-top:14px;">
-              <button class="btn btn-whatsapp" style="flex:1; padding:8px; font-size:0.85rem;" onclick="sendWAConfirmation('${p.id}')">
-                <i class="fa-brands fa-whatsapp"></i> WhatsApp
+            <div style="display:flex; gap:8px; margin-top:16px;">
+              <button class="btn btn-whatsapp" style="flex:1; padding:10px; font-size:0.85rem;" onclick="sendWAConfirmation('${p.id}')">
+                <i class="fa-brands fa-whatsapp"></i> Aviso
               </button>
-              <button class="btn btn-danger" style="padding:8px 12px; font-size:0.85rem;" onclick="deleteOrder('${p.id}')">
+              <button class="btn btn-danger" style="padding:10px 14px; font-size:0.85rem;" onclick="deleteOrder('${p.id}')">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -511,42 +604,93 @@
       }
     }
 
-    // RENDER SURTIDO
+    // 2. RENDER SURTIDO AGRUPADO E INTELIGENTE
     function renderSurtido() {
-      const tbody = document.getElementById('surtido-table-body');
-      tbody.innerHTML = '';
+      const container = document.getElementById('supplier-surtido-container');
+      container.innerHTML = '';
 
       const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
       if (pendientes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888; padding:20px;">No hay productos pendientes por surtir.</td></tr>';
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-bags-shopping"></i>
+            <h3>Lista de Compras Vacía</h3>
+            <p>No hay encargos pendientes por surtir.</p>
+          </div>
+        `;
         return;
       }
 
-      pendientes.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><img src="${p.fotoUrl || 'https://via.placeholder.com/50'}" style="width:45px; height:45px; border-radius:6px; object-fit:cover;"></td>
-          <td><strong>${p.prenda}</strong> (${p.detalles})</td>
-          <td>${p.cliente}</td>
-          <td>${p.proveedor}</td>
-          <td style="font-weight:600;">$${p.costo.toFixed(2)}</td>
-          <td>
-            <button class="btn btn-success" style="padding:5px 10px; font-size:0.8rem;" onclick="updateOrderStatus('${p.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Comprado</button>
-            <button class="btn btn-danger" style="padding:5px 10px; font-size:0.8rem;" onclick="updateOrderStatus('${p.id}', 'Cancelado')"><i class="fa-solid fa-xmark"></i> Agotado</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      // Agrupar por proveedor
+      const grouped = {};
+      pendientes.forEach(o => {
+        const prov = o.proveedor || 'Sin Proveedor';
+        if (!grouped[prov]) grouped[prov] = [];
+        grouped[prov].push(o);
       });
+
+      // Crear las tablas separadas
+      for (let prov in grouped) {
+        const items = grouped[prov];
+        const totalInvest = items.reduce((acc, i) => acc + i.costo, 0);
+
+        const section = document.createElement('div');
+        section.className = 'supplier-section';
+
+        let rowsHTML = items.map(p => `
+          <tr>
+            <td style="width:60px;"><img src="${p.fotoUrl || 'https://via.placeholder.com/50'}" style="width:45px; height:45px; border-radius:8px; object-fit:cover; border:1px solid #e2e8f0;"></td>
+            <td>
+              <strong>${p.prenda}</strong><br>
+              <span style="font-size:0.8rem; color:var(--text-muted);">${p.detalles}</span>
+            </td>
+            <td><i class="fa-regular fa-user" style="color:#cbd5e1;"></i> ${p.cliente}</td>
+            <td style="font-weight:700; color:var(--text-dark);">$${p.costo.toFixed(2)}</td>
+            <td style="min-width: 140px;">
+              <button class="btn btn-success" style="padding:6px 12px; font-size:0.8rem; width:100%; margin-bottom:6px;" onclick="updateOrderStatus('${p.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Comprado</button>
+              <button class="btn btn-danger" style="padding:6px 12px; font-size:0.8rem; width:100%;" onclick="updateOrderStatus('${p.id}', 'Cancelado')"><i class="fa-solid fa-xmark"></i> Agotado</button>
+            </td>
+          </tr>
+        `).join('');
+
+        section.innerHTML = `
+          <div class="supplier-header">
+            <h3><i class="fa-solid fa-store"></i> Proveedor: ${prov}</h3>
+            <span class="supplier-budget">Efectivo a llevar: $${totalInvest.toFixed(2)}</span>
+          </div>
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Foto</th>
+                  <th>Prenda / Detalles</th>
+                  <th>Clienta</th>
+                  <th>Costo Compra</th>
+                  <th>Acción Rápida</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHTML}</tbody>
+            </table>
+          </div>
+        `;
+        container.appendChild(section);
+      }
     }
 
-    // RENDER ENTREGAS
+    // 3. RENDER ENTREGAS
     function renderEntregas() {
       const container = document.getElementById('entregas-cards-container');
       container.innerHTML = '';
 
       const surtidos = state.encargos.filter(o => o.estado === 'Surtido');
       if (surtidos.length === 0) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; margin-top:30px;">No hay paquetes listos para entrega actualmente.</p>';
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column:1/-1;">
+            <i class="fa-solid fa-box-open"></i>
+            <h3>Sin entregas pendientes</h3>
+            <p>Las prendas que vayas marcando como compradas aparecerán aquí.</p>
+          </div>
+        `;
         return;
       }
 
@@ -555,26 +699,26 @@
         card.className = 'card-item';
         card.innerHTML = `
           <div class="card-media">
-            <img src="${p.fotoUrl || 'https://via.placeholder.com/300x200?text=LISTO+PARA+ENTREGA'}" alt="${p.prenda}">
-            <span class="status-badge badge-surtido">Listo</span>
+            <img src="${p.fotoUrl || 'https://via.placeholder.com/400x300?text=LISTO+PARA+ENTREGA'}" alt="${p.prenda}">
+            <span class="status-badge badge-surtido">Listo p/ Entrega</span>
           </div>
           <div class="card-body">
             <div>
               <div class="card-title">${p.prenda}</div>
-              <div class="card-subtitle">Clienta: ${p.cliente} (${p.detalles})</div>
+              <div class="card-subtitle"><i class="fa-solid fa-box"></i> Para: ${p.cliente} (${p.detalles})</div>
               
-              <div style="background:#fff5f5; padding:12px; border-radius:8px; border:1px solid #fed7d7; text-align:center; margin-bottom:12px;">
-                <span style="font-size:0.8rem; color:#c53030; display:block;">Saldo Pendiente</span>
-                <span style="font-size:1.3rem; font-weight:bold; color:#c53030;">$${p.saldo.toFixed(2)}</span>
+              <div style="background:#fff5f5; padding:15px; border-radius:8px; border:1px solid #fecaca; text-align:center; margin-bottom:15px;">
+                <span style="font-size:0.85rem; color:#9b2c2c; display:block; margin-bottom:4px; font-weight:600;">COBRAR SALDO RESTANTE</span>
+                <span style="font-size:1.6rem; font-weight:bold; color:#c53030;">$${p.saldo.toFixed(2)}</span>
               </div>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:8px;">
-              <button class="btn btn-primary" style="width:100%;" onclick="updateOrderStatus('${p.id}', 'Entregado')">
-                <i class="fa-solid fa-hand-holding-dollar"></i> Cobrar Saldo y Entregar
-              </button>
               <button class="btn btn-whatsapp" style="width:100%;" onclick="sendWADeliveryReady('${p.id}')">
                 <i class="fa-brands fa-whatsapp"></i> Avisar a Clienta
+              </button>
+              <button class="btn btn-primary" style="width:100%;" onclick="updateOrderStatus('${p.id}', 'Entregado')">
+                <i class="fa-solid fa-hand-holding-dollar"></i> Cobrar y Finalizar
               </button>
             </div>
           </div>
@@ -596,16 +740,24 @@
     }
 
     async function updateOrderStatus(id, status) {
-      await db.collection('encargos_pedidos').doc(id).update({ estado: status });
-    }
-
-    async function deleteOrder(id) {
-      if (confirm("¿Eliminar este encargo?")) {
-        await db.collection('encargos_pedidos').doc(id).delete();
+      try {
+        await db.collection('encargos_pedidos').doc(id).update({ estado: status });
+        if (status === 'Surtido') showToast("Prenda marcada como Comprada", "success");
+        if (status === 'Cancelado') showToast("Prenda marcada como Agotada", "danger");
+        if (status === 'Entregado') showToast("¡Excelente! Entrega y cobro finalizados", "success");
+      } catch (err) {
+        showToast("Error al actualizar estado", "danger");
       }
     }
 
-    // RENDER RESUMEN
+    async function deleteOrder(id) {
+      if (confirm("¿Estás segura de eliminar este registro por completo?")) {
+        await db.collection('encargos_pedidos').doc(id).delete();
+        showToast("Registro eliminado", "success");
+      }
+    }
+
+    // 4. RENDER RESUMEN FINANCIERO
     function renderResumen() {
       const totalCount = state.encargos.length;
       const totalAdvances = state.encargos.reduce((acc, o) => acc + (o.anticipo || 0), 0);
