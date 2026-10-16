@@ -13,12 +13,12 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Firebase SDKs (v10.8.0 Compat) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Manifest PWA Web Data URL -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1a1a1a","theme_color":"#d4af37","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
+  <!-- Manifest PWA -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1a1a1a","theme_color":"#121212","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
 
   <style>
     :root {
@@ -39,7 +39,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* HEADER */
     header {
       background-color: var(--bg-dark);
       color: #fff;
@@ -55,7 +54,6 @@
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--success); display: inline-block; }
     .status-dot.offline { background-color: var(--danger); }
 
-    /* NAVEGACIÓN PRINCIPAL */
     nav.top-nav {
       background-color: #1a1a1a;
       display: flex;
@@ -78,19 +76,31 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    nav.top-nav button:hover, nav.top-nav button.active {
+    nav.top-nav button:hover,
+    nav.top-nav button.active {
       color: var(--gold);
       border-bottom: 3px solid var(--gold);
       background-color: rgba(212, 175, 55, 0.08);
     }
 
-    /* CONTENEDOR PRINCIPAL */
     main { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* BOTONES */
-    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.95rem; }
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
     .btn-gold { background-color: var(--gold); color: #fff; }
     .btn-gold:hover { background-color: var(--gold-hover); }
     .btn-dark { background-color: var(--bg-dark); color: #fff; }
@@ -100,50 +110,197 @@
     .btn-danger { background-color: var(--danger); color: #fff; }
     .btn-success { background-color: var(--success); color: #fff; }
 
-    /* GRID DE ENCARGOS */
-    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 20px; }
-    .product-card { background: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; border: 1px solid #eee; display: flex; flex-direction: column; }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s;
+      border: 1px solid #eee;
+      display: flex;
+      flex-direction: column;
+    }
     .product-card:hover { transform: translateY(-3px); }
-    
-    .card-header { padding: 12px 15px; background: var(--bg-dark); color: var(--gold); font-family: 'Playfair Display', serif; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
-    .product-img { width: 100%; height: 200px; object-fit: cover; background-color: #f0f0f0; border-bottom: 1px solid #eee; }
-    
-    .product-details { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; font-size: 0.9rem; }
-    .detail-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
-    
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat', sans-serif; }
+    .product-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+    .product-details {
+      padding: 14px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .product-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px; color: var(--text-dark); }
+    .product-code { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .product-price { font-weight: 700; color: var(--gold-hover); font-size: 1.1rem; }
+    .meta-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.85rem;
+      padding: 4px 0;
+      border-bottom: 1px dashed #eee;
+    }
+    .meta-line:last-child { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
     .badge-pendiente { background: #fff3cd; color: #856404; }
     .badge-surtido { background: #d4edda; color: #155724; }
-    .badge-entregado { background: #cce5ff; color: #004085; }
+    .badge-entregado { background: #e8f1ff; color: #1b4f9c; }
     .badge-cancelado { background: #f8d7da; color: #721c24; }
 
-    /* TABLAS */
-    .data-table-container { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow-x: auto; margin-top: 15px; }
+    .data-table-container {
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+      margin-top: 15px;
+    }
     table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-    table.data-table th { background: var(--bg-dark); color: var(--gold); padding: 12px 15px; font-weight: 600; }
+    table.data-table th {
+      background: var(--bg-dark);
+      color: var(--gold);
+      padding: 12px 15px;
+      font-weight: 600;
+    }
     table.data-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
     table.data-table tr:hover { background-color: #fcfcfc; }
 
-    /* MODALES */
-    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 15px;
+    }
     .modal-overlay.active { display: flex; }
-    .modal-card { background: #fff; border-radius: var(--border-radius); width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-    .modal-header { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--bg-dark); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    
+    .modal-card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .modal-header {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--bg-dark);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
 
-    /* STATS / CAJA */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
-    .stat-card { background: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-left: 4px solid var(--gold); }
-    .stat-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--gold);
+    }
+    .stat-card h3 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
     .stat-card .value { font-size: 1.5rem; font-weight: 700; color: var(--bg-dark); }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+    .supplier-box { margin-bottom: 20px; }
+    .supplier-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      background: var(--bg-dark);
+      color: #fff;
+    }
+    .supplier-title h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      color: var(--gold);
+      margin: 0;
+    }
+    .budget-pill {
+      background: rgba(212,175,55,0.15);
+      color: var(--gold);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .balance-box {
+      background: #f8f5f0;
+      border: 1px solid #e5e0d8;
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- ENCABEZADO SUPERIOR -->
   <header>
     <div class="brand-title"><i class="fa-solid fa-gem"></i> SARAY HA — Encargos</div>
     <div class="sync-status">
@@ -152,58 +309,45 @@
     </div>
   </header>
 
-  <!-- NAVEGACIÓN -->
   <nav class="top-nav">
-    <button class="nav-btn active" onclick="switchTab('encargos')"><i class="fa-solid fa-clipboard-list"></i> 1. Encargos (Lun-Mié)</button>
-    <button class="nav-btn" onclick="switchTab('surtido')"><i class="fa-solid fa-cart-flatbed"></i> 2. Lista Surte (Jueves)</button>
-    <button class="nav-btn" onclick="switchTab('entregas')"><i class="fa-solid fa-box-open"></i> 3. Entregas (Vie-Dom)</button>
-    <button class="nav-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-pie"></i> Resumen Financiero</button>
+    <button class="nav-btn active" onclick="switchTab('encargos')"><i class="fa-solid fa-clipboard-list"></i> Encargos</button>
+    <button class="nav-btn" onclick="switchTab('surtido')"><i class="fa-solid fa-cart-flatbed"></i> Lista Surte</button>
+    <button class="nav-btn" onclick="switchTab('entregas')"><i class="fa-solid fa-box-open"></i> Entregas</button>
+    <button class="nav-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-line"></i> Resumen</button>
   </nav>
 
-  <!-- CONTENIDO -->
   <main>
-
-    <!-- 1. ENCARGOS -->
+    <!-- ENCARGOS -->
     <section id="tab-encargos" class="tab-content active">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <h2>Pedidos Bajo Pedido (Lunes a Miércoles)</h2>
+      <div class="section-head">
+        <h2>Pedidos Bajo Encargo</h2>
         <button class="btn btn-gold" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> Nuevo Encargo</button>
       </div>
-      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">Registra los pedidos de tus clientas y controla los anticipos recibidos.</p>
-
-      <div class="products-grid" id="encargos-cards-container">
-        <!-- Carga dinámica -->
-      </div>
+      <p class="section-sub">Lunes a miércoles: registra pedidos, anticipos y saldos pendientes.</p>
+      <div class="products-grid" id="encargos-cards-container"></div>
     </section>
 
-    <!-- 2. SURTIDO (JUEVES) -->
+    <!-- SURTIDO -->
     <section id="tab-surtido" class="tab-content">
-      <div style="margin-bottom: 15px;">
-        <h2>Lista de Compras y Surtido (Jueves)</h2>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">Esta lista agrupa automáticamente todo lo que debes comprar, dividido por proveedor.</p>
+      <div class="section-head">
+        <h2>Lista de Surtido</h2>
       </div>
-
-      <div id="supplier-surtido-container">
-        <!-- Carga dinámica agrupada por proveedor -->
-      </div>
+      <p class="section-sub">Jueves: compras agrupadas por proveedor y dinero necesario.</p>
+      <div id="supplier-surtido-container"></div>
     </section>
 
-    <!-- 3. ENTREGAS (VIERNES A DOMINGO) -->
+    <!-- ENTREGAS -->
     <section id="tab-entregas" class="tab-content">
-      <div style="margin-bottom: 15px;">
-        <h2>Paquetes Listos para Entrega y Cobro</h2>
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:5px;">Aquí aparecen las prendas que ya compraste (Surtidas). Cobra el saldo restante al entregar.</p>
+      <div class="section-head">
+        <h2>Entregas y Cobro de Saldo</h2>
       </div>
-
-      <div class="products-grid" id="entregas-cards-container">
-        <!-- Carga dinámica -->
-      </div>
+      <p class="section-sub">Viernes a domingo: prendas ya surtidas listas para entregar.</p>
+      <div class="products-grid" id="entregas-cards-container"></div>
     </section>
 
-    <!-- 4. RESUMEN -->
+    <!-- RESUMEN -->
     <section id="tab-resumen" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Reporte Financiero de Encargos</h2>
-      
+      <h2 style="margin-bottom: 15px;">Resumen Financiero de Encargos</h2>
       <div class="stats-grid">
         <div class="stat-card">
           <h3>Total de Pedidos</h3>
@@ -214,25 +358,25 @@
           <div class="value" id="st-advances">$0.00</div>
         </div>
         <div class="stat-card">
-          <h3>Saldos Liquidados (Cobrados)</h3>
+          <h3>Saldos Cobrados</h3>
           <div class="value" id="st-remainings">$0.00</div>
         </div>
         <div class="stat-card" style="border-left-color: var(--success);">
-          <h3>Ganancia Estimada Neta</h3>
+          <h3>Ganancia Neta</h3>
           <div class="value" id="st-profit">$0.00</div>
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- MODAL NUEVO / EDITAR ENCARGO -->
+  <!-- MODAL ENCARGO -->
   <div class="modal-overlay" id="modal-order">
     <div class="modal-card">
       <div class="modal-header">
         <span id="modal-order-title">Nuevo Encargo</span>
-        <button onclick="closeModal('modal-order')" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+        <button onclick="closeModal('modal-order')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;">&times;</button>
       </div>
+
       <form id="form-order" onsubmit="saveOrder(event)">
         <input type="hidden" id="ord-id">
 
@@ -243,48 +387,50 @@
           </div>
           <div class="form-group">
             <label>Teléfono / WhatsApp (Opcional)</label>
-            <input type="text" id="ord-phone" placeholder="Dejar vacío si no se tiene">
+            <input type="text" id="ord-phone" placeholder="Opcional">
           </div>
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
           <div class="form-group">
             <label>Prenda / Producto *</label>
-            <input type="text" id="ord-item" required placeholder="Ej: Vestido Gala">
+            <input type="text" id="ord-item" required placeholder="Ej: Vestido de gala">
           </div>
           <div class="form-group">
             <label>Talla y Color *</label>
-            <input type="text" id="ord-details" required placeholder="Ej: Talla M / Rojo">
+            <input type="text" id="ord-details" required placeholder="Ej: M / Negro">
           </div>
         </div>
 
         <div class="form-group">
-          <label>Proveedor / Marca Objetivo *</label>
-          <input type="text" id="ord-supplier" required placeholder="Ej: Proveedor Pasarela / San Juan">
+          <label>Proveedor *</label>
+          <input type="text" id="ord-supplier" required placeholder="Ej: Pasarela / San Juan">
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
           <div class="form-group">
-            <label>Costo Est. ($)</label>
-            <input type="number" step="0.01" id="ord-cost" required oninput="calcBalances()">
+            <label>Costo de Compra ($) *</label>
+            <input type="number" step="0.01" id="ord-cost" required oninput="calcBalances()" placeholder="0.00">
           </div>
           <div class="form-group">
-            <label>Precio Venta ($)</label>
-            <input type="number" step="0.01" id="ord-price" required oninput="calcBalances()">
+            <label>Precio de Venta ($) *</label>
+            <input type="number" step="0.01" id="ord-price" required oninput="calcBalances()" placeholder="0.00">
           </div>
           <div class="form-group">
-            <label>Anticipo ($)</label>
-            <input type="number" step="0.01" id="ord-advance" required oninput="calcBalances()">
+            <label>Anticipo ($) *</label>
+            <input type="number" step="0.01" id="ord-advance" required oninput="calcBalances()" placeholder="0.00">
           </div>
-        </div>
-
-        <div class="form-group" style="background:rgba(212, 175, 55, 0.1); padding:15px; border-radius:8px; border: 1px solid var(--gold); display:flex; justify-content:space-between; align-items:center;">
-          <strong style="color:var(--bg-dark); font-size:1.1rem;">Saldo Pendiente a Cobrar: </strong>
-          <span id="ord-balance-display" style="color:var(--danger); font-weight:bold; font-size:1.4rem;">$0.00</span>
         </div>
 
         <div class="form-group">
-          <label>Fotografía de Referencia (Opcional):</label>
+          <div class="balance-box">
+            <strong>Saldo pendiente por cobrar</strong>
+            <span id="ord-balance-display" style="color:var(--danger); font-weight:700; font-size:1.2rem;">$0.00</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Fotografía de referencia (Opcional)</label>
           <input type="file" accept="image/*" id="ord-photo-input" onchange="previewOrderPhoto(event)">
           <input type="hidden" id="ord-photo-url">
           <div style="margin-top:10px; text-align:center;">
@@ -300,10 +446,7 @@
     </div>
   </div>
 
-
-  <!-- LÓGICA JAVASCRIPT -->
   <script>
-    // 1. CONFIGURACIÓN DE FIREBASE (MISMO PROYECTO)
     const firebaseConfig = {
       apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
       authDomain: "saray-ha-pos.firebaseapp.com",
@@ -315,12 +458,10 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    db.enablePersistence().catch(err => console.warn("Offline deshabilitado:", err));
+    db.enablePersistence().catch(() => {});
 
     let state = { encargos: [] };
 
-    // 2. ESCUCHADOR TIEMPO REAL
     function initListeners() {
       db.collection('encargos_pedidos').onSnapshot(snap => {
         state.encargos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -337,12 +478,12 @@
     function updateStatus(online) {
       const dot = document.getElementById('sync-dot');
       const text = document.getElementById('sync-text');
-      if(online) {
+      if (online) {
         dot.classList.remove('offline');
-        text.innerText = "Sincronizado";
+        text.innerText = 'Sincronizado';
       } else {
         dot.classList.add('offline');
-        text.innerText = "Modo Offline";
+        text.innerText = 'Modo Offline';
       }
     }
 
@@ -356,7 +497,6 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // CALCULAR SALDO EN FORMULARIO
     function calcBalances() {
       const price = parseFloat(document.getElementById('ord-price').value) || 0;
       const advance = parseFloat(document.getElementById('ord-advance').value) || 0;
@@ -366,7 +506,7 @@
 
     function previewOrderPhoto(event) {
       const file = event.target.files[0];
-      if(!file) return;
+      if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -379,7 +519,6 @@
           canvas.width = maxW;
           canvas.height = img.height * scale;
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
           const base64 = canvas.toDataURL('image/jpeg', 0.7);
           document.getElementById('ord-photo-url').value = base64;
           const prev = document.getElementById('ord-photo-preview');
@@ -397,6 +536,7 @@
       document.getElementById('ord-photo-url').value = '';
       document.getElementById('ord-photo-preview').style.display = 'none';
       document.getElementById('ord-balance-display').innerText = '$0.00';
+      document.getElementById('modal-order-title').innerText = 'Nuevo Encargo';
       openModal('modal-order');
     }
 
@@ -417,11 +557,13 @@
         anticipo: advance,
         saldo: Math.max(0, price - advance),
         fotoUrl: document.getElementById('ord-photo-url').value,
-        estado: 'Pendiente', 
+        estado: 'Pendiente',
         fecha: new Date().toISOString()
       };
 
-      if(id) {
+      if (id) {
+        const current = state.encargos.find(o => o.id === id);
+        if (current && current.estado) data.estado = current.estado;
         await db.collection('encargos_pedidos').doc(id).update(data);
       } else {
         await db.collection('encargos_pedidos').add(data);
@@ -429,50 +571,43 @@
       closeModal('modal-order');
     }
 
-    // RENDER PESTAÑA 1: ENCARGOS
+    function money(n) {
+      return `$${(parseFloat(n) || 0).toFixed(2)}`;
+    }
+
     function renderEncargos() {
       const container = document.getElementById('encargos-cards-container');
       container.innerHTML = '';
-
       const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
-      
-      if(pendientes.length === 0) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:20px; color:#888;">No hay encargos pendientes registrados.</p>';
+
+      if (pendientes.length === 0) {
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; padding:24px;">No hay encargos pendientes.</p>';
+        return;
       }
 
       pendientes.forEach(ord => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <div class="card-header">
-            <span><i class="fa-solid fa-user"></i> ${ord.cliente}</span>
-            <span class="badge badge-pendiente">${ord.estado}</span>
-          </div>
-          <img class="product-img" src="${ord.fotoUrl || 'https://via.placeholder.com/400x300?text=SARAY+HA+ENCARGOS'}" alt="Prenda">
+          <img class="product-img" src="${ord.fotoUrl || 'https://via.placeholder.com/400x300?text=SARAY+HA'}" alt="${ord.prenda}">
           <div class="product-details">
             <div>
-              <div style="font-weight:700; font-size:1.1rem; color:var(--bg-dark); margin-bottom:5px;">${ord.prenda}</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">${ord.detalles}</div>
-              
-              <div class="detail-row">
-                <span>Proveedor:</span> <strong>${ord.proveedor}</strong>
+              <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:6px;">
+                <div class="product-title">${ord.prenda}</div>
+                <span class="badge badge-pendiente">${ord.estado}</span>
               </div>
-              <div class="detail-row">
-                <span>Precio Venta:</span> <strong>$${ord.precio.toFixed(2)}</strong>
-              </div>
-              <div class="detail-row" style="color:var(--success);">
-                <span>Anticipo:</span> <strong>$${ord.anticipo.toFixed(2)}</strong>
-              </div>
-              <div class="detail-row" style="color:var(--danger); font-size:1.05rem;">
-                <span>Saldo a Cobrar:</span> <strong>$${ord.saldo.toFixed(2)}</strong>
-              </div>
+              <div class="product-code">${ord.cliente} · ${ord.detalles}</div>
+              <div class="meta-line"><span>Proveedor</span><strong>${ord.proveedor}</strong></div>
+              <div class="meta-line"><span>Costo de compra</span><strong>${money(ord.costo)}</strong></div>
+              <div class="meta-line"><span>Precio de venta</span><strong class="product-price">${money(ord.precio)}</strong></div>
+              <div class="meta-line"><span>Anticipo</span><strong style="color:var(--success)">${money(ord.anticipo)}</strong></div>
+              <div class="meta-line"><span>Saldo pendiente</span><strong style="color:var(--danger)">${money(ord.saldo)}</strong></div>
             </div>
-
-            <div style="display:grid; grid-template-columns: 1fr 40px; gap:8px; margin-top:10px;">
-              <button class="btn btn-whatsapp" style="padding:8px;" onclick="sendWAConfirmation('${ord.id}')">
+            <div style="display:grid; grid-template-columns: 1fr 42px; gap:8px;">
+              <button class="btn btn-whatsapp" style="padding:10px;" onclick="sendWAConfirmation('${ord.id}')">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </button>
-              <button class="btn btn-danger" style="padding:8px;" onclick="deleteOrder('${ord.id}')">
+              <button class="btn btn-danger" style="padding:10px;" onclick="deleteOrder('${ord.id}')">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -482,50 +617,50 @@
       });
     }
 
-    // MANEJO DE WHATSAPP OPCIONAL
-    function sendWAConfirmation(id) {
-      const ord = state.encargos.find(o => o.id === id);
-      if(!ord) return;
-      const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Confirmamos tu encargo de: ${ord.prenda} (${ord.detalles}).\nAnticipo recibido: $${ord.anticipo.toFixed(2)}.\nSaldo pendiente al entregar: $${ord.saldo.toFixed(2)}.\n¡Muchas gracias por tu confianza en SARAY HA Boutique!`);
-      
-      if(ord.telefono && ord.telefono.trim() !== '') {
-        window.open(`https://api.whatsapp.com/send?phone=${ord.telefono.trim()}&text=${msg}`, '_blank');
+    function openWhatsApp(phone, message) {
+      const msg = encodeURIComponent(message);
+      if (phone && phone.trim() !== '') {
+        window.open(`https://api.whatsapp.com/send?phone=${phone.trim()}&text=${msg}`, '_blank');
       } else {
         window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
       }
     }
 
-    // RENDER PESTAÑA 2: SURTIDO (JUEVES)
+    function sendWAConfirmation(id) {
+      const ord = state.encargos.find(o => o.id === id);
+      if (!ord) return;
+      const msg = `¡Hola ${ord.cliente}! Confirmamos tu encargo de: ${ord.prenda} (${ord.detalles}).\nAnticipo recibido: ${money(ord.anticipo)}.\nSaldo pendiente al entregar: ${money(ord.saldo)}.\n¡Gracias por tu confianza en SARAY HA Boutique!`;
+      openWhatsApp(ord.telefono, msg);
+    }
+
     function renderSurtido() {
       const container = document.getElementById('supplier-surtido-container');
       container.innerHTML = '';
-
       const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
-      if(pendientes.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#888; padding:30px;">No hay compras pendientes para realizar.</p>';
+
+      if (pendientes.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#888; padding:30px;">No hay compras pendientes por surtir.</p>';
         return;
       }
 
       const grouped = {};
       pendientes.forEach(o => {
         const prov = o.proveedor || 'Sin Proveedor';
-        if(!grouped[prov]) grouped[prov] = [];
+        if (!grouped[prov]) grouped[prov] = [];
         grouped[prov].push(o);
       });
 
-      for(let prov in grouped) {
+      Object.keys(grouped).forEach(prov => {
         const items = grouped[prov];
-        const totalInvest = items.reduce((acc, i) => acc + i.costo, 0);
-
+        const totalInvest = items.reduce((acc, i) => acc + (parseFloat(i.costo) || 0), 0);
         const box = document.createElement('div');
-        box.className = 'data-table-container';
-        box.style.marginBottom = '25px';
+        box.className = 'data-table-container supplier-box';
 
-        let rowsHTML = items.map(item => `
+        const rows = items.map(item => `
           <tr>
             <td>
               <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${item.fotoUrl || 'https://via.placeholder.com/50'}" style="width:45px; height:45px; border-radius:6px; object-fit:cover;">
+                <img src="${item.fotoUrl || 'https://via.placeholder.com/50'}" style="width:42px; height:42px; border-radius:6px; object-fit:cover;">
                 <div>
                   <strong>${item.prenda}</strong><br>
                   <span style="font-size:0.8rem; color:#777;">${item.detalles}</span>
@@ -533,45 +668,46 @@
               </div>
             </td>
             <td>${item.cliente}</td>
-            <td style="font-weight:bold; color:var(--danger);">$${item.costo.toFixed(2)}</td>
-            <td style="min-width: 140px;">
-              <button class="btn btn-success" style="padding:6px 10px; font-size:0.8rem; width:100%; margin-bottom:5px;" onclick="updateOrderStatus('${item.id}', 'Surtido')"><i class="fa-solid fa-check-circle"></i> Comprado</button>
-              <button class="btn btn-danger" style="padding:6px 10px; font-size:0.8rem; width:100%;" onclick="updateOrderStatus('${item.id}', 'Cancelado')"><i class="fa-solid fa-times-circle"></i> Agotado</button>
+            <td style="font-weight:700;">${money(item.costo)}</td>
+            <td style="min-width:150px;">
+              <button class="btn btn-success" style="padding:6px 10px; font-size:0.8rem; width:100%; margin-bottom:5px;" onclick="updateOrderStatus('${item.id}', 'Surtido')">
+                <i class="fa-solid fa-check-circle"></i> Comprado
+              </button>
+              <button class="btn btn-danger" style="padding:6px 10px; font-size:0.8rem; width:100%;" onclick="updateOrderStatus('${item.id}', 'Cancelado')">
+                <i class="fa-solid fa-times-circle"></i> No conseguido
+              </button>
             </td>
           </tr>
         `).join('');
 
         box.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; padding:15px; background:var(--bg-dark); color:var(--gold); border-bottom:3px solid var(--gold);">
-            <h3 style="font-family:'Playfair Display', serif; font-size:1.2rem; margin:0;"><i class="fa-solid fa-store"></i> ${prov}</h3>
-            <span style="background:rgba(212,175,55,0.2); padding:6px 12px; border-radius:20px; font-weight:bold; font-size:0.95rem;">
-              Presupuesto: $${totalInvest.toFixed(2)}
-            </span>
+          <div class="supplier-title">
+            <h3><i class="fa-solid fa-store"></i> ${prov}</h3>
+            <span class="budget-pill">Efectivo necesario: ${money(totalInvest)}</span>
           </div>
           <table class="data-table">
             <thead>
               <tr>
-                <th>Prenda / Detalles</th>
+                <th>Prenda</th>
                 <th>Clienta</th>
-                <th>Costo Inversión</th>
-                <th>Acción Rápida</th>
+                <th>Costo de Compra</th>
+                <th>Acción</th>
               </tr>
             </thead>
-            <tbody>${rowsHTML}</tbody>
+            <tbody>${rows}</tbody>
           </table>
         `;
         container.appendChild(box);
-      }
+      });
     }
 
-    // RENDER PESTAÑA 3: ENTREGAS
     function renderEntregas() {
       const container = document.getElementById('entregas-cards-container');
       container.innerHTML = '';
-
       const surtidos = state.encargos.filter(o => o.estado === 'Surtido');
-      if(surtidos.length === 0) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:30px; color:#888;">No hay paquetes listos para entrega actualmente.</p>';
+
+      if (surtidos.length === 0) {
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; padding:30px;">No hay paquetes listos para entrega.</p>';
         return;
       }
 
@@ -579,27 +715,23 @@
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <div class="card-header" style="background:var(--gold); color:var(--bg-dark);">
-            <span><i class="fa-solid fa-box"></i> ${ord.cliente}</span>
-            <span class="badge badge-surtido">Listo</span>
-          </div>
-          <img class="product-img" src="${ord.fotoUrl || 'https://via.placeholder.com/400x300?text=LISTO+PARA+ENTREGA'}" alt="Prenda">
+          <img class="product-img" src="${ord.fotoUrl || 'https://via.placeholder.com/400x300?text=LISTO+PARA+ENTREGA'}" alt="${ord.prenda}">
           <div class="product-details">
             <div>
-              <div style="font-weight:700; font-size:1.1rem; color:var(--bg-dark);">${ord.prenda}</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">${ord.detalles}</div>
-              
-              <div style="background:var(--bg-light); padding:10px; border-radius:8px; border:1px solid #ddd; text-align:center; margin-bottom:10px;">
-                <span style="display:block; font-size:0.85rem; color:#555;">Saldo a Cobrar</span>
-                <strong style="font-size:1.4rem; color:var(--danger);">$${ord.saldo.toFixed(2)}</strong>
+              <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:6px;">
+                <div class="product-title">${ord.prenda}</div>
+                <span class="badge badge-surtido">Listo</span>
               </div>
+              <div class="product-code">${ord.cliente} · ${ord.detalles}</div>
+              <div class="meta-line"><span>Proveedor</span><strong>${ord.proveedor}</strong></div>
+              <div class="meta-line"><span>Precio de venta</span><strong class="product-price">${money(ord.precio)}</strong></div>
+              <div class="meta-line"><span>Saldo a cobrar</span><strong style="color:var(--danger)">${money(ord.saldo)}</strong></div>
             </div>
-
             <div style="display:flex; flex-direction:column; gap:8px;">
               <button class="btn btn-whatsapp" style="width:100%;" onclick="sendWADeliveryReady('${ord.id}')">
                 <i class="fa-brands fa-whatsapp"></i> Avisar a Clienta
               </button>
-              <button class="btn btn-success" style="width:100%;" onclick="updateOrderStatus('${ord.id}', 'Entregado')">
+              <button class="btn btn-gold" style="width:100%;" onclick="updateOrderStatus('${ord.id}', 'Entregado')">
                 <i class="fa-solid fa-hand-holding-dollar"></i> Cobrar y Entregar
               </button>
             </div>
@@ -611,14 +743,9 @@
 
     function sendWADeliveryReady(id) {
       const ord = state.encargos.find(o => o.id === id);
-      if(!ord) return;
-      const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Te avisamos que tu pedido de ${ord.prenda} (${ord.detalles}) ya está listo para entrega.\nSaldo pendiente a liquidar: $${ord.saldo.toFixed(2)}.\n¡Te esperamos en SARAY HA Boutique!`);
-      
-      if(ord.telefono && ord.telefono.trim() !== '') {
-        window.open(`https://api.whatsapp.com/send?phone=${ord.telefono.trim()}&text=${msg}`, '_blank');
-      } else {
-        window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
-      }
+      if (!ord) return;
+      const msg = `¡Hola ${ord.cliente}! Tu pedido de ${ord.prenda} (${ord.detalles}) ya está listo para entrega.\nSaldo pendiente: ${money(ord.saldo)}.\n¡Te esperamos en SARAY HA Boutique!`;
+      openWhatsApp(ord.telefono, msg);
     }
 
     async function updateOrderStatus(id, status) {
@@ -626,29 +753,29 @@
     }
 
     async function deleteOrder(id) {
-      if(confirm("¿Eliminar por completo el registro de este encargo?")) {
+      if (confirm('¿Eliminar por completo este encargo?')) {
         await db.collection('encargos_pedidos').doc(id).delete();
       }
     }
 
-    // RENDER PESTAÑA 4: RESUMEN
     function renderResumen() {
       const totalCount = state.encargos.length;
-      const totalAdvances = state.encargos.reduce((acc, o) => acc + (o.anticipo || 0), 0);
-      const totalRemainings = state.encargos.filter(o => o.estado === 'Entregado').reduce((acc, o) => acc + (o.saldo || 0), 0);
-      const totalCost = state.encargos.filter(o => o.estado !== 'Cancelado').reduce((acc, o) => acc + (o.costo || 0), 0);
-      
+      const totalAdvances = state.encargos.reduce((acc, o) => acc + (parseFloat(o.anticipo) || 0), 0);
+      const totalRemainings = state.encargos
+        .filter(o => o.estado === 'Entregado')
+        .reduce((acc, o) => acc + (parseFloat(o.saldo) || 0), 0);
+      const totalCost = state.encargos
+        .filter(o => o.estado !== 'Cancelado')
+        .reduce((acc, o) => acc + (parseFloat(o.costo) || 0), 0);
       const netProfit = (totalAdvances + totalRemainings) - totalCost;
 
       document.getElementById('st-total-count').innerText = totalCount;
-      document.getElementById('st-advances').innerText = `$${totalAdvances.toFixed(2)}`;
-      document.getElementById('st-remainings').innerText = `$${totalRemainings.toFixed(2)}`;
-      document.getElementById('st-profit').innerText = `$${netProfit.toFixed(2)}`;
+      document.getElementById('st-advances').innerText = money(totalAdvances);
+      document.getElementById('st-remainings').innerText = money(totalRemainings);
+      document.getElementById('st-profit').innerText = money(netProfit);
     }
 
-    window.onload = () => {
-      initListeners();
-    };
+    window.onload = () => initListeners();
   </script>
 </body>
 </html>
