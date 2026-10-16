@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SARAY HA — Encargos & Surtido v3.5</title>
+    <title>SARAY HA — Encargos & Surtido v3.6</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -31,8 +31,6 @@
             --warning: #b45309;
             --warning-bg: #fef3c7;
             --info: #0369a1;
-            --agotado: #4b5563;
-            --agotado-bg: #f3f4f6;
             --radius: 12px;
             --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
@@ -286,9 +284,35 @@
 
         .btn-icon-group { display: flex; gap: 5px; }
 
-        /* =========================================
-           DASHBOARD RESUMEN PROFESIONAL
-           ========================================= */
+        /* RECUADRO DE DETALLES DE ENTREGA (NUEVO) */
+        .delivery-details-box {
+            background: #ffffff;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .delivery-details-title {
+            font-weight: 700;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px dashed #bbf7d0;
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+        }
+        .delivery-detail-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-main);
+        }
+
+        /* DASHBOARD RESUMEN */
         .dashboard-header { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--card-border); }
         .dashboard-header h2 { font-family: 'Playfair Display', serif; color: var(--primary); font-size: 1.5rem; margin-bottom: 5px; }
 
@@ -310,13 +334,11 @@
         .stat-label-pro { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 4px; }
         .stat-value-pro { font-size: 1.7rem; font-weight: 700; color: var(--text-main); line-height: 1; }
 
-        /* Tarjeta Resaltada para Ganancia */
         .stat-card-profit { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); border: none; color: white; }
         .stat-card-profit .stat-label-pro { color: rgba(255, 255, 255, 0.85); }
         .stat-card-profit .stat-value-pro { color: white; }
         .stat-card-profit .stat-icon { background: rgba(255, 255, 255, 0.2); color: white; }
 
-        /* Panel de Peligro Administrativo */
         .admin-danger-zone {
             background: #fffafa; border: 1px solid #fecdd3; border-left: 5px solid var(--danger);
             border-radius: var(--radius); padding: 20px; display: flex; justify-content: space-between;
@@ -325,14 +347,13 @@
         .admin-danger-text h3 { color: var(--danger); font-size: 1.1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; }
         .admin-danger-text p { font-size: 0.85rem; color: #881337; }
 
-        /* TOAST */
+        /* TOAST & MODAL */
         .toast {
             position: fixed; bottom: 20px; right: 20px; background: var(--success); color: white;
             padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: none; z-index: 300; font-weight: 600; font-size: 0.9rem;
         }
 
-        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 200; align-items: center; justify-content: center; padding: 15px; }
         .modal.active { display: flex; }
         .modal-content { background: var(--card-bg); border-radius: var(--radius); max-width: 500px; width: 100%; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
@@ -346,7 +367,7 @@
             <i class="fa-solid fa-boxes-packing" style="font-size: 1.5rem; color: var(--primary);"></i>
             <div>
                 <div class="brand-title">SARAY HA</div>
-                <div class="brand-subtitle">Encargos & Surtido v3.5</div>
+                <div class="brand-subtitle">Encargos & Surtido v3.6</div>
             </div>
         </div>
         <button class="btn btn-secondary btn-sm" onclick="location.reload()"><i class="fa-solid fa-rotate"></i></button>
@@ -403,7 +424,7 @@
                             <input type="hidden" id="prenda_talla" required>
                         </div>
                         <div class="form-group">
-                            <label>Proveedor (Selecciona de la lista) *</label>
+                            <label>Proveedor *</label>
                             <select id="proveedor_nombre" required style="background:var(--input-bg);">
                                 <option value="">Cargando proveedores...</option>
                             </select>
@@ -506,6 +527,7 @@
                     <select id="filter-estado-entrega" onchange="renderEntregas()">
                         <option value="TODOS">Todos (Surtidos, Entregados, Agotados)</option>
                         <option value="Surtido">Listos para Entrega</option>
+                        <option value="Entregado">Entregados (Ver Detalles de Cobro)</option>
                         <option value="Agotado">Agotados (Devolver anticipo)</option>
                     </select>
                 </div>
@@ -591,7 +613,7 @@
 
     </div>
 
-    <!-- MODAL DE COBRO Y ENTREGA (NUEVO PAGO POS) -->
+    <!-- MODAL DE COBRO Y ENTREGA (PUNTO DE VENTA) -->
     <div id="modal-cobro" class="modal">
         <div class="modal-content" style="max-width: 420px;">
             <div class="card-title">
@@ -603,7 +625,7 @@
                 <div style="font-size: 0.85rem; color: var(--text-muted);">Cliente: <strong id="cobro_cliente" style="color: var(--text-main);"></strong></div>
                 <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">Prenda: <strong id="cobro_prenda" style="color: var(--text-main);"></strong></div>
                 
-                <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; text-transform: uppercase; font-weight: 700;">Total a Cobrar</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; text-transform: uppercase; font-weight: 700;">Saldo Pendiente a Cobrar</div>
                 <div style="font-size: 1.8rem; font-weight: 700; color: var(--primary); text-align: center; line-height: 1;">
                     $<span id="cobro_total">0.00</span>
                 </div>
@@ -624,7 +646,6 @@
             </div>
             
             <div id="cobro_resultado_box" style="padding: 12px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 1rem; display: none; transition: all 0.2s;">
-                <!-- Aquí aparece el texto de cambio o saldo pendiente -->
             </div>
             
             <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
@@ -968,7 +989,7 @@
             mostrarToast("Prenda oculta de la lista de surtido");
         }
 
-        // ENTREGAS
+        // ENTREGAS (DETALLES COMPLETOS)
         function renderEntregas() {
             const container = document.getElementById('grid-entregas');
             const filtro = document.getElementById('filter-estado-entrega').value;
@@ -987,14 +1008,65 @@
             container.innerHTML = list.map(item => {
                 let cardClass = item.estado === 'Entregado' ? 'entregado-card' : '';
                 
-                let btnAccion = '';
+                let areaDetallesYCobro = '';
+
                 if(item.estado === 'Surtido') {
-                    // CAMBIO AQUI: Abre el nuevo modal de pago
-                    btnAccion = `<button class="btn btn-success btn-sm" style="flex:2;" onclick="abrirModalCobro('${item.id}')"><i class="fa-solid fa-handshake"></i> Cobrar y Entregar</button>`;
+                    areaDetallesYCobro = `
+                        <div style="font-size:0.85rem; margin-top:4px;">
+                            Saldo a cobrar: <strong style="color:var(--primary); font-size:1.1rem;">$${(item.saldo_pendiente).toFixed(2)}</strong>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i></button>
+                            <button class="btn btn-success btn-sm" style="flex:2;" onclick="abrirModalCobro('${item.id}')"><i class="fa-solid fa-handshake"></i> Cobrar y Entregar</button>
+                        </div>
+                    `;
                 } else if(item.estado === 'Entregado') {
-                    btnAccion = `<button class="btn btn-success btn-sm" style="flex:2; opacity:0.7;" disabled>✔️ YA ENTREGADO</button>`;
+                    // MUESTRA TODA LA INFORMACION DE LA ENTREGA Y EL PAGO
+                    areaDetallesYCobro = `
+                        <div class="delivery-details-box">
+                            <div class="delivery-details-title">
+                                <i class="fa-solid fa-circle-check"></i> Detalle de Entrega y Cobro Exitoso
+                            </div>
+                            <div class="delivery-detail-row">
+                                <span>Precio Total Prenda:</span>
+                                <strong>$${(item.precio_venta || 0).toFixed(2)}</strong>
+                            </div>
+                            <div class="delivery-detail-row">
+                                <span>Anticipo Previor Recibido:</span>
+                                <span>$${(item.anticipo_inicial || item.anticipo || 0).toFixed(2)}</span>
+                            </div>
+                            <div class="delivery-detail-row">
+                                <span>Método de Pago Final:</span>
+                                <strong><i class="fa-solid fa-credit-card"></i> ${item.metodo_pago_final || 'Efectivo'}</strong>
+                            </div>
+                            <div class="delivery-detail-row">
+                                <span>Monto Recibido en Entrega:</span>
+                                <span>$${(item.monto_recibido_final || item.saldo_pendiente || 0).toFixed(2)}</span>
+                            </div>
+                            ${(item.cambio_entregado && item.cambio_entregado > 0) ? `
+                            <div class="delivery-detail-row" style="color: var(--success); font-weight:700;">
+                                <span>Cambio Entregado:</span>
+                                <span>$${item.cambio_entregado.toFixed(2)}</span>
+                            </div>` : ''}
+                            ${item.fecha_entrega ? `
+                            <div style="font-size:0.7rem; color:var(--text-muted); text-align:right; margin-top:4px;">
+                                📅 ${item.fecha_entrega}
+                            </div>` : ''}
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <button class="btn btn-whatsapp btn-sm" style="width:100%;" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i> Enviar Agradecimiento</button>
+                        </div>
+                    `;
                 } else if(item.estado === 'Agotado') {
-                    btnAccion = `<button class="btn btn-danger btn-sm" style="flex:2;" onclick="devolverAnticipo('${item.id}')"><i class="fa-solid fa-money-bill-transfer"></i> Devolver Anticipo</button>`;
+                    areaDetallesYCobro = `
+                        <div style="font-size:0.85rem; color:var(--danger); font-weight:600; margin-top:4px;">
+                            Prenda no disponible con proveedor.
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i> Avisar Clienta</button>
+                            <button class="btn btn-danger btn-sm" style="flex:2;" onclick="devolverAnticipo('${item.id}')"><i class="fa-solid fa-money-bill-transfer"></i> Devolver Anticipo</button>
+                        </div>
+                    `;
                 }
 
                 return `
@@ -1010,23 +1082,15 @@
                         <img src="${item.foto || 'https://via.placeholder.com/70'}" class="item-img" onclick="abrirFotoFull('${item.foto}')">
                         <div class="item-info">
                             <div class="item-title">${item.producto_nombre}</div>
-                            <div class="item-specs">Talla: ${item.talla}</div>
-                            <div style="font-size:0.85rem; margin-top:8px;">
-                                Saldo: <strong style="color:var(--primary); font-size:1.1rem;">$${(item.saldo_pendiente).toFixed(2)}</strong>
-                            </div>
+                            <div class="item-specs">Talla: ${item.talla} | Color: ${item.color}</div>
                         </div>
                     </div>
-                    <div style="display:flex; gap:8px;">
-                        <button class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i></button>
-                        ${btnAccion}
-                    </div>
+                    ${areaDetallesYCobro}
                 </div>
             `}).join('');
         }
 
-        // ==========================================
-        // NUEVA LOGICA DE COBRO Y PUNTO DE VENTA
-        // ==========================================
+        // MODAL DE COBRO Y PUNTO DE VENTA
         function abrirModalCobro(id) {
             currentCobroItem = encargosData.find(i => i.id === id);
             if (!currentCobroItem) return;
@@ -1075,7 +1139,10 @@
             const total = currentCobroItem.saldo_pendiente;
             const recibido = parseFloat(document.getElementById('cobro_monto').value) || 0;
             const metodo = document.getElementById('cobro_metodo').value;
+            const cambio = Math.max(0, recibido - total);
             
+            const fechaAhora = new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+
             if (recibido <= 0) {
                 mostrarToast("El monto recibido debe ser mayor a 0", true);
                 return;
@@ -1083,17 +1150,21 @@
 
             try {
                 if (recibido >= total) {
-                    // Pago total -> Cambia a Entregado
+                    // Pago Total y Entrega Exitosa -> Guarda todos los detalles requeridos
                     await db.collection('encargos_pedidos').doc(currentCobroItem.id).update({
                         estado: 'Entregado',
                         saldo_pendiente: 0,
-                        anticipo: currentCobroItem.anticipo + total, // Lo sumamos para que las finanzas cuadren
-                        metodo_pago_final: metodo
+                        anticipo_inicial: currentCobroItem.anticipo, // Conserva registro inicial
+                        anticipo: currentCobroItem.precio_venta, // Total pagado completo
+                        monto_recibido_final: recibido,
+                        cambio_entregado: cambio,
+                        metodo_pago_final: metodo,
+                        fecha_entrega: fechaAhora
                     });
-                    mostrarToast('Pago completado y prenda marcada como ENTREGADA');
+                    mostrarToast('¡Pago registrado y entrega realizada con éxito!');
                 } else {
-                    // Abono parcial -> No se entrega, se guarda el abono
-                    if (!confirm(`La clienta está pagando $${recibido.toFixed(2)} (Menos del total).\n\nEsto se registrará como un ABONO y la prenda seguirá marcada como "Surtido" (Pendiente de entregar).\n¿Continuar?`)) {
+                    // Abono Parcial
+                    if (!confirm(`La clienta está abonando $${recibido.toFixed(2)}.\nEl saldo restante será de $${(total - recibido).toFixed(2)}.\n¿Deseas guardar este abono?`)) {
                         return;
                     }
                     const nuevoSaldo = total - recibido;
@@ -1103,7 +1174,7 @@
                         saldo_pendiente: nuevoSaldo,
                         anticipo: nuevoAnticipo
                     });
-                    mostrarToast(`Abono registrado. Saldo actualizado: $${nuevoSaldo.toFixed(2)}`);
+                    mostrarToast(`Abono registrado. Saldo pendiente: $${nuevoSaldo.toFixed(2)}`);
                 }
                 cerrarModal('modal-cobro');
             } catch(e) {
@@ -1113,7 +1184,14 @@
 
         async function devolverAnticipo(id) {
             if(!confirm("¿Confirmas que le devolviste el anticipo a la clienta porque no hubo la prenda?")) return;
-            await db.collection('encargos_pedidos').doc(id).update({ estado: 'Entregado', saldo_pendiente: 0, anticipo: 0 }); 
+            const fechaAhora = new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' });
+            await db.collection('encargos_pedidos').doc(id).update({ 
+                estado: 'Entregado', 
+                saldo_pendiente: 0, 
+                anticipo: 0,
+                metodo_pago_final: 'Devolución de Anticipo',
+                fecha_entrega: fechaAhora
+            }); 
             mostrarToast('Anticipo devuelto y orden cerrada.');
         }
 
@@ -1162,6 +1240,7 @@
             
             let select = document.getElementById('wa_plantilla_select');
             if(currentWAItem.estado === 'Surtido') select.value = 'listo';
+            else if(currentWAItem.estado === 'Entregado') select.value = 'gracias';
             else if(currentWAItem.estado === 'Agotado') select.value = 'agotado';
             else select.value = 'confirmacion';
             
@@ -1180,7 +1259,7 @@
             } else if (tipo === 'agotado') {
                 msg = `¡Hola ${currentWAItem.cliente_nombre}! 🥺 Te informo que al acudir a surtir, tu prenda ${det} se encontraba agotada con el proveedor.\n\n¿Gustas que te hagamos la devolución de tu anticipo de $${currentWAItem.anticipo.toFixed(2)} o prefieres pedir otra prenda? Quedo atenta. 🌸`;
             } else if (tipo === 'gracias') {
-                msg = `¡Hola ${currentWAItem.cliente_nombre}! Muchas gracias por tu compra. Esperamos que disfrutes tu prenda. ¡Estamos a la orden! 🌸`;
+                msg = `¡Hola ${currentWAItem.cliente_nombre}! Muchas gracias por tu compra en SARAY HA. Esperamos que disfrutes tu prenda ${det}. ¡Quedamos a tus órdenes! 🌸`;
             }
             document.getElementById('wa_mensaje_txt').value = msg;
         }
