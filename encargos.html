@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SARAY HA — Encargos & Surtido v2.0</title>
+    <title>SARAY HA — Encargos & Surtido v2.5</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -14,24 +14,25 @@
     
     <style>
         :root {
-            --primary: #8b4255;
-            --primary-hover: #a34f66;
-            --primary-light: rgba(139, 66, 85, 0.15);
-            --accent: #d98299;
-            --bg-dark: #181b20;
-            --card-bg: #222730;
-            --card-border: #313846;
-            --text-light: #f3f4f6;
-            --text-muted: #9ca3af;
-            --success: #2e7d32;
-            --success-bg: rgba(46, 125, 50, 0.2);
-            --danger: #c62828;
-            --danger-bg: rgba(198, 40, 40, 0.2);
-            --warning: #ef6c00;
-            --warning-bg: rgba(239, 108, 0, 0.2);
-            --info: #0288d1;
+            /* TEMA CLARO - VINO CHIC */
+            --primary: #8b4255; /* Vino Institucional */
+            --primary-hover: #733445;
+            --accent: #b35d74;
+            --bg-light: #f4f6f8; /* Fondo general gris muy claro */
+            --card-bg: #ffffff; /* Fondo de tarjetas blanco puro */
+            --card-border: #e5e7eb;
+            --text-main: #1f2937; /* Gris oscuro para texto principal */
+            --text-muted: #6b7280; /* Gris medio para etiquetas */
+            --input-bg: #f9fafb;
+            --success: #15803d;
+            --success-bg: #dcfce7;
+            --danger: #b91c1c;
+            --danger-bg: #fee2e2;
+            --warning: #b45309;
+            --warning-bg: #fef3c7;
+            --info: #0369a1;
             --radius: 12px;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -43,16 +44,16 @@
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-light);
+            color: var(--text-main);
             padding-bottom: 80px;
             min-height: 100vh;
         }
 
         /* HEADER */
         header {
-            background: linear-gradient(135deg, #121418 0%, #222730 100%);
-            border-bottom: 2px solid var(--primary);
+            background: #ffffff;
+            border-bottom: 3px solid var(--primary);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
@@ -60,7 +61,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .brand-container {
@@ -71,15 +72,15 @@
 
         .brand-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            color: var(--text-light);
+            color: var(--primary);
             letter-spacing: 0.5px;
         }
 
         .brand-subtitle {
             font-size: 0.7rem;
-            color: var(--accent);
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1.5px;
             font-weight: 600;
@@ -88,21 +89,22 @@
         /* NAVIGATION TABS */
         .nav-tabs {
             display: flex;
-            background: #121418;
-            padding: 8px;
-            gap: 6px;
+            background: #ffffff;
+            padding: 10px;
+            gap: 8px;
             overflow-x: auto;
             border-bottom: 1px solid var(--card-border);
             position: sticky;
-            top: 61px;
+            top: 64px;
             z-index: 99;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .nav-btn {
             flex: 1;
-            min-width: 100px;
-            background: transparent;
-            border: none;
+            min-width: 105px;
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
             color: var(--text-muted);
             padding: 10px 12px;
             border-radius: 8px;
@@ -113,14 +115,15 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             white-space: nowrap;
         }
 
         .nav-btn.active {
             background: var(--primary);
             color: #ffffff;
-            box-shadow: 0 2px 10px rgba(139, 66, 85, 0.4);
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(139, 66, 85, 0.3);
         }
 
         /* MAIN CONTAINER */
@@ -157,7 +160,7 @@
         .card-title {
             font-size: 1.1rem;
             font-weight: 700;
-            color: var(--text-light);
+            color: var(--primary);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -167,7 +170,7 @@
         }
 
         .card-title i {
-            color: var(--accent);
+            color: var(--primary);
         }
 
         /* FORMS */
@@ -189,25 +192,55 @@
 
         label {
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         input, select, textarea {
-            background: #181b20;
+            background: var(--input-bg);
             border: 1px solid var(--card-border);
-            color: var(--text-light);
+            color: var(--text-main);
             padding: 12px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input:focus, select:focus, textarea:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 66, 85, 0.1);
+        }
+
+        /* TALLAS (BOTONES) */
+        .size-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .size-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 10px;
+            border: 1px solid var(--card-border);
+            background: var(--input-bg);
+            color: var(--text-main);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .size-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 3px 8px rgba(139, 66, 85, 0.3);
         }
 
         /* BUTTONS */
@@ -231,37 +264,26 @@
             background: var(--primary-hover);
         }
 
-        .btn-block {
-            width: 100%;
-        }
-
         .btn-secondary {
-            background: #313846;
-            color: var(--text-light);
+            background: #e5e7eb;
+            color: var(--text-main);
         }
 
         .btn-secondary:hover {
-            background: #3f4758;
+            background: #d1d5db;
         }
 
-        .btn-success {
-            background: var(--success);
-        }
-        .btn-success:hover { background: #236327; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #166534; }
 
-        .btn-danger {
-            background: var(--danger);
-        }
-        .btn-danger:hover { background: #9a1f1f; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #991b1b; }
 
-        .btn-whatsapp {
-            background: #25D366;
-            color: white;
-        }
+        .btn-whatsapp { background: #25D366; color: white; }
         .btn-whatsapp:hover { background: #1eb956; }
 
         .btn-sm {
-            padding: 6px 12px;
+            padding: 8px 12px;
             font-size: 0.75rem;
             border-radius: 6px;
         }
@@ -269,29 +291,31 @@
         /* PHOTO UPLOADER PREVIEW */
         .photo-uploader {
             border: 2px dashed var(--card-border);
-            padding: 15px;
+            padding: 20px;
             text-align: center;
             border-radius: 8px;
             cursor: pointer;
-            background: #181b20;
+            background: var(--input-bg);
             transition: all 0.2s;
         }
         .photo-uploader:hover {
-            border-color: var(--accent);
+            border-color: var(--primary);
+            background: #fdfafb;
         }
         .photo-preview {
-            max-width: 100px;
-            max-height: 100px;
+            max-width: 120px;
+            max-height: 120px;
             object-fit: cover;
             border-radius: 8px;
             margin-top: 10px;
             border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
         }
 
         /* ORDERS GRID & LIST */
         .grid-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 15px;
         }
 
@@ -304,6 +328,7 @@
             flex-direction: column;
             gap: 12px;
             position: relative;
+            box-shadow: var(--shadow);
         }
 
         .order-header {
@@ -311,32 +336,37 @@
             justify-content: space-between;
             align-items: flex-start;
             border-bottom: 1px solid var(--card-border);
-            padding-bottom: 8px;
+            padding-bottom: 10px;
         }
 
         .client-name {
             font-weight: 700;
-            font-size: 1rem;
-            color: var(--text-light);
+            font-size: 1.05rem;
+            color: var(--text-main);
         }
 
         .phone-sub {
             font-size: 0.75rem;
             color: var(--text-muted);
+            margin-top: 2px;
         }
 
         .item-details {
             display: flex;
             gap: 12px;
             align-items: center;
+            background: var(--input-bg);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
         }
 
         .item-img {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 8px;
             object-fit: cover;
-            background: #181b20;
+            background: #e5e7eb;
             border: 1px solid var(--card-border);
             flex-shrink: 0;
             cursor: pointer;
@@ -347,57 +377,70 @@
         }
 
         .item-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--primary);
+        }
+        
+        .item-specs {
+            font-size: 0.75rem;
+            color: var(--text-main);
+            margin-top: 4px;
             font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--accent);
         }
 
         .supplier-badge {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 3px 8px;
+            background: #e5e7eb;
+            padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 4px;
+            color: var(--text-main);
+            margin-top: 6px;
+            font-weight: 600;
         }
 
         .financial-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            background: #181b20;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.8rem;
+            gap: 10px;
         }
 
         .fin-item {
             display: flex;
             flex-direction: column;
+            background: var(--input-bg);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
         }
 
         .fin-label {
             font-size: 0.65rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            font-weight: 700;
         }
 
         .fin-value {
             font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-top: 2px;
         }
 
         .badge-status {
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .status-pendiente { background: var(--warning-bg); color: #ffb74d; }
-        .status-surtido { background: rgba(2, 136, 209, 0.2); color: #81d4fa; }
-        .status-entregado { background: var(--success-bg); color: #81c784; }
+        .status-pendiente { background: var(--warning-bg); color: var(--warning); border: 1px solid #fcd34d; }
+        .status-surtido { background: #e0f2fe; color: var(--info); border: 1px solid #bae6fd; }
+        .status-entregado { background: var(--success-bg); color: var(--success); border: 1px solid #bbf7d0; }
 
         /* SUPPLIER GROUPED SURTIDO LIST */
         .supplier-group {
@@ -406,11 +449,12 @@
             border-radius: var(--radius);
             margin-bottom: 20px;
             overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
         .supplier-header {
-            background: linear-gradient(90deg, #2a313d 0%, var(--card-bg) 100%);
-            padding: 12px 18px;
+            background: var(--input-bg);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -419,8 +463,8 @@
 
         .supplier-name {
             font-weight: 700;
-            font-size: 1rem;
-            color: var(--accent);
+            font-size: 1.1rem;
+            color: var(--primary);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -429,6 +473,8 @@
         .supplier-totals {
             text-align: right;
             font-size: 0.85rem;
+            color: var(--text-main);
+            font-weight: 600;
         }
 
         .surtido-table {
@@ -438,16 +484,22 @@
         }
 
         .surtido-table th, .surtido-table td {
-            padding: 10px 15px;
+            padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid var(--card-border);
+            color: var(--text-main);
         }
 
         .surtido-table th {
-            background: #181b20;
+            background: #ffffff;
             color: var(--text-muted);
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
+            font-weight: 700;
+        }
+        
+        .surtido-table tbody tr:hover {
+            background: var(--input-bg);
         }
 
         /* SUMMARY STATS */
@@ -461,13 +513,14 @@
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            padding: 16px;
+            padding: 20px;
             border-radius: var(--radius);
-            border-left: 4px solid var(--primary);
+            border-left: 5px solid var(--primary);
+            box-shadow: var(--shadow);
         }
 
         .stat-val {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin-top: 5px;
         }
@@ -477,7 +530,8 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(3px);
             z-index: 200;
             align-items: center;
             justify-content: center;
@@ -492,10 +546,11 @@
             border-radius: var(--radius);
             max-width: 500px;
             width: 100%;
-            padding: 20px;
+            padding: 25px;
             position: relative;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
         /* TOAST NOTIFICATIONS */
@@ -503,15 +558,15 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: #2e7d32;
+            background: var(--success);
             color: white;
-            padding: 12px 20px;
+            padding: 15px 25px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: none;
             z-index: 300;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
         }
 
         /* FILTER BAR */
@@ -527,7 +582,7 @@
         @media print {
             body { background: white !important; color: black !important; }
             header, .nav-tabs, .btn, .filter-bar, .no-print { display: none !important; }
-            .card, .supplier-group { border: 1px solid #ccc !important; background: white !important; color: black !important; box-shadow: none !important; }
+            .card, .supplier-group { border: 1px solid #ccc !important; background: white !important; color: black !important; box-shadow: none !important; margin-bottom: 10px !important; }
             .supplier-name, .item-title { color: black !important; }
             .surtido-table th { background: #eee !important; color: black !important; }
             .surtido-table td { border-bottom: 1px solid #ddd !important; }
@@ -539,10 +594,10 @@
     <!-- HEADER -->
     <header>
         <div class="brand-container">
-            <i class="fa-solid fa-boxes-packing" style="font-size: 1.5rem; color: var(--accent);"></i>
+            <i class="fa-solid fa-boxes-packing" style="font-size: 1.5rem; color: var(--primary);"></i>
             <div>
                 <div class="brand-title">SARAY HA</div>
-                <div class="brand-subtitle">Encargos & Surtido v2.0</div>
+                <div class="brand-subtitle">Encargos & Surtido v2.5</div>
             </div>
         </div>
         <button class="btn btn-secondary btn-sm" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Actualizar</button>
@@ -565,7 +620,7 @@
             <div class="card">
                 <div class="card-title">
                     <span><i class="fa-solid fa-plus-circle"></i> Nuevo Encargo</span>
-                    <small style="font-size: 0.75rem; color: var(--text-muted);">Captura inicial de pre-pedido</small>
+                    <small style="font-size: 0.75rem; color: var(--text-muted); font-weight:normal;">Captura inicial de pedido</small>
                 </div>
                 <form id="form-encargo" onsubmit="guardarEncargo(event)">
                     <div class="form-grid">
@@ -580,8 +635,29 @@
                         </div>
                         <div class="form-group">
                             <label>Prenda / Producto *</label>
-                            <input type="text" id="producto_nombre" required placeholder="Ej. Vestido Gala Rosa M">
+                            <input type="text" id="producto_nombre" required placeholder="Ej. Vestido Gala Escote">
                         </div>
+                        
+                        <!-- NUEVO: CAMPO DE COLOR Y TALLAS -->
+                        <div class="form-group">
+                            <label>Color *</label>
+                            <input type="text" id="prenda_color" required placeholder="Ej. Rosa pastel, Negro, etc.">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label>Talla Solicitada *</label>
+                            <div class="size-selector">
+                                <button type="button" class="size-btn" onclick="seleccionarTalla('CH', this)">CH</button>
+                                <button type="button" class="size-btn" onclick="seleccionarTalla('M', this)">M</button>
+                                <button type="button" class="size-btn" onclick="seleccionarTalla('G', this)">G</button>
+                                <button type="button" class="size-btn" onclick="seleccionarTalla('XL', this)">XL</button>
+                                <button type="button" class="size-btn" onclick="seleccionarTalla('Unitalla', this)">Unitalla</button>
+                                <button type="button" class="size-btn" onclick="seleccionarTalla('Curvy', this)">Curvy</button>
+                            </div>
+                            <!-- Input oculto para guardar la selección -->
+                            <input type="hidden" id="prenda_talla" required>
+                        </div>
+
                         <div class="form-group">
                             <label>Proveedor *</label>
                             <input type="text" id="proveedor_nombre" required list="list-proveedores" placeholder="Ej. Novedades Karen">
@@ -601,7 +677,7 @@
                         </div>
                         <div class="form-group">
                             <label>Saldo Pendiente ($)</label>
-                            <input type="number" id="saldo_pendiente" readonly placeholder="0.00" style="background: #121418; font-weight:700; color:var(--accent);">
+                            <input type="number" id="saldo_pendiente" readonly placeholder="0.00" style="background: #f3f4f6; font-weight:700; color:var(--primary);">
                         </div>
                         <div class="form-group">
                             <label>Tipo de Entrega</label>
@@ -611,20 +687,20 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Foto de Referencia (Prenda)</label>
+                            <label>Foto de Referencia (Opcional)</label>
                             <div class="photo-uploader" onclick="document.getElementById('item_foto_input').click()">
-                                <i class="fa-solid fa-camera" style="font-size: 1.5rem; color: var(--accent);"></i>
-                                <div style="font-size: 0.75rem; margin-top:5px;">Subir o Tomar Foto</div>
+                                <i class="fa-solid fa-camera" style="font-size: 1.8rem; color: var(--primary);"></i>
+                                <div style="font-size: 0.75rem; margin-top:8px; font-weight:600; color:var(--text-muted);">Subir o Tomar Foto</div>
                                 <input type="file" id="item_foto_input" accept="image/*" capture="environment" style="display:none;" onchange="previewImagen(this, 'preview_encargo')">
                                 <img id="preview_encargo" class="photo-preview" style="display:none;">
                             </div>
                         </div>
                         <div class="form-group full-width">
-                            <label>Notas / Talla / Especificaciones</label>
-                            <input type="text" id="notas_encargo" placeholder="Ej. Talla M, Color Verde Esmeralda, cliente pide entrega sábado">
+                            <label>Notas Adicionales</label>
+                            <input type="text" id="notas_encargo" placeholder="Ej. Clienta pide entrega el sábado sin falta">
                         </div>
                     </div>
-                    <div style="margin-top: 15px; text-align: right;">
+                    <div style="margin-top: 20px; text-align: right; border-top: 1px solid var(--card-border); padding-top:15px;">
                         <button type="submit" class="btn"><i class="fa-solid fa-floppy-disk"></i> Registrar Encargo</button>
                     </div>
                 </form>
@@ -651,10 +727,10 @@
             <div class="card no-print">
                 <div class="card-title">
                     <span><i class="fa-solid fa-basket-shopping"></i> Lista Inteligente de Surtido (Jueves)</span>
-                    <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir / Exportar PDF</button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
                 </div>
-                <p style="font-size: 0.8rem; color: var(--text-muted);">
-                    Organizada automáticamente por **Proveedor** con el total de efectivo requerido en caja para compras.
+                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Organizada automáticamente por <strong>Proveedor</strong> con el total de efectivo requerido en caja para tus compras.
                 </p>
             </div>
 
@@ -687,11 +763,11 @@
             </div>
         </div>
 
-        <!-- TAB 4: TICKETS DE PROVEEDORES (NUEVO) -->
+        <!-- TAB 4: TICKETS DE PROVEEDORES -->
         <div id="tab-tickets" class="tab-content">
             <div class="card">
                 <div class="card-title">
-                    <span><i class="fa-solid fa-receipt"></i> Fotografiar Notas y Tickets de Compra</span>
+                    <span><i class="fa-solid fa-receipt"></i> Fotografiar Notas de Compra</span>
                 </div>
                 <form id="form-ticket" onsubmit="guardarTicketProveedor(event)">
                     <div class="form-grid">
@@ -703,11 +779,11 @@
                             <label>Monto Total ($) *</label>
                             <input type="number" step="0.01" id="ticket_monto" required placeholder="0.00">
                         </div>
-                        <div class="form-group">
-                            <label>Foto del Ticket / Nota de Venta *</label>
+                        <div class="form-group full-width">
+                            <label>Foto del Ticket / Nota *</label>
                             <div class="photo-uploader" onclick="document.getElementById('ticket_foto_input').click()">
-                                <i class="fa-solid fa-camera" style="font-size: 1.5rem; color: var(--accent);"></i>
-                                <div style="font-size: 0.75rem; margin-top:5px;">Capturar Foto de Nota</div>
+                                <i class="fa-solid fa-camera" style="font-size: 1.8rem; color: var(--primary);"></i>
+                                <div style="font-size: 0.75rem; margin-top:8px; font-weight:600; color:var(--text-muted);">Capturar Foto de Nota</div>
                                 <input type="file" id="ticket_foto_input" accept="image/*" capture="environment" style="display:none;" required onchange="previewImagen(this, 'preview_ticket')">
                                 <img id="preview_ticket" class="photo-preview" style="display:none;">
                             </div>
@@ -717,8 +793,8 @@
                             <input type="date" id="ticket_fecha" required>
                         </div>
                     </div>
-                    <div style="margin-top: 15px; text-align: right;">
-                        <button type="submit" class="btn"><i class="fa-solid fa-upload"></i> Guardar Ticket de Compra</button>
+                    <div style="margin-top: 20px; text-align: right; border-top: 1px solid var(--card-border); padding-top:15px;">
+                        <button type="submit" class="btn"><i class="fa-solid fa-upload"></i> Guardar Ticket</button>
                     </div>
                 </form>
             </div>
@@ -736,28 +812,28 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="fin-label">Capital a Invertir (Surtido)</div>
-                    <div class="stat-val" id="stat-capital" style="color: #64b5f6;">$0.00</div>
+                    <div class="stat-val" id="stat-capital" style="color: var(--info);">$0.00</div>
                 </div>
                 <div class="stat-card">
                     <div class="fin-label">Anticipos Recibidos</div>
-                    <div class="stat-val" id="stat-anticipos" style="color: #81c784;">$0.00</div>
+                    <div class="stat-val" id="stat-anticipos" style="color: var(--success);">$0.00</div>
                 </div>
                 <div class="stat-card">
                     <div class="fin-label">Saldos por Cobrar</div>
-                    <div class="stat-val" id="stat-saldos" style="color: #ffb74d;">$0.00</div>
+                    <div class="stat-val" id="stat-saldos" style="color: var(--warning);">$0.00</div>
                 </div>
                 <div class="stat-card">
                     <div class="fin-label">Ganancia Estimada Total</div>
-                    <div class="stat-val" id="stat-ganancia" style="color: var(--accent);">$0.00</div>
+                    <div class="stat-val" id="stat-ganancia" style="color: var(--primary);">$0.00</div>
                 </div>
             </div>
 
-            <div class="card" style="border-color: rgba(198, 40, 40, 0.4);">
-                <div class="card-title" style="color: #ef5350;">
+            <div class="card" style="border-color: var(--danger); background: var(--danger-bg);">
+                <div class="card-title" style="color: var(--danger); border-bottom-color: rgba(185, 28, 28, 0.2);">
                     <span><i class="fa-solid fa-triangle-exclamation"></i> Zona de Administración y Reset</span>
                 </div>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">
-                    Usa este botón para eliminar **todos los encargos de prueba** y reiniciar el sistema para el inicio de una nueva semana.
+                <p style="font-size: 0.85rem; color: #7f1d1d; margin-bottom: 15px;">
+                    Usa este botón para eliminar <strong>todos los encargos y tickets</strong> e iniciar el sistema limpio para una nueva semana.
                 </p>
                 <button class="btn btn-danger" onclick="reiniciarBaseDatos()"><i class="fa-solid fa-trash-can"></i> Reiniciar Base de Datos Completamente</button>
             </div>
@@ -769,14 +845,14 @@
     <div id="modal-whatsapp" class="modal">
         <div class="modal-content">
             <div class="card-title">
-                <span><i class="fa-brands fa-whatsapp"></i> Enviar Mensaje de WhatsApp</span>
+                <span><i class="fa-brands fa-whatsapp"></i> Enviar WhatsApp</span>
                 <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="cerrarModal('modal-whatsapp')"></i>
             </div>
-            <div class="form-group" style="margin-bottom: 12px;">
+            <div class="form-group" style="margin-bottom: 15px;">
                 <label>Seleccionar Plantilla:</label>
                 <select id="wa_plantilla_select" onchange="cambiarPlantillaWA()">
                     <option value="confirmacion">1. Confirmación de Anticipo Recibido</option>
-                    <option value="listo">2. Pedido Listo para Entrega (Recordatorio Saldo)</option>
+                    <option value="listo">2. Pedido Listo (Recordatorio de Saldo)</option>
                     <option value="gracias">3. Agradecimiento por Compra</option>
                 </select>
             </div>
@@ -784,7 +860,7 @@
                 <label>Mensaje Personalizado:</label>
                 <textarea id="wa_mensaje_txt" rows="6"></textarea>
             </div>
-            <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
                 <button class="btn btn-secondary" onclick="cerrarModal('modal-whatsapp')">Cancelar</button>
                 <button class="btn btn-whatsapp" onclick="enviarWA()"><i class="fa-brands fa-whatsapp"></i> Abrir Chat</button>
             </div>
@@ -794,7 +870,7 @@
     <!-- MODAL VISOR FOTO FULL -->
     <div id="modal-foto" class="modal" onclick="cerrarModal('modal-foto')">
         <div style="max-width: 90%; max-height: 90%;">
-            <img id="foto-full-img" style="width: 100%; height: auto; border-radius: 12px; box-shadow: var(--shadow);">
+            <img id="foto-full-img" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         </div>
     </div>
 
@@ -853,7 +929,17 @@
             document.getElementById('saldo_pendiente').value = saldo.toFixed(2);
         }
 
-        // IMAGE COMPRESSION UTILITY (Base64 lightweight)
+        // TALLAS LOGIC
+        function seleccionarTalla(talla, btnElement) {
+            // Remover activo de todos los botones de talla
+            document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+            // Agregar activo al seleccionado
+            btnElement.classList.add('active');
+            // Guardar el valor en el input oculto
+            document.getElementById('prenda_talla').value = talla;
+        }
+
+        // IMAGE COMPRESSION UTILITY
         function previewImagen(input, previewId) {
             const file = input.files[0];
             if (!file) return;
@@ -864,7 +950,7 @@
                 img.src = e.target.result;
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500;
+                    const MAX_WIDTH = 600;
                     const scaleSize = MAX_WIDTH / img.width;
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
@@ -886,6 +972,14 @@
         // SAVE ENCARGO
         async function guardarEncargo(e) {
             e.preventDefault();
+            
+            // Validar que se haya seleccionado una talla
+            const tallaSeleccionada = document.getElementById('prenda_talla').value;
+            if (!tallaSeleccionada) {
+                mostrarToast("Por favor, selecciona una talla.", true);
+                return;
+            }
+
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
 
@@ -893,6 +987,8 @@
                 cliente_nombre: document.getElementById('cliente_nombre').value.trim(),
                 cliente_telefono: document.getElementById('cliente_telefono').value.trim(),
                 producto_nombre: document.getElementById('producto_nombre').value.trim(),
+                color: document.getElementById('prenda_color').value.trim(),
+                talla: tallaSeleccionada,
                 proveedor_nombre: document.getElementById('proveedor_nombre').value.trim(),
                 costo_compra: parseFloat(document.getElementById('costo_compra').value) || 0,
                 precio_venta: parseFloat(document.getElementById('precio_venta').value) || 0,
@@ -908,9 +1004,14 @@
             try {
                 await db.collection('encargos_pedidos').add(nuevo);
                 mostrarToast('¡Encargo registrado exitosamente!');
+                
+                // Reset form and UI
                 document.getElementById('form-encargo').reset();
                 document.getElementById('preview_encargo').style.display = 'none';
+                document.getElementById('prenda_talla').value = '';
+                document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
                 tempBase64Prenda = "";
+                
                 cargarEncargos();
             } catch (error) {
                 console.error("Error al guardar encargo:", error);
@@ -944,7 +1045,7 @@
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No hay encargos registrados en esta categoría.</div>`;
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px; background:var(--card-bg); border-radius:12px; border:1px dashed var(--card-border);">No hay encargos registrados en esta categoría.</div>`;
                 return;
             }
 
@@ -958,42 +1059,43 @@
                         <span class="badge-status status-${item.estado.toLowerCase()}">${item.estado}</span>
                     </div>
                     <div class="item-details">
-                        <img src="${item.foto || 'https://via.placeholder.com/80?text=Prenda'}" class="item-img" onclick="abrirFotoFull('${item.foto}')" alt="Foto Prenda">
+                        <img src="${item.foto || 'https://via.placeholder.com/80?text=S%2FF'}" class="item-img" onclick="abrirFotoFull('${item.foto}')" alt="Foto">
                         <div class="item-info">
                             <div class="item-title">${item.producto_nombre}</div>
+                            <div class="item-specs">Talla: <strong>${item.talla || '-'}</strong> | Color: <strong>${item.color || '-'}</strong></div>
                             <div class="supplier-badge"><i class="fa-solid fa-store"></i> ${item.proveedor_nombre}</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">🚚 ${item.tipo_entrega || 'Local'} ${item.notas ? '| ' + item.notas : ''}</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">🚚 ${item.tipo_entrega || 'Local'} ${item.notas ? ' • ' + item.notas : ''}</div>
                         </div>
                     </div>
                     <div class="financial-row">
                         <div class="fin-item">
-                            <span class="fin-label">Costo de Compra</span>
+                            <span class="fin-label">Costo</span>
                             <span class="fin-value">$${(item.costo_compra || 0).toFixed(2)}</span>
                         </div>
                         <div class="fin-item">
-                            <span class="fin-label">Precio de Venta</span>
+                            <span class="fin-label">Precio</span>
                             <span class="fin-value">$${(item.precio_venta || 0).toFixed(2)}</span>
                         </div>
                         <div class="fin-item">
                             <span class="fin-label">Anticipo</span>
-                            <span class="fin-value" style="color:#81c784;">$${(item.anticipo || 0).toFixed(2)}</span>
+                            <span class="fin-value" style="color:var(--success);">$${(item.anticipo || 0).toFixed(2)}</span>
                         </div>
                         <div class="fin-item">
-                            <span class="fin-label">Saldo Pendiente</span>
-                            <span class="fin-value" style="color:var(--accent);">$${(item.saldo_pendiente || 0).toFixed(2)}</span>
+                            <span class="fin-label">Saldo</span>
+                            <span class="fin-value" style="color:var(--primary);">$${(item.saldo_pendiente || 0).toFixed(2)}</span>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        <button class="btn btn-whatsapp btn-sm" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i> Contactar</button>
-                        ${item.estado === 'Pendiente' ? `<button class="btn btn-success btn-sm" onclick="cambiarEstadoEncargo('${item.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Marcar Surtido</button>` : ''}
-                        <button class="btn btn-secondary btn-sm" onclick="moverAInventarioPOS('${item.id}')"><i class="fa-solid fa-box-archive"></i> + POS</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top:5px;">
+                        <button class="btn btn-whatsapp btn-sm" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i></button>
+                        ${item.estado === 'Pendiente' ? `<button class="btn btn-success btn-sm" style="flex:1;" onclick="cambiarEstadoEncargo('${item.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Surtido</button>` : ''}
+                        <button class="btn btn-secondary btn-sm" title="Mover a Inventario POS" onclick="moverAInventarioPOS('${item.id}')"><i class="fa-solid fa-box-archive"></i> +POS</button>
                         <button class="btn btn-danger btn-sm" onclick="eliminarEncargo('${item.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // RENDER SURTIDO GROUPED BY SUPPLIER (JUEVES)
+        // RENDER SURTIDO GROUPED BY SUPPLIER
         function renderSurtido() {
             const container = document.getElementById('container-surtido-proveedores');
             const pendientes = encargosData.filter(i => i.estado === 'Pendiente');
@@ -1003,7 +1105,6 @@
                 return;
             }
 
-            // Group by supplier
             const grupos = {};
             pendientes.forEach(item => {
                 const prov = item.proveedor_nombre.trim() || 'Sin Proveedor';
@@ -1017,33 +1118,39 @@
                 html += `
                     <div class="supplier-group">
                         <div class="supplier-header">
-                            <div class="supplier-name"><i class="fa-solid fa-store"></i> ${prov} (${items.length} prendas)</div>
-                            <div class="supplier-totals">Efectivo Requerido: <strong style="color:var(--accent);">$${totalInversionProv.toFixed(2)}</strong></div>
+                            <div class="supplier-name"><i class="fa-solid fa-store"></i> ${prov}</div>
+                            <div class="supplier-totals">Efectivo Requerido:<br><strong style="color:var(--primary); font-size:1.1rem;">$${totalInversionProv.toFixed(2)}</strong></div>
                         </div>
-                        <table class="surtido-table">
-                            <thead>
-                                <tr>
-                                    <th>Foto</th>
-                                    <th>Prenda / Talla / Notas</th>
-                                    <th>Cliente</th>
-                                    <th>Costo Compra</th>
-                                    <th>Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${items.map(i => `
+                        <div style="overflow-x:auto;">
+                            <table class="surtido-table">
+                                <thead>
                                     <tr>
-                                        <td><img src="${i.foto || 'https://via.placeholder.com/40'}" style="width:40px; height:40px; border-radius:6px; object-fit:cover;" onclick="abrirFotoFull('${i.foto}')"></td>
-                                        <td><strong>${i.producto_nombre}</strong><br><small style="color:var(--text-muted);">${i.notas || ''}</small></td>
-                                        <td>${i.cliente_nombre}</td>
-                                        <td><strong>$${(i.costo_compra || 0).toFixed(2)}</strong></td>
-                                        <td>
-                                            <button class="btn btn-success btn-sm" onclick="cambiarEstadoEncargo('${i.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Surtido</button>
-                                        </td>
+                                        <th>Foto</th>
+                                        <th>Prenda / Detalles</th>
+                                        <th>Cliente</th>
+                                        <th>Costo</th>
+                                        <th class="no-print">Acción</th>
                                     </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    ${items.map(i => `
+                                        <tr>
+                                            <td><img src="${i.foto || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:6px; object-fit:cover; border:1px solid #ccc; cursor:pointer;" onclick="abrirFotoFull('${i.foto}')"></td>
+                                            <td>
+                                                <strong>${i.producto_nombre}</strong><br>
+                                                <span style="font-size:0.75rem; color:var(--primary); font-weight:600;">Talla: ${i.talla || '-'} | Color: ${i.color || '-'}</span><br>
+                                                <small style="color:var(--text-muted);">${i.notas || ''}</small>
+                                            </td>
+                                            <td>${i.cliente_nombre}</td>
+                                            <td><strong>$${(i.costo_compra || 0).toFixed(2)}</strong></td>
+                                            <td class="no-print">
+                                                <button class="btn btn-success btn-sm" onclick="cambiarEstadoEncargo('${i.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Surtido</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 `;
             }
@@ -1063,7 +1170,7 @@
             });
 
             if (list.length === 0) {
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">No hay prendas en esta categoría de entregas.</div>`;
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px; background:var(--card-bg); border-radius:12px; border:1px dashed var(--card-border);">No hay prendas en esta categoría de entregas.</div>`;
                 return;
             }
 
@@ -1080,20 +1187,21 @@
                         <img src="${item.foto || 'https://via.placeholder.com/70'}" class="item-img" onclick="abrirFotoFull('${item.foto}')">
                         <div class="item-info">
                             <div class="item-title">${item.producto_nombre}</div>
-                            <div style="font-size:0.8rem; margin-top:4px;">Saldo a Cobrar: <strong style="color:var(--accent);">$${(item.saldo_pendiente || 0).toFixed(2)}</strong></div>
+                            <div class="item-specs">Talla: ${item.talla || '-'}</div>
+                            <div style="font-size:0.85rem; margin-top:8px;">Saldo a Cobrar: <strong style="color:var(--primary); font-size:1rem;">$${(item.saldo_pendiente || 0).toFixed(2)}</strong></div>
                         </div>
                     </div>
                     <div style="display:flex; gap:8px;">
-                        <button class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i> Avisar Cliente</button>
+                        <button class="btn btn-whatsapp btn-sm" style="flex:1;" onclick="abrirModalWA('${item.id}')"><i class="fa-brands fa-whatsapp"></i> Avisar</button>
                         ${item.estado === 'Surtido' ? `
-                            <button class="btn btn-success btn-sm" style="flex:1;" onclick="completarEntregaYCobro('${item.id}')"><i class="fa-solid fa-handshake"></i> Entregar y Cobrar</button>
+                            <button class="btn btn-success btn-sm" style="flex:2;" onclick="completarEntregaYCobro('${item.id}')"><i class="fa-solid fa-handshake"></i> Entregar y Cobrar</button>
                         ` : ''}
                     </div>
                 </div>
             `).join('');
         }
 
-        // SAVE SUPPLIER TICKET PHOTO
+        // SAVE TICKET
         async function guardarTicketProveedor(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
@@ -1113,6 +1221,7 @@
                 document.getElementById('form-ticket').reset();
                 document.getElementById('preview_ticket').style.display = 'none';
                 tempBase64Ticket = "";
+                document.getElementById('ticket_fecha').valueAsDate = new Date();
                 cargarTickets();
             } catch (err) {
                 console.error("Error guardando ticket:", err);
@@ -1134,7 +1243,7 @@
         function renderTickets() {
             const container = document.getElementById('grid-tickets');
             if(ticketsData.length === 0) {
-                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:20px;">No se han guardado comprobantes aún.</div>`;
+                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px; background:var(--card-bg); border-radius:12px; border:1px dashed var(--card-border);">No se han guardado comprobantes aún.</div>`;
                 return;
             }
 
@@ -1142,18 +1251,18 @@
                 <div class="order-card">
                     <div class="order-header">
                         <div class="client-name">${t.proveedor}</div>
-                        <div style="font-weight:700; color:var(--accent);">$${(t.monto || 0).toFixed(2)}</div>
+                        <div style="font-weight:700; color:var(--primary); font-size:1.1rem;">$${(t.monto || 0).toFixed(2)}</div>
                     </div>
-                    <img src="${t.foto}" style="width:100%; height:160px; object-fit:cover; border-radius:8px; cursor:pointer;" onclick="abrirFotoFull('${t.foto}')">
-                    <div style="font-size:0.75rem; color:var(--text-muted); display:flex; justify-shadow:space-between; justify-content:space-between; align-items:center;">
-                        <span>Fecha: ${t.fecha}</span>
+                    <img src="${t.foto}" style="width:100%; height:180px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid var(--card-border);" onclick="abrirFotoFull('${t.foto}')">
+                    <div style="font-size:0.8rem; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+                        <span><i class="fa-regular fa-calendar"></i> ${t.fecha}</span>
                         <button class="btn btn-danger btn-sm" onclick="eliminarTicket('${t.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // ACTIONS: CHANGE STATUS
+        // ACTIONS
         async function cambiarEstadoEncargo(id, nuevoEstado) {
             try {
                 await db.collection('encargos_pedidos').doc(id).update({ estado: nuevoEstado });
@@ -1163,7 +1272,6 @@
             }
         }
 
-        // COMPLETE DELIVERY AND COLLECT BALANCE
         async function completarEntregaYCobro(id) {
             if(!confirm("¿Confirmas que recibiste el saldo pendiente y entregaste la prenda?")) return;
             try {
@@ -1177,16 +1285,16 @@
             }
         }
 
-        // MOVE ITEM TO MAIN POS INVENTORY
         async function moverAInventarioPOS(id) {
             const item = encargosData.find(i => i.id === id);
             if (!item) return;
 
             const barcodeAuto = "SHA" + Math.floor(1000 + Math.random() * 9000);
+            const nombrePOS = `${item.producto_nombre} ${item.color || ''} Talla:${item.talla || ''}`.trim();
 
             const productoPOS = {
                 codigo: barcodeAuto,
-                nombre: item.producto_nombre,
+                nombre: nombrePOS,
                 categoria: "Encargos / Surtido",
                 costo: item.costo_compra,
                 precio: item.precio_venta,
@@ -1204,7 +1312,6 @@
             }
         }
 
-        // DELETE ENCARGO
         async function eliminarEncargo(id) {
             if (!confirm("¿Segura que deseas eliminar este encargo?")) return;
             try {
@@ -1215,7 +1322,6 @@
             }
         }
 
-        // DELETE TICKET
         async function eliminarTicket(id) {
             if (!confirm("¿Eliminar este ticket comprobante?")) return;
             try {
@@ -1226,7 +1332,7 @@
             }
         }
 
-        // WHATSAPP MODAL & TEMPLATES
+        // WHATSAPP
         function abrirModalWA(id) {
             currentWAItem = encargosData.find(i => i.id === id);
             if (!currentWAItem) return;
@@ -1240,18 +1346,20 @@
             const tipo = document.getElementById('wa_plantilla_select').value;
             let msg = "";
 
+            const detallesPrenda = `*${currentWAItem.producto_nombre}* (Color: ${currentWAItem.color || 'N/A'}, Talla: ${currentWAItem.talla || 'N/A'})`;
+
             if (tipo === 'confirmacion') {
-                msg = `¡Hola ${currentWAItem.cliente_nombre}! Confirmo la recepción de tu encargo de: *${currentWAItem.producto_nombre}*.\n\n` +
+                msg = `¡Hola ${currentWAItem.cliente_nombre}! Confirmo la recepción de tu encargo de: ${detallesPrenda}.\n\n` +
                       `▪ Anticipo recibido: $${currentWAItem.anticipo.toFixed(2)}\n` +
                       `▪ Saldo pendiente al entregar: $${currentWAItem.saldo_pendiente.toFixed(2)}\n\n` +
                       `¡Muchas gracias por tu confianza en SARAY HA! ✨`;
             } else if (tipo === 'listo') {
-                msg = `¡Hola ${currentWAItem.cliente_nombre}! ✨ Te informamos que tu prenda *${currentWAItem.producto_nombre}* ya está lista para entrega.\n\n` +
+                msg = `¡Hola ${currentWAItem.cliente_nombre}! ✨ Te informamos que tu pedido ${detallesPrenda} ya está listo para entrega.\n\n` +
                       `▪ Saldo a liquidar: $${currentWAItem.saldo_pendiente.toFixed(2)}\n` +
                       `▪ Modalidad: ${currentWAItem.tipo_entrega || 'Entrega en local'}\n\n` +
                       `Por favor avísanos cuando gustes pasar o coordinar tu envío. ¡Gracias! 💕`;
             } else if (tipo === 'gracias') {
-                msg = `¡Hola ${currentWAItem.cliente_nombre}! Muchas gracias por tu compra en SARAY HA. Esperamos que disfrutes tu *${currentWAItem.producto_nombre}*. ¡Estamos a la orden! 🌸`;
+                msg = `¡Hola ${currentWAItem.cliente_nombre}! Muchas gracias por tu compra en SARAY HA. Esperamos que disfrutes tu prenda. ¡Estamos a la orden! 🌸`;
             }
 
             document.getElementById('wa_mensaje_txt').value = msg;
@@ -1264,14 +1372,14 @@
             cerrarModal('modal-whatsapp');
 
             if (phone.length === 10) {
-                phone = "52" + phone; // default Mexico prefix
+                phone = "52" + phone;
                 window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${texto}`, '_blank');
             } else {
                 window.open(`https://api.whatsapp.com/send?text=${texto}`, '_blank');
             }
         }
 
-        // PHOTO ZOOM MODAL
+        // UTIL: MODALS & TOASTS
         function abrirFotoFull(url) {
             if(!url) return;
             document.getElementById('foto-full-img').src = url;
@@ -1282,13 +1390,19 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
-        // FINANCIAL SUMMARY CALCULATION
-        function calcularResumen() {
-            let capital = 0;
-            let anticipos = 0;
-            let saldos = 0;
-            let ganancia = 0;
+        function mostrarToast(mensaje, esError = false) {
+            const toast = document.getElementById('toast');
+            toast.innerText = mensaje;
+            toast.style.background = esError ? 'var(--danger)' : 'var(--success)';
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
 
+        // SUMMARY STATS
+        function calcularResumen() {
+            let capital = 0; let anticipos = 0; let saldos = 0; let ganancia = 0;
             encargosData.forEach(i => {
                 capital += (i.costo_compra || 0);
                 anticipos += (i.anticipo || 0);
@@ -1302,7 +1416,7 @@
             document.getElementById('stat-ganancia').innerText = `$${ganancia.toFixed(2)}`;
         }
 
-        // CLIENT AUTOCOMPLETE SUGGESTIONS
+        // AUTOCOMPLETE
         function cargarClientesSugeridos() {
             const listClientes = document.getElementById('list-clientes');
             const listProv = document.getElementById('list-proveedores');
@@ -1319,24 +1433,22 @@
             listProv.innerHTML = Array.from(provSet).map(p => `<option value="${p}">`).join('');
         }
 
-        // SYSTEM RESET (DANGER ZONE)
+        // RESET SYSTEM
         async function reiniciarBaseDatos() {
             const confirm1 = confirm("⚠️ ¿ESTÁS SEGURO DE ELIMINAR TODOS LOS ENCARGOS Y TICKETS?");
             if (!confirm1) return;
-            const confirm2 = prompt("Escribe 'ELIMINAR' para confirmar el reinicio completo de la base de datos:");
+            const confirm2 = prompt("Escribe 'ELIMINAR' para confirmar el reinicio completo:");
             if (confirm2 !== 'ELIMINAR') {
                 alert("Operación cancelada.");
                 return;
             }
 
             try {
-                // Delete all encargos
                 const encargosSnap = await db.collection('encargos_pedidos').get();
                 const batch1 = db.batch();
                 encargosSnap.docs.forEach(doc => batch1.delete(doc.ref));
                 await batch1.commit();
 
-                // Delete all tickets
                 const ticketsSnap = await db.collection('tickets_proveedores').get();
                 const batch2 = db.batch();
                 ticketsSnap.docs.forEach(doc => batch2.delete(doc.ref));
@@ -1349,17 +1461,6 @@
                 console.error(e);
                 mostrarToast("Error al reiniciar base de datos", true);
             }
-        }
-
-        // TOAST SYSTEM
-        function mostrarToast(mensaje, esError = false) {
-            const toast = document.getElementById('toast');
-            toast.innerText = mensaje;
-            toast.style.background = esError ? 'var(--danger)' : 'var(--success)';
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
         }
     </script>
 </body>
