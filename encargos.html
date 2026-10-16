@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SARAY HA — Encargos & Surtido</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Firebase SDKs (v10.8.0 Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+  <!-- Manifest PWA Web Data URL -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1a1a1a","theme_color":"#d4af37","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-hover: #b89628;
+      --bg-dark: #121212;
+      --bg-card: #1e1e1e;
+      --bg-light: #f8f5f0;
+      --text-dark: #1a1a1a;
+      --text-muted: #777777;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --whatsapp: #25d366;
+      --border-radius: 12px;
+      --shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+    body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* HEADER */
+    header {
+      background-color: var(--bg-dark);
+      color: #fff;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--gold);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .brand-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; letter-spacing: 1.5px; color: var(--gold); }
+    .sync-status { font-size: 0.85rem; display: flex; align-items: center; gap: 6px; }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--success); display: inline-block; }
+    .status-dot.offline { background-color: var(--danger); }
+
+    /* NAVEGACIÓN PRINCIPAL */
+    nav.top-nav {
+      background-color: #1a1a1a;
+      display: flex;
+      overflow-x: auto;
+      white-space: nowrap;
+      border-bottom: 1px solid #333;
+    }
+    nav.top-nav button {
+      background: none;
+      border: none;
+      color: #ccc;
+      padding: 14px 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    nav.top-nav button:hover, nav.top-nav button.active {
+      color: var(--gold);
+      border-bottom: 3px solid var(--gold);
+      background-color: rgba(212, 175, 55, 0.08);
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    main { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* BOTONES GENERALES */
+    .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.9rem; }
+    .btn-gold { background-color: var(--gold); color: #fff; }
+    .btn-gold:hover { background-color: var(--gold-hover); }
+    .btn-dark { background-color: var(--bg-dark); color: #fff; }
+    .btn-dark:hover { background-color: #333; }
+    .btn-whatsapp { background-color: var(--whatsapp); color: #fff; }
+    .btn-whatsapp:hover { background-color: #1eb857; }
+    .btn-danger { background-color: var(--danger); color: #fff; }
+    .btn-success { background-color: var(--success); color: #fff; }
+
+    /* TARJETAS Y GRID */
+    .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 15px; }
+    .order-card { background: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid #eee; display: flex; flex-direction: column; }
+    .order-header-card { padding: 12px 15px; background: var(--bg-dark); color: #fff; display: flex; justify-content: space-between; align-items: center; }
+    .order-body { padding: 15px; flex: 1; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; }
+    .order-img { width: 100%; height: 180px; object-fit: cover; background: #f0f0f0; border-radius: 6px; margin-bottom: 8px; }
+
+    /* BADGES DE ESTADO */
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+    .badge-pendiente { background: #fff3cd; color: #856404; }
+    .badge-surtido { background: #d4edda; color: #155724; }
+    .badge-entregado { background: #cce5ff; color: #004085; }
+    .badge-cancelado { background: #f8d7da; color: #721c24; }
+
+    /* TABLAS */
+    .data-table-container { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow-x: auto; margin-top: 15px; }
+    table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+    table.data-table th { background: var(--bg-dark); color: var(--gold); padding: 12px 15px; font-weight: 600; }
+    table.data-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+
+    /* MODALES */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: #fff; border-radius: var(--border-radius); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .modal-header { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--bg-dark); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+
+    /* STATS */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .stat-card { background: #fff; padding: 18px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-left: 4px solid var(--gold); }
+    .stat-card h3 { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
+    .stat-card .value { font-size: 1.4rem; font-weight: 700; color: var(--bg-dark); }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO SUPERIOR -->
+  <header>
+    <div class="brand-title"><i class="fa-solid fa-shirt"></i> SARAY HA — Encargos</div>
+    <div class="sync-status">
+      <span class="status-dot" id="sync-dot"></span>
+      <span id="sync-text">Sincronizado</span>
+    </div>
+  </header>
+
+  <!-- NAVEGACIÓN -->
+  <nav class="top-nav">
+    <button class="nav-btn active" onclick="switchTab('encargos')"><i class="fa-solid fa-clipboard-list"></i> 1. Encargos (Lun-Mié)</button>
+    <button class="nav-btn" onclick="switchTab('surtido')"><i class="fa-solid fa-cart-flatbed"></i> 2. Lista Surte (Jueves)</button>
+    <button class="nav-btn" onclick="switchTab('entregas')"><i class="fa-solid fa-box-open"></i> 3. Entregas (Vie-Dom)</button>
+    <button class="nav-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-pie"></i> Resumen Financiero</button>
+  </nav>
+
+  <!-- CONTENIDO -->
+  <main>
+
+    <!-- 1. ENCARGOS -->
+    <section id="tab-encargos" class="tab-content active">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+        <h2>Pedidos Bajo Pedido (Lunes a Miércoles)</h2>
+        <button class="btn btn-gold" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> Nuevo Encargo</button>
+      </div>
+
+      <div class="orders-grid" id="encargos-cards-container">
+        <!-- Carga dinámica -->
+      </div>
+    </section>
+
+    <!-- 2. SURTIDO (JUEVES) -->
+    <section id="tab-surtido" class="tab-content">
+      <div style="margin-bottom: 15px;">
+        <h2>Lista de Compras y Surtido (Jueves)</h2>
+        <p style="font-size: 0.9rem; color: #666; margin-top:4px;">Calcula el dinero requerido en efectivo agrupado por proveedor para realizar tus compras.</p>
+      </div>
+
+      <div id="supplier-surtido-container">
+        <!-- Carga dinámica agrupada por proveedor -->
+      </div>
+    </section>
+
+    <!-- 3. ENTREGAS (VIERNES A DOMINGO) -->
+    <section id="tab-entregas" class="tab-content">
+      <div style="margin-bottom: 15px;">
+        <h2>Paquetes listos para Entrega y Cobro de Saldo</h2>
+        <p style="font-size: 0.9rem; color: #666; margin-top:4px;">Notifica a tus clientas y cobra el saldo restante al entregar el producto.</p>
+      </div>
+
+      <div class="orders-grid" id="entregas-cards-container">
+        <!-- Carga dinámica -->
+      </div>
+    </section>
+
+    <!-- 4. RESUMEN -->
+    <section id="tab-resumen" class="tab-content">
+      <h2 style="margin-bottom: 15px;">Resumen Financiero de Encargos</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total Pedidos</h3>
+          <div class="value" id="st-total-count">0</div>
+        </div>
+        <div class="stat-card">
+          <h3>Anticipos Cobrados</h3>
+          <div class="value" id="st-advances">$0.00</div>
+        </div>
+        <div class="stat-card">
+          <h3>Saldos Liquidados</h3>
+          <div class="value" id="st-remainings">$0.00</div>
+        </div>
+        <div class="stat-card" style="border-left-color: var(--success);">
+          <h3>Ganancia Estimada Neta</h3>
+          <div class="value" id="st-profit">$0.00</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL NUEVO / EDITAR ENCARGO -->
+  <div class="modal-overlay" id="modal-order">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span id="modal-order-title">Nuevo Encargo</span>
+        <button onclick="closeModal('modal-order')" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
+      </div>
+      <form id="form-order" onsubmit="saveOrder(event)">
+        <input type="hidden" id="ord-id">
+
+        <div class="form-group">
+          <label>Nombre de la Clienta *</label>
+          <input type="text" id="ord-client" required placeholder="Ej: María López">
+        </div>
+        <div class="form-group">
+          <label>Teléfono / WhatsApp *</label>
+          <input type="text" id="ord-phone" required placeholder="Ej: 5512345678">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Prenda / Producto *</label>
+            <input type="text" id="ord-item" required placeholder="Ej: Vestido Fiesta Rojo">
+          </div>
+          <div class="form-group">
+            <label>Talla / Color *</label>
+            <input type="text" id="ord-details" required placeholder="Ej: Talla M / Rojo">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Proveedor / Marca Objetivo *</label>
+          <input type="text" id="ord-supplier" required placeholder="Ej: Proveedor Pasarela / San Juan">
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Costo Estimado ($)</label>
+            <input type="number" step="0.01" id="ord-cost" required oninput="calcBalances()">
+          </div>
+          <div class="form-group">
+            <label>Precio Venta ($)</label>
+            <input type="number" step="0.01" id="ord-price" required oninput="calcBalances()">
+          </div>
+          <div class="form-group">
+            <label>Anticipo ($)</label>
+            <input type="number" step="0.01" id="ord-advance" required oninput="calcBalances()">
+          </div>
+        </div>
+
+        <div class="form-group" style="background:#f9f9f9; padding:10px; border-radius:6px;">
+          <strong>Saldo Pendiente a Cobrar: </strong>
+          <span id="ord-balance-display" style="color:var(--danger); font-weight:bold;">$0.00</span>
+        </div>
+
+        <div class="form-group">
+          <label>Foto de Referencia (Opcional):</label>
+          <input type="file" accept="image/*" onchange="previewOrderPhoto(event)">
+          <input type="hidden" id="ord-photo-url">
+          <div style="margin-top:8px; text-align:center;">
+            <img id="ord-photo-preview" src="" style="max-height:100px; border-radius:6px; display:none;">
+          </div>
+        </div>
+
+        <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn btn-dark" onclick="closeModal('modal-order')">Cancelar</button>
+          <button type="submit" class="btn btn-gold">Guardar Encargo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- LÓGICA JAVASCRIPT -->
+  <script>
+    // 1. CONFIGURACIÓN DE FIREBASE (MISMO PROYECTO)
+    const firebaseConfig = {
+      apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
+      authDomain: "saray-ha-pos.firebaseapp.com",
+      projectId: "saray-ha-pos",
+      storageBucket: "saray-ha-pos.appspot.com",
+      messagingSenderId: "910404250860",
+      appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    db.enablePersistence().catch(err => console.warn("Offline deshabilitado:", err));
+
+    let state = { encargos: [] };
+
+    // 2. ESCUCHADOR TIEMPO REAL
+    function initListeners() {
+      db.collection('encargos_pedidos').onSnapshot(snap => {
+        state.encargos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderEncargos();
+        renderSurtido();
+        renderEntregas();
+        renderResumen();
+      });
+
+      window.addEventListener('online', () => updateStatus(true));
+      window.addEventListener('offline', () => updateStatus(false));
+    }
+
+    function updateStatus(online) {
+      const dot = document.getElementById('sync-dot');
+      const text = document.getElementById('sync-text');
+      if(online) {
+        dot.classList.remove('offline');
+        text.innerText = "Sincronizado";
+      } else {
+        dot.classList.add('offline');
+        text.innerText = "Modo Offline";
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // CALCULAR SALDO EN FORMULARIO
+    function calcBalances() {
+      const price = parseFloat(document.getElementById('ord-price').value) || 0;
+      const advance = parseFloat(document.getElementById('ord-advance').value) || 0;
+      const balance = Math.max(0, price - advance);
+      document.getElementById('ord-balance-display').innerText = `$${balance.toFixed(2)}`;
+    }
+
+    function previewOrderPhoto(event) {
+      const file = event.target.files[0];
+      if(!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const maxW = 350;
+          const scale = maxW / img.width;
+          canvas.width = maxW;
+          canvas.height = img.height * scale;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const base64 = canvas.toDataURL('image/jpeg', 0.7);
+          document.getElementById('ord-photo-url').value = base64;
+          const prev = document.getElementById('ord-photo-preview');
+          prev.src = base64;
+          prev.style.display = 'inline-block';
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function openOrderModal() {
+      document.getElementById('form-order').reset();
+      document.getElementById('ord-id').value = '';
+      document.getElementById('ord-photo-url').value = '';
+      document.getElementById('ord-photo-preview').style.display = 'none';
+      document.getElementById('ord-balance-display').innerText = '$0.00';
+      openModal('modal-order');
+    }
+
+    async function saveOrder(event) {
+      event.preventDefault();
+      const id = document.getElementById('ord-id').value;
+      const price = parseFloat(document.getElementById('ord-price').value) || 0;
+      const advance = parseFloat(document.getElementById('ord-advance').value) || 0;
+
+      const data = {
+        cliente: document.getElementById('ord-client').value.trim(),
+        telefono: document.getElementById('ord-phone').value.trim(),
+        prenda: document.getElementById('ord-item').value.trim(),
+        detalles: document.getElementById('ord-details').value.trim(),
+        proveedor: document.getElementById('ord-supplier').value.trim(),
+        costo: parseFloat(document.getElementById('ord-cost').value) || 0,
+        precio: price,
+        anticipo: advance,
+        saldo: Math.max(0, price - advance),
+        fotoUrl: document.getElementById('ord-photo-url').value,
+        estado: 'Pendiente', // Pendiente, Surtido, Entregado, Cancelado
+        fecha: new Date().toISOString()
+      };
+
+      if(id) {
+        await db.collection('encargos_pedidos').doc(id).update(data);
+      } else {
+        await db.collection('encargos_pedidos').add(data);
+      }
+      closeModal('modal-order');
+    }
+
+    // RENDER PESTAÑA 1: ENCARGOS
+    function renderEncargos() {
+      const container = document.getElementById('encargos-cards-container');
+      container.innerHTML = '';
+
+      state.encargos.forEach(ord => {
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-header-card">
+            <span><strong>${ord.cliente}</strong></span>
+            <span class="badge badge-${ord.estado.toLowerCase()}">${ord.estado}</span>
+          </div>
+          <div class="order-body">
+            ${ord.fotoUrl ? `<img src="${ord.fotoUrl}" class="order-img">` : ''}
+            <p><strong>Prenda:</strong> ${ord.prenda} (${ord.detalles})</p>
+            <p><strong>Proveedor:</strong> ${ord.proveedor}</p>
+            <p><strong>Precio Venta:</strong> $${ord.precio.toFixed(2)}</p>
+            <p style="color:var(--success);"><strong>Anticipo:</strong> $${ord.anticipo.toFixed(2)}</p>
+            <p style="color:var(--danger);"><strong>Saldo Pendiente:</strong> $${ord.saldo.toFixed(2)}</p>
+            <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-whatsapp" style="padding:4px 8px; font-size:0.8rem;" onclick="sendWAConfirmation('${ord.id}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+              <button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="deleteOrder('${ord.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function sendWAConfirmation(id) {
+      const ord = state.encargos.find(o => o.id === id);
+      if(!ord) return;
+      const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Confirmamos tu encargo de: ${ord.prenda} (${ord.detalles}).%0AAnticipo recibido: $${ord.anticipo.toFixed(2)}.%0ASaldo pendiente al entregar: $${ord.saldo.toFixed(2)}.%0A¡Muchas gracias por tu confianza en SARAY HA!`);
+      window.open(`https://api.whatsapp.com/send?phone=${ord.telefono}&text=${msg}`, '_blank');
+    }
+
+    // RENDER PESTAÑA 2: SURTIDO (JUEVES)
+    function renderSurtido() {
+      const container = document.getElementById('supplier-surtido-container');
+      container.innerHTML = '';
+
+      const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
+      if(pendientes.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#888; padding:30px;">No hay encargos pendientes por surtir este Jueves.</p>';
+        return;
+      }
+
+      // Agrupar por proveedor
+      const grouped = {};
+      pendientes.forEach(o => {
+        const prov = o.proveedor || 'Sin Proveedor';
+        if(!grouped[prov]) grouped[prov] = [];
+        grouped[prov].push(o);
+      });
+
+      for(let prov in grouped) {
+        const items = grouped[prov];
+        const totalInvest = items.reduce((acc, i) => acc + i.costo, 0);
+
+        const box = document.createElement('div');
+        box.style.background = '#fff';
+        box.style.borderRadius = '12px';
+        box.style.padding = '18px';
+        box.style.marginBottom = '20px';
+        box.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+
+        let rowsHTML = items.map(item => `
+          <tr>
+            <td>${item.prenda} (${item.detalles})</td>
+            <td>${item.cliente}</td>
+            <td>$${item.costo.toFixed(2)}</td>
+            <td>
+              <button class="btn btn-success" style="padding:4px 8px; font-size:0.75rem;" onclick="updateOrderStatus('${item.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Comprado</button>
+              <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="updateOrderStatus('${item.id}', 'Cancelado')"><i class="fa-solid fa-xmark"></i> Agotado</button>
+            </td>
+          </tr>
+        `).join('');
+
+        box.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:2px solid var(--gold); padding-bottom:8px;">
+            <h3 style="color:var(--bg-dark);"><i class="fa-solid fa-truck"></i> Proveedor: ${prov}</h3>
+            <span style="background:var(--bg-dark); color:var(--gold); padding:6px 12px; border-radius:20px; font-weight:bold; font-size:0.9rem;">
+              Efectivo Requerido: $${totalInvest.toFixed(2)}
+            </span>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Prenda / Detalles</th>
+                <th>Clienta</th>
+                <th>Costo Compra</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHTML}</tbody>
+          </table>
+        `;
+        container.appendChild(box);
+      }
+    }
+
+    // RENDER PESTAÑA 3: ENTREGAS
+    function renderEntregas() {
+      const container = document.getElementById('entregas-cards-container');
+      container.innerHTML = '';
+
+      const surtidos = state.encargos.filter(o => o.estado === 'Surtido');
+      if(surtidos.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#888; padding:30px; grid-column:1/-1;">No hay paquetes pendientes de entrega.</p>';
+        return;
+      }
+
+      surtidos.forEach(ord => {
+        const card = document.createElement('div');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <div class="order-header-card" style="background:var(--gold); color:#000;">
+            <span><strong>${ord.cliente}</strong></span>
+            <span class="badge badge-surtido">Listo p/ Entrega</span>
+          </div>
+          <div class="order-body">
+            ${ord.fotoUrl ? `<img src="${ord.fotoUrl}" class="order-img">` : ''}
+            <p><strong>Prenda:</strong> ${ord.prenda} (${ord.detalles})</p>
+            <p style="font-size:1.1rem; color:var(--danger); font-weight:bold;">Saldo a Cobrar: $${ord.saldo.toFixed(2)}</p>
+            <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+              <button class="btn btn-success" onclick="updateOrderStatus('${ord.id}', 'Entregado')"><i class="fa-solid fa-hand-holding-dollar"></i> Cobrar Saldo y Entregar</button>
+              <button class="btn btn-whatsapp" onclick="sendWADeliveryReady('${ord.id}')"><i class="fa-brands fa-whatsapp"></i> Avisar por WhatsApp</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function sendWADeliveryReady(id) {
+      const ord = state.encargos.find(o => o.id === id);
+      if(!ord) return;
+      const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Te avisamos que tu pedido de ${ord.prenda} (${ord.detalles}) ya está listo para entrega.%0ASaldo pendiente a liquidar: $${ord.saldo.toFixed(2)}.%0A¡Te esperamos en SARAY HA!`);
+      window.open(`https://api.whatsapp.com/send?phone=${ord.telefono}&text=${msg}`, '_blank');
+    }
+
+    async function updateOrderStatus(id, status) {
+      await db.collection('encargos_pedidos').doc(id).update({ estado: status });
+    }
+
+    async function deleteOrder(id) {
+      if(confirm("¿Eliminar registro de encargo?")) {
+        await db.collection('encargos_pedidos').doc(id).delete();
+      }
+    }
+
+    // RENDER PESTAÑA 4: RESUMEN
+    function renderResumen() {
+      const totalCount = state.encargos.length;
+      const totalAdvances = state.encargos.reduce((acc, o) => acc + (o.anticipo || 0), 0);
+      const totalRemainings = state.encargos.filter(o => o.estado === 'Entregado').reduce((acc, o) => acc + (o.saldo || 0), 0);
+      const totalCost = state.encargos.filter(o => o.estado !== 'Cancelado').reduce((acc, o) => acc + (o.costo || 0), 0);
+      
+      const netProfit = (totalAdvances + totalRemainings) - totalCost;
+
+      document.getElementById('st-total-count').innerText = totalCount;
+      document.getElementById('st-advances').innerText = `$${totalAdvances.toFixed(2)}`;
+      document.getElementById('st-remainings').innerText = `$${totalRemainings.toFixed(2)}`;
+      document.getElementById('st-profit').innerText = `$${netProfit.toFixed(2)}`;
+    }
+
+    window.onload = () => {
+      initListeners();
+    };
+  </script>
+</body>
+</html>
