@@ -39,7 +39,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* ENCABEZADO SUPERIOR (IGUAL AL POS) */
+    /* HEADER (EXACTO AL POS) */
     header {
       background-color: var(--bg-dark);
       color: #fff;
@@ -55,7 +55,7 @@
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--success); display: inline-block; }
     .status-dot.offline { background-color: var(--danger); }
 
-    /* NAVEGACIÓN PRINCIPAL (IGUAL AL POS) */
+    /* NAVEGACIÓN PRINCIPAL (EXACTA AL POS) */
     nav.top-nav {
       background-color: #1a1a1a;
       display: flex;
@@ -89,7 +89,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* BOTONES (IGUALES AL POS) */
+    /* BOTONES (EXACTOS AL POS) */
     .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.95rem; }
     .btn-gold { background-color: var(--gold); color: #fff; }
     .btn-gold:hover { background-color: var(--gold-hover); }
@@ -100,8 +100,8 @@
     .btn-danger { background-color: var(--danger); color: #fff; }
     .btn-success { background-color: var(--success); color: #fff; }
 
-    /* GRID DE TARJETAS (IGUAL AL POS) */
-    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+    /* GRID DE TARJETAS DE PRODUCTO (EXACTO AL POS) */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
     .product-card { background: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; border: 1px solid #eee; display: flex; flex-direction: column; }
     .product-card:hover { transform: translateY(-3px); }
     .product-img { width: 100%; height: 160px; object-fit: cover; background-color: #f0f0f0; }
@@ -109,15 +109,16 @@
     .product-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; color: var(--text-dark); }
     .product-code { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
     .product-price { font-weight: 700; color: var(--gold-hover); font-size: 1.1rem; }
+    .product-info { font-size: 0.8rem; color: #555; margin-bottom: 4px; }
 
-    /* TABLAS (IGUALES AL POS) */
+    /* TABLAS GENERALES (EXACTAS AL POS) */
     .data-table-container { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow-x: auto; margin-top: 15px; }
     table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
     table.data-table th { background: var(--bg-dark); color: var(--gold); padding: 12px 15px; font-weight: 600; }
     table.data-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
     table.data-table tr:hover { background-color: #fcfcfc; }
 
-    /* MODALES (IGUALES AL POS) */
+    /* MODALES (EXACTOS AL POS) */
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
     .modal-overlay.active { display: flex; }
     .modal-card { background: #fff; border-radius: var(--border-radius); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
@@ -126,7 +127,7 @@
     .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
 
-    /* DASHBOARD / STATS (IGUAL AL POS) */
+    /* STATS / CAJA (EXACTO AL POS) */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .stat-card { background: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-left: 4px solid var(--gold); }
     .stat-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
@@ -158,7 +159,7 @@
     <!-- 1. ENCARGOS -->
     <section id="tab-encargos" class="tab-content active">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h2>Encargos Registrados</h2>
+        <h2>Encargos Bajo Pedido</h2>
         <button class="btn btn-gold" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> Nuevo Encargo</button>
       </div>
 
@@ -169,17 +170,18 @@
 
     <!-- 2. SURTIDO (JUEVES) -->
     <section id="tab-surtido" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Lista de Surtido por Proveedor</h2>
+      <h2 style="margin-bottom: 15px;">Lista de Surtido</h2>
       
       <div class="data-table-container">
         <table class="data-table">
           <thead>
             <tr>
+              <th>Foto</th>
               <th>Prenda / Detalles</th>
               <th>Cliente</th>
               <th>Proveedor</th>
               <th>Costo Compra</th>
-              <th>Acción</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody id="surtido-table-body">
@@ -191,7 +193,7 @@
 
     <!-- 3. ENTREGAS -->
     <section id="tab-entregas" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Paquetes Listos para Entrega</h2>
+      <h2 style="margin-bottom: 15px;">Entregas y Cobros Pendientes</h2>
 
       <div class="products-grid" id="entregas-cards-container">
         <!-- Carga dinámica -->
@@ -200,11 +202,11 @@
 
     <!-- 4. RESUMEN FINANCIERO -->
     <section id="tab-resumen" class="tab-content">
-      <h2 style="margin-bottom: 15px;">Resumen Financiero de Encargos</h2>
+      <h2 style="margin-bottom: 15px;">Caja y Reporte de Encargos</h2>
       
       <div class="stats-grid">
         <div class="stat-card">
-          <h3>Total Encargos</h3>
+          <h3>Total Pedidos</h3>
           <div class="value" id="st-total-count">0</div>
         </div>
         <div class="stat-card">
@@ -224,7 +226,7 @@
 
   </main>
 
-  <!-- MODAL NUEVO / EDITAR ENCARGO -->
+  <!-- MODAL NUEVO ENCARGO -->
   <div class="modal-overlay" id="modal-order">
     <div class="modal-card">
       <div class="modal-header">
@@ -241,7 +243,7 @@
 
         <div class="form-group">
           <label>Teléfono / WhatsApp (Opcional)</label>
-          <input type="text" id="ord-phone" placeholder="Opcional">
+          <input type="text" id="ord-phone" placeholder="Dejar vacío si no se tiene">
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -275,8 +277,9 @@
           </div>
         </div>
 
-        <div class="form-group" style="padding:10px; background:#f0f0f0; border-radius:6px; font-weight:bold;">
-          <span>Saldo Pendiente: </span><span id="ord-balance-display" style="color:var(--danger);">$0.00</span>
+        <div class="form-group" style="padding:12px; background:#f4f4f4; border-radius:6px; font-weight:600; display:flex; justify-content:space-between; align-items:center;">
+          <span>Saldo Pendiente:</span>
+          <span id="ord-balance-display" style="color:var(--danger); font-size:1.1rem; font-weight:700;">$0.00</span>
         </div>
 
         <div class="form-group">
@@ -298,7 +301,7 @@
 
   <!-- LÓGICA JAVASCRIPT -->
   <script>
-    // FIREBASE (MISMA CONFIGURACIÓN)
+    // FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
       authDomain: "saray-ha-pos.firebaseapp.com",
@@ -421,7 +424,7 @@
       closeModal('modal-order');
     }
 
-    // RENDER ENCARGOS (FORMATO PRODUCT CARD DEL POS)
+    // RENDER ENCARGOS (TARJETAS LIMPIAS IDÉNTICAS AL POS)
     function renderEncargos() {
       const container = document.getElementById('encargos-cards-container');
       container.innerHTML = '';
@@ -440,12 +443,12 @@
           <div class="product-details">
             <div>
               <div class="product-title">${p.prenda}</div>
-              <div class="product-code">Cliente: ${p.cliente} | ${p.detalles}</div>
-              <p style="font-size:0.8rem; color:#555;">Proveedor: ${p.proveedor}</p>
-              <p style="font-size:0.8rem; color:#555;">Costo Compra: $${p.costo.toFixed(2)}</p>
+              <div class="product-code">Cliente: ${p.cliente} (${p.detalles})</div>
+              <div class="product-info">Proveedor: ${p.proveedor}</div>
+              <div class="product-info">Costo Compra: $${p.costo.toFixed(2)}</div>
               <div class="product-price">$${p.precio.toFixed(2)}</div>
-              <p style="font-size:0.8rem; color:var(--success); font-weight:600;">Anticipo: $${p.anticipo.toFixed(2)}</p>
-              <p style="font-size:0.85rem; color:var(--danger); font-weight:bold;">Saldo Pendiente: $${p.saldo.toFixed(2)}</p>
+              <div class="product-info" style="color:var(--success); font-weight:600;">Anticipo: $${p.anticipo.toFixed(2)}</div>
+              <div class="product-info" style="color:var(--danger); font-weight:bold;">Saldo Pendiente: $${p.saldo.toFixed(2)}</div>
             </div>
             <div style="display:flex; gap:8px; margin-top:10px;">
               <button class="btn btn-whatsapp" style="flex:1; padding:6px; font-size:0.85rem;" onclick="sendWAConfirmation('${p.id}')">
@@ -480,13 +483,14 @@
 
       const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
       if (pendientes.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No hay productos pendientes por surtir</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">No hay productos pendientes por surtir</td></tr>';
         return;
       }
 
       pendientes.forEach(p => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td><img src="${p.fotoUrl || 'https://via.placeholder.com/50'}" style="width:40px; height:40px; border-radius:4px; object-fit:cover;"></td>
           <td><strong>${p.prenda}</strong> (${p.detalles})</td>
           <td>${p.cliente}</td>
           <td>${p.proveedor}</td>
@@ -519,15 +523,15 @@
           <div class="product-details">
             <div>
               <div class="product-title">${p.prenda}</div>
-              <div class="product-code">Cliente: ${p.cliente} | ${p.detalles}</div>
-              <div class="product-price" style="color:var(--danger);">Saldo: $${p.saldo.toFixed(2)}</div>
+              <div class="product-code">Cliente: ${p.cliente} (${p.detalles})</div>
+              <div class="product-price" style="color:var(--danger);">Saldo Pendiente: $${p.saldo.toFixed(2)}</div>
             </div>
             <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
               <button class="btn btn-gold" style="width:100%; font-size:0.85rem;" onclick="updateOrderStatus('${p.id}', 'Entregado')">
                 <i class="fa-solid fa-hand-holding-dollar"></i> Cobrar y Entregar
               </button>
               <button class="btn btn-whatsapp" style="width:100%; font-size:0.85rem;" onclick="sendWADeliveryReady('${p.id}')">
-                <i class="fa-brands fa-whatsapp"></i> Avisar WhatsApp
+                <i class="fa-brands fa-whatsapp"></i> Avisar por WhatsApp
               </button>
             </div>
           </div>
@@ -558,7 +562,7 @@
       }
     }
 
-    // RENDER RESUMEN FINANCIERO
+    // RENDER RESUMEN
     function renderResumen() {
       const totalCount = state.encargos.length;
       const totalAdvances = state.encargos.reduce((acc, o) => acc + (o.anticipo || 0), 0);
