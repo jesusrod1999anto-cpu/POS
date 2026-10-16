@@ -13,12 +13,12 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs (v10.8.0 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-  <!-- Manifest PWA -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1a1a1a","theme_color":"#121212","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
+  <!-- Manifest PWA Web Data URL -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1a1a1a","theme_color":"#d4af37","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
 
   <style>
     :root {
@@ -39,6 +39,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
     body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
 
+    /* ENCABEZADO SUPERIOR (IGUAL AL POS) */
     header {
       background-color: var(--bg-dark);
       color: #fff;
@@ -54,6 +55,7 @@
     .status-dot { width: 10px; height: 10px; border-radius: 50%; background-color: var(--success); display: inline-block; }
     .status-dot.offline { background-color: var(--danger); }
 
+    /* NAVEGACIÓN PRINCIPAL (IGUAL AL POS) */
     nav.top-nav {
       background-color: #1a1a1a;
       display: flex;
@@ -76,31 +78,19 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-    nav.top-nav button:hover,
-    nav.top-nav button.active {
+    nav.top-nav button:hover, nav.top-nav button.active {
       color: var(--gold);
       border-bottom: 3px solid var(--gold);
       background-color: rgba(212, 175, 55, 0.08);
     }
 
+    /* CONTENEDOR PRINCIPAL */
     main { flex: 1; padding: 20px; max-width: 1400px; margin: 0 auto; width: 100%; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    .btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      font-size: 0.95rem;
-    }
+    /* BOTONES (IGUALES AL POS) */
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.95rem; }
     .btn-gold { background-color: var(--gold); color: #fff; }
     .btn-gold:hover { background-color: var(--gold-hover); }
     .btn-dark { background-color: var(--bg-dark); color: #fff; }
@@ -110,251 +100,115 @@
     .btn-danger { background-color: var(--danger); color: #fff; }
     .btn-success { background-color: var(--success); color: #fff; }
 
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .product-card {
-      background: #fff;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: transform 0.2s;
-      border: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-    }
+    /* GRID DE TARJETAS (IGUAL AL POS) */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 15px; }
+    .product-card { background: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; border: 1px solid #eee; display: flex; flex-direction: column; }
     .product-card:hover { transform: translateY(-3px); }
-    .product-img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      background-color: #f0f0f0;
-    }
-    .product-details {
-      padding: 14px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .product-title { font-weight: 600; font-size: 1rem; margin-bottom: 4px; color: var(--text-dark); }
-    .product-code { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+    .product-img { width: 100%; height: 160px; object-fit: cover; background-color: #f0f0f0; }
+    .product-details { padding: 12px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .product-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; color: var(--text-dark); }
+    .product-code { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; }
     .product-price { font-weight: 700; color: var(--gold-hover); font-size: 1.1rem; }
-    .meta-line {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 0.85rem;
-      padding: 4px 0;
-      border-bottom: 1px dashed #eee;
-    }
-    .meta-line:last-child { border-bottom: none; }
 
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .badge-pendiente { background: #fff3cd; color: #856404; }
-    .badge-surtido { background: #d4edda; color: #155724; }
-    .badge-entregado { background: #e8f1ff; color: #1b4f9c; }
-    .badge-cancelado { background: #f8d7da; color: #721c24; }
-
-    .data-table-container {
-      background: #fff;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      overflow-x: auto;
-      margin-top: 15px;
-    }
+    /* TABLAS (IGUALES AL POS) */
+    .data-table-container { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow-x: auto; margin-top: 15px; }
     table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-    table.data-table th {
-      background: var(--bg-dark);
-      color: var(--gold);
-      padding: 12px 15px;
-      font-weight: 600;
-    }
+    table.data-table th { background: var(--bg-dark); color: var(--gold); padding: 12px 15px; font-weight: 600; }
     table.data-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
     table.data-table tr:hover { background-color: #fcfcfc; }
 
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      padding: 15px;
-    }
+    /* MODALES (IGUALES AL POS) */
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
     .modal-overlay.active { display: flex; }
-    .modal-card {
-      background: #fff;
-      border-radius: var(--border-radius);
-      width: 100%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 25px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    }
-    .modal-header {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      color: var(--bg-dark);
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-    }
+    .modal-card { background: #fff; border-radius: var(--border-radius); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .modal-header { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--bg-dark); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; }
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: #fff;
-      padding: 20px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-      border-left: 4px solid var(--gold);
-    }
-    .stat-card h3 {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      margin-bottom: 5px;
-    }
+    /* DASHBOARD / STATS (IGUAL AL POS) */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+    .stat-card { background: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-left: 4px solid var(--gold); }
+    .stat-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
     .stat-card .value { font-size: 1.5rem; font-weight: 700; color: var(--bg-dark); }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    .section-sub {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-bottom: 10px;
-    }
-    .supplier-box { margin-bottom: 20px; }
-    .supplier-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 14px 16px;
-      background: var(--bg-dark);
-      color: #fff;
-    }
-    .supplier-title h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      color: var(--gold);
-      margin: 0;
-    }
-    .budget-pill {
-      background: rgba(212,175,55,0.15);
-      color: var(--gold);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: 700;
-      font-size: 0.9rem;
-    }
-    .balance-box {
-      background: #f8f5f0;
-      border: 1px solid #e5e0d8;
-      border-radius: 8px;
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
   </style>
 </head>
 <body>
 
+  <!-- ENCABEZADO SUPERIOR -->
   <header>
-    <div class="brand-title"><i class="fa-solid fa-gem"></i> SARAY HA — Encargos</div>
+    <div class="brand-title"><i class="fa-solid fa-gem"></i> SARAY HA</div>
     <div class="sync-status">
       <span class="status-dot" id="sync-dot"></span>
       <span id="sync-text">Sincronizado</span>
     </div>
   </header>
 
+  <!-- NAVEGACIÓN PRINCIPAL -->
   <nav class="top-nav">
     <button class="nav-btn active" onclick="switchTab('encargos')"><i class="fa-solid fa-clipboard-list"></i> Encargos</button>
     <button class="nav-btn" onclick="switchTab('surtido')"><i class="fa-solid fa-cart-flatbed"></i> Lista Surte</button>
     <button class="nav-btn" onclick="switchTab('entregas')"><i class="fa-solid fa-box-open"></i> Entregas</button>
-    <button class="nav-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-line"></i> Resumen</button>
+    <button class="nav-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-line"></i> Caja / Reportes</button>
   </nav>
 
+  <!-- CONTENIDO -->
   <main>
-    <!-- ENCARGOS -->
+
+    <!-- 1. ENCARGOS -->
     <section id="tab-encargos" class="tab-content active">
-      <div class="section-head">
-        <h2>Pedidos Bajo Encargo</h2>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h2>Encargos Registrados</h2>
         <button class="btn btn-gold" onclick="openOrderModal()"><i class="fa-solid fa-plus"></i> Nuevo Encargo</button>
       </div>
-      <p class="section-sub">Lunes a miércoles: registra pedidos, anticipos y saldos pendientes.</p>
-      <div class="products-grid" id="encargos-cards-container"></div>
+
+      <div class="products-grid" id="encargos-cards-container">
+        <!-- Carga dinámica -->
+      </div>
     </section>
 
-    <!-- SURTIDO -->
+    <!-- 2. SURTIDO (JUEVES) -->
     <section id="tab-surtido" class="tab-content">
-      <div class="section-head">
-        <h2>Lista de Surtido</h2>
+      <h2 style="margin-bottom: 15px;">Lista de Surtido por Proveedor</h2>
+      
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Prenda / Detalles</th>
+              <th>Cliente</th>
+              <th>Proveedor</th>
+              <th>Costo Compra</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="surtido-table-body">
+            <!-- Carga dinámica -->
+          </tbody>
+        </table>
       </div>
-      <p class="section-sub">Jueves: compras agrupadas por proveedor y dinero necesario.</p>
-      <div id="supplier-surtido-container"></div>
     </section>
 
-    <!-- ENTREGAS -->
+    <!-- 3. ENTREGAS -->
     <section id="tab-entregas" class="tab-content">
-      <div class="section-head">
-        <h2>Entregas y Cobro de Saldo</h2>
+      <h2 style="margin-bottom: 15px;">Paquetes Listos para Entrega</h2>
+
+      <div class="products-grid" id="entregas-cards-container">
+        <!-- Carga dinámica -->
       </div>
-      <p class="section-sub">Viernes a domingo: prendas ya surtidas listas para entregar.</p>
-      <div class="products-grid" id="entregas-cards-container"></div>
     </section>
 
-    <!-- RESUMEN -->
+    <!-- 4. RESUMEN FINANCIERO -->
     <section id="tab-resumen" class="tab-content">
       <h2 style="margin-bottom: 15px;">Resumen Financiero de Encargos</h2>
+      
       <div class="stats-grid">
         <div class="stat-card">
-          <h3>Total de Pedidos</h3>
+          <h3>Total Encargos</h3>
           <div class="value" id="st-total-count">0</div>
         </div>
         <div class="stat-card">
-          <h3>Anticipos Recibidos</h3>
+          <h3>Anticipos Cobrados</h3>
           <div class="value" id="st-advances">$0.00</div>
         </div>
         <div class="stat-card">
@@ -362,43 +216,42 @@
           <div class="value" id="st-remainings">$0.00</div>
         </div>
         <div class="stat-card" style="border-left-color: var(--success);">
-          <h3>Ganancia Neta</h3>
+          <h3>Ganancia Real Neta</h3>
           <div class="value" id="st-profit">$0.00</div>
         </div>
       </div>
     </section>
+
   </main>
 
-  <!-- MODAL ENCARGO -->
+  <!-- MODAL NUEVO / EDITAR ENCARGO -->
   <div class="modal-overlay" id="modal-order">
     <div class="modal-card">
       <div class="modal-header">
         <span id="modal-order-title">Nuevo Encargo</span>
-        <button onclick="closeModal('modal-order')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;">&times;</button>
+        <button onclick="closeModal('modal-order')" style="background:none; border:none; font-size:1.2rem; cursor:pointer;">&times;</button>
       </div>
-
       <form id="form-order" onsubmit="saveOrder(event)">
         <input type="hidden" id="ord-id">
 
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-          <div class="form-group">
-            <label>Nombre de la Clienta *</label>
-            <input type="text" id="ord-client" required placeholder="Ej: María López">
-          </div>
-          <div class="form-group">
-            <label>Teléfono / WhatsApp (Opcional)</label>
-            <input type="text" id="ord-phone" placeholder="Opcional">
-          </div>
+        <div class="form-group">
+          <label>Nombre de la Clienta *</label>
+          <input type="text" id="ord-client" required placeholder="Ej: María López">
+        </div>
+
+        <div class="form-group">
+          <label>Teléfono / WhatsApp (Opcional)</label>
+          <input type="text" id="ord-phone" placeholder="Opcional">
         </div>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
           <div class="form-group">
             <label>Prenda / Producto *</label>
-            <input type="text" id="ord-item" required placeholder="Ej: Vestido de gala">
+            <input type="text" id="ord-item" required placeholder="Ej: Vestido Gala">
           </div>
           <div class="form-group">
             <label>Talla y Color *</label>
-            <input type="text" id="ord-details" required placeholder="Ej: M / Negro">
+            <input type="text" id="ord-details" required placeholder="Ej: Talla M / Rojo">
           </div>
         </div>
 
@@ -409,32 +262,29 @@
 
         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
           <div class="form-group">
-            <label>Costo de Compra ($) *</label>
-            <input type="number" step="0.01" id="ord-cost" required oninput="calcBalances()" placeholder="0.00">
+            <label>Costo Compra ($) *</label>
+            <input type="number" step="0.01" id="ord-cost" required oninput="calcBalances()">
           </div>
           <div class="form-group">
-            <label>Precio de Venta ($) *</label>
-            <input type="number" step="0.01" id="ord-price" required oninput="calcBalances()" placeholder="0.00">
+            <label>Precio Venta ($) *</label>
+            <input type="number" step="0.01" id="ord-price" required oninput="calcBalances()">
           </div>
           <div class="form-group">
             <label>Anticipo ($) *</label>
-            <input type="number" step="0.01" id="ord-advance" required oninput="calcBalances()" placeholder="0.00">
+            <input type="number" step="0.01" id="ord-advance" required oninput="calcBalances()">
           </div>
         </div>
 
-        <div class="form-group">
-          <div class="balance-box">
-            <strong>Saldo pendiente por cobrar</strong>
-            <span id="ord-balance-display" style="color:var(--danger); font-weight:700; font-size:1.2rem;">$0.00</span>
-          </div>
+        <div class="form-group" style="padding:10px; background:#f0f0f0; border-radius:6px; font-weight:bold;">
+          <span>Saldo Pendiente: </span><span id="ord-balance-display" style="color:var(--danger);">$0.00</span>
         </div>
 
         <div class="form-group">
-          <label>Fotografía de referencia (Opcional)</label>
+          <label>Fotografía (Opcional)</label>
           <input type="file" accept="image/*" id="ord-photo-input" onchange="previewOrderPhoto(event)">
           <input type="hidden" id="ord-photo-url">
           <div style="margin-top:10px; text-align:center;">
-            <img id="ord-photo-preview" src="" style="max-height:120px; border-radius:8px; display:none; box-shadow:var(--shadow);">
+            <img id="ord-photo-preview" src="" style="max-height:120px; border-radius:8px; display:none;">
           </div>
         </div>
 
@@ -446,7 +296,9 @@
     </div>
   </div>
 
+  <!-- LÓGICA JAVASCRIPT -->
   <script>
+    // FIREBASE (MISMA CONFIGURACIÓN)
     const firebaseConfig = {
       apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
       authDomain: "saray-ha-pos.firebaseapp.com",
@@ -480,10 +332,10 @@
       const text = document.getElementById('sync-text');
       if (online) {
         dot.classList.remove('offline');
-        text.innerText = 'Sincronizado';
+        text.innerText = "Sincronizado";
       } else {
         dot.classList.add('offline');
-        text.innerText = 'Modo Offline';
+        text.innerText = "Modo Offline";
       }
     }
 
@@ -519,6 +371,7 @@
           canvas.width = maxW;
           canvas.height = img.height * scale;
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
           const base64 = canvas.toDataURL('image/jpeg', 0.7);
           document.getElementById('ord-photo-url').value = base64;
           const prev = document.getElementById('ord-photo-preview');
@@ -536,7 +389,6 @@
       document.getElementById('ord-photo-url').value = '';
       document.getElementById('ord-photo-preview').style.display = 'none';
       document.getElementById('ord-balance-display').innerText = '$0.00';
-      document.getElementById('modal-order-title').innerText = 'Nuevo Encargo';
       openModal('modal-order');
     }
 
@@ -562,8 +414,6 @@
       };
 
       if (id) {
-        const current = state.encargos.find(o => o.id === id);
-        if (current && current.estado) data.estado = current.estado;
         await db.collection('encargos_pedidos').doc(id).update(data);
       } else {
         await db.collection('encargos_pedidos').add(data);
@@ -571,43 +421,37 @@
       closeModal('modal-order');
     }
 
-    function money(n) {
-      return `$${(parseFloat(n) || 0).toFixed(2)}`;
-    }
-
+    // RENDER ENCARGOS (FORMATO PRODUCT CARD DEL POS)
     function renderEncargos() {
       const container = document.getElementById('encargos-cards-container');
       container.innerHTML = '';
-      const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
 
+      const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
       if (pendientes.length === 0) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; padding:24px;">No hay encargos pendientes.</p>';
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; margin-top:20px;">No hay encargos registrados</p>';
         return;
       }
 
-      pendientes.forEach(ord => {
+      pendientes.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <img class="product-img" src="${ord.fotoUrl || 'https://via.placeholder.com/400x300?text=SARAY+HA'}" alt="${ord.prenda}">
+          <img class="product-img" src="${p.fotoUrl || 'https://via.placeholder.com/200?text=SARAY+HA'}" alt="${p.prenda}">
           <div class="product-details">
             <div>
-              <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:6px;">
-                <div class="product-title">${ord.prenda}</div>
-                <span class="badge badge-pendiente">${ord.estado}</span>
-              </div>
-              <div class="product-code">${ord.cliente} · ${ord.detalles}</div>
-              <div class="meta-line"><span>Proveedor</span><strong>${ord.proveedor}</strong></div>
-              <div class="meta-line"><span>Costo de compra</span><strong>${money(ord.costo)}</strong></div>
-              <div class="meta-line"><span>Precio de venta</span><strong class="product-price">${money(ord.precio)}</strong></div>
-              <div class="meta-line"><span>Anticipo</span><strong style="color:var(--success)">${money(ord.anticipo)}</strong></div>
-              <div class="meta-line"><span>Saldo pendiente</span><strong style="color:var(--danger)">${money(ord.saldo)}</strong></div>
+              <div class="product-title">${p.prenda}</div>
+              <div class="product-code">Cliente: ${p.cliente} | ${p.detalles}</div>
+              <p style="font-size:0.8rem; color:#555;">Proveedor: ${p.proveedor}</p>
+              <p style="font-size:0.8rem; color:#555;">Costo Compra: $${p.costo.toFixed(2)}</p>
+              <div class="product-price">$${p.precio.toFixed(2)}</div>
+              <p style="font-size:0.8rem; color:var(--success); font-weight:600;">Anticipo: $${p.anticipo.toFixed(2)}</p>
+              <p style="font-size:0.85rem; color:var(--danger); font-weight:bold;">Saldo Pendiente: $${p.saldo.toFixed(2)}</p>
             </div>
-            <div style="display:grid; grid-template-columns: 1fr 42px; gap:8px;">
-              <button class="btn btn-whatsapp" style="padding:10px;" onclick="sendWAConfirmation('${ord.id}')">
+            <div style="display:flex; gap:8px; margin-top:10px;">
+              <button class="btn btn-whatsapp" style="flex:1; padding:6px; font-size:0.85rem;" onclick="sendWAConfirmation('${p.id}')">
                 <i class="fa-brands fa-whatsapp"></i> WhatsApp
               </button>
-              <button class="btn btn-danger" style="padding:10px;" onclick="deleteOrder('${ord.id}')">
+              <button class="btn btn-danger" style="padding:6px 10px; font-size:0.85rem;" onclick="deleteOrder('${p.id}')">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </div>
@@ -617,122 +461,73 @@
       });
     }
 
-    function openWhatsApp(phone, message) {
-      const msg = encodeURIComponent(message);
-      if (phone && phone.trim() !== '') {
-        window.open(`https://api.whatsapp.com/send?phone=${phone.trim()}&text=${msg}`, '_blank');
+    function sendWAConfirmation(id) {
+      const ord = state.encargos.find(o => o.id === id);
+      if (!ord) return;
+      const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Confirmamos tu encargo de: ${ord.prenda} (${ord.detalles}).%0AAnticipo recibido: $${ord.anticipo.toFixed(2)}.%0ASaldo pendiente al entregar: $${ord.saldo.toFixed(2)}.%0A¡Muchas gracias por tu preferencia!`);
+      
+      if (ord.telefono && ord.telefono.trim() !== '') {
+        window.open(`https://api.whatsapp.com/send?phone=${ord.telefono.trim()}&text=${msg}`, '_blank');
       } else {
         window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
       }
     }
 
-    function sendWAConfirmation(id) {
-      const ord = state.encargos.find(o => o.id === id);
-      if (!ord) return;
-      const msg = `¡Hola ${ord.cliente}! Confirmamos tu encargo de: ${ord.prenda} (${ord.detalles}).\nAnticipo recibido: ${money(ord.anticipo)}.\nSaldo pendiente al entregar: ${money(ord.saldo)}.\n¡Gracias por tu confianza en SARAY HA Boutique!`;
-      openWhatsApp(ord.telefono, msg);
-    }
-
+    // RENDER SURTIDO
     function renderSurtido() {
-      const container = document.getElementById('supplier-surtido-container');
-      container.innerHTML = '';
-      const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
+      const tbody = document.getElementById('surtido-table-body');
+      tbody.innerHTML = '';
 
+      const pendientes = state.encargos.filter(o => o.estado === 'Pendiente');
       if (pendientes.length === 0) {
-        container.innerHTML = '<p style="text-align:center; color:#888; padding:30px;">No hay compras pendientes por surtir.</p>';
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No hay productos pendientes por surtir</td></tr>';
         return;
       }
 
-      const grouped = {};
-      pendientes.forEach(o => {
-        const prov = o.proveedor || 'Sin Proveedor';
-        if (!grouped[prov]) grouped[prov] = [];
-        grouped[prov].push(o);
-      });
-
-      Object.keys(grouped).forEach(prov => {
-        const items = grouped[prov];
-        const totalInvest = items.reduce((acc, i) => acc + (parseFloat(i.costo) || 0), 0);
-        const box = document.createElement('div');
-        box.className = 'data-table-container supplier-box';
-
-        const rows = items.map(item => `
-          <tr>
-            <td>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <img src="${item.fotoUrl || 'https://via.placeholder.com/50'}" style="width:42px; height:42px; border-radius:6px; object-fit:cover;">
-                <div>
-                  <strong>${item.prenda}</strong><br>
-                  <span style="font-size:0.8rem; color:#777;">${item.detalles}</span>
-                </div>
-              </div>
-            </td>
-            <td>${item.cliente}</td>
-            <td style="font-weight:700;">${money(item.costo)}</td>
-            <td style="min-width:150px;">
-              <button class="btn btn-success" style="padding:6px 10px; font-size:0.8rem; width:100%; margin-bottom:5px;" onclick="updateOrderStatus('${item.id}', 'Surtido')">
-                <i class="fa-solid fa-check-circle"></i> Comprado
-              </button>
-              <button class="btn btn-danger" style="padding:6px 10px; font-size:0.8rem; width:100%;" onclick="updateOrderStatus('${item.id}', 'Cancelado')">
-                <i class="fa-solid fa-times-circle"></i> No conseguido
-              </button>
-            </td>
-          </tr>
-        `).join('');
-
-        box.innerHTML = `
-          <div class="supplier-title">
-            <h3><i class="fa-solid fa-store"></i> ${prov}</h3>
-            <span class="budget-pill">Efectivo necesario: ${money(totalInvest)}</span>
-          </div>
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Prenda</th>
-                <th>Clienta</th>
-                <th>Costo de Compra</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
+      pendientes.forEach(p => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${p.prenda}</strong> (${p.detalles})</td>
+          <td>${p.cliente}</td>
+          <td>${p.proveedor}</td>
+          <td>$${p.costo.toFixed(2)}</td>
+          <td>
+            <button class="btn btn-success" style="padding:4px 8px; font-size:0.8rem;" onclick="updateOrderStatus('${p.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Comprado</button>
+            <button class="btn btn-danger" style="padding:4px 8px; font-size:0.8rem;" onclick="updateOrderStatus('${p.id}', 'Cancelado')"><i class="fa-solid fa-xmark"></i> Agotado</button>
+          </td>
         `;
-        container.appendChild(box);
+        tbody.appendChild(tr);
       });
     }
 
+    // RENDER ENTREGAS
     function renderEntregas() {
       const container = document.getElementById('entregas-cards-container');
       container.innerHTML = '';
-      const surtidos = state.encargos.filter(o => o.estado === 'Surtido');
 
+      const surtidos = state.encargos.filter(o => o.estado === 'Surtido');
       if (surtidos.length === 0) {
-        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; padding:30px;">No hay paquetes listos para entrega.</p>';
+        container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888; margin-top:20px;">No hay paquetes listos para entrega</p>';
         return;
       }
 
-      surtidos.forEach(ord => {
+      surtidos.forEach(p => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-          <img class="product-img" src="${ord.fotoUrl || 'https://via.placeholder.com/400x300?text=LISTO+PARA+ENTREGA'}" alt="${ord.prenda}">
+          <img class="product-img" src="${p.fotoUrl || 'https://via.placeholder.com/200?text=LISTO+PARA+ENTREGA'}" alt="${p.prenda}">
           <div class="product-details">
             <div>
-              <div style="display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:6px;">
-                <div class="product-title">${ord.prenda}</div>
-                <span class="badge badge-surtido">Listo</span>
-              </div>
-              <div class="product-code">${ord.cliente} · ${ord.detalles}</div>
-              <div class="meta-line"><span>Proveedor</span><strong>${ord.proveedor}</strong></div>
-              <div class="meta-line"><span>Precio de venta</span><strong class="product-price">${money(ord.precio)}</strong></div>
-              <div class="meta-line"><span>Saldo a cobrar</span><strong style="color:var(--danger)">${money(ord.saldo)}</strong></div>
+              <div class="product-title">${p.prenda}</div>
+              <div class="product-code">Cliente: ${p.cliente} | ${p.detalles}</div>
+              <div class="product-price" style="color:var(--danger);">Saldo: $${p.saldo.toFixed(2)}</div>
             </div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <button class="btn btn-whatsapp" style="width:100%;" onclick="sendWADeliveryReady('${ord.id}')">
-                <i class="fa-brands fa-whatsapp"></i> Avisar a Clienta
-              </button>
-              <button class="btn btn-gold" style="width:100%;" onclick="updateOrderStatus('${ord.id}', 'Entregado')">
+            <div style="display:flex; flex-direction:column; gap:6px; margin-top:10px;">
+              <button class="btn btn-gold" style="width:100%; font-size:0.85rem;" onclick="updateOrderStatus('${p.id}', 'Entregado')">
                 <i class="fa-solid fa-hand-holding-dollar"></i> Cobrar y Entregar
+              </button>
+              <button class="btn btn-whatsapp" style="width:100%; font-size:0.85rem;" onclick="sendWADeliveryReady('${p.id}')">
+                <i class="fa-brands fa-whatsapp"></i> Avisar WhatsApp
               </button>
             </div>
           </div>
@@ -744,8 +539,13 @@
     function sendWADeliveryReady(id) {
       const ord = state.encargos.find(o => o.id === id);
       if (!ord) return;
-      const msg = `¡Hola ${ord.cliente}! Tu pedido de ${ord.prenda} (${ord.detalles}) ya está listo para entrega.\nSaldo pendiente: ${money(ord.saldo)}.\n¡Te esperamos en SARAY HA Boutique!`;
-      openWhatsApp(ord.telefono, msg);
+      const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Tu pedido de ${ord.prenda} (${ord.detalles}) ya está listo para entrega.%0ASaldo pendiente a liquidar: $${ord.saldo.toFixed(2)}.%0A¡Te esperamos!`);
+      
+      if (ord.telefono && ord.telefono.trim() !== '') {
+        window.open(`https://api.whatsapp.com/send?phone=${ord.telefono.trim()}&text=${msg}`, '_blank');
+      } else {
+        window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+      }
     }
 
     async function updateOrderStatus(id, status) {
@@ -753,29 +553,29 @@
     }
 
     async function deleteOrder(id) {
-      if (confirm('¿Eliminar por completo este encargo?')) {
+      if (confirm("¿Eliminar este encargo?")) {
         await db.collection('encargos_pedidos').doc(id).delete();
       }
     }
 
+    // RENDER RESUMEN FINANCIERO
     function renderResumen() {
       const totalCount = state.encargos.length;
-      const totalAdvances = state.encargos.reduce((acc, o) => acc + (parseFloat(o.anticipo) || 0), 0);
-      const totalRemainings = state.encargos
-        .filter(o => o.estado === 'Entregado')
-        .reduce((acc, o) => acc + (parseFloat(o.saldo) || 0), 0);
-      const totalCost = state.encargos
-        .filter(o => o.estado !== 'Cancelado')
-        .reduce((acc, o) => acc + (parseFloat(o.costo) || 0), 0);
+      const totalAdvances = state.encargos.reduce((acc, o) => acc + (o.anticipo || 0), 0);
+      const totalRemainings = state.encargos.filter(o => o.estado === 'Entregado').reduce((acc, o) => acc + (o.saldo || 0), 0);
+      const totalCost = state.encargos.filter(o => o.estado !== 'Cancelado').reduce((acc, o) => acc + (o.costo || 0), 0);
+      
       const netProfit = (totalAdvances + totalRemainings) - totalCost;
 
       document.getElementById('st-total-count').innerText = totalCount;
-      document.getElementById('st-advances').innerText = money(totalAdvances);
-      document.getElementById('st-remainings').innerText = money(totalRemainings);
-      document.getElementById('st-profit').innerText = money(netProfit);
+      document.getElementById('st-advances').innerText = `$${totalAdvances.toFixed(2)}`;
+      document.getElementById('st-remainings').innerText = `$${totalRemainings.toFixed(2)}`;
+      document.getElementById('st-profit').innerText = `$${netProfit.toFixed(2)}`;
     }
 
-    window.onload = () => initListeners();
+    window.onload = () => {
+      initListeners();
+    };
   </script>
 </body>
 </html>
