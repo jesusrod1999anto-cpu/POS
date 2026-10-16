@@ -21,7 +21,6 @@
   <link rel="manifest" href='data:application/manifest+json,{"name":"SARAY HA Encargos","short_name":"Encargos","start_url":"./encargos.html","display":"standalone","background_color":"#1a1a1a","theme_color":"#d4af37","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3081/3081559.png","sizes":"512x512","type":"image/png"}]}'>
 
   <style>
-    /* VARIABLES IDÉNTICAS AL POS */
     :root {
       --gold: #d4af37;
       --gold-hover: #b89628;
@@ -91,7 +90,7 @@
     .tab-content.active { display: block; }
 
     /* BOTONES */
-    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.95rem;}
+    .btn { padding: 12px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-size: 0.95rem; }
     .btn-gold { background-color: var(--gold); color: #fff; }
     .btn-gold:hover { background-color: var(--gold-hover); }
     .btn-dark { background-color: var(--bg-dark); color: #fff; }
@@ -101,7 +100,7 @@
     .btn-danger { background-color: var(--danger); color: #fff; }
     .btn-success { background-color: var(--success); color: #fff; }
 
-    /* GRID DE ENCARGOS (Estilo POS) */
+    /* GRID DE ENCARGOS */
     .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-top: 20px; }
     .product-card { background: #fff; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow); transition: transform 0.2s; border: 1px solid #eee; display: flex; flex-direction: column; }
     .product-card:hover { transform: translateY(-3px); }
@@ -112,13 +111,13 @@
     .product-details { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; font-size: 0.9rem; }
     .detail-row { display: flex; justify-content: space-between; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
     
-    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat', sans-serif;}
+    .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; font-family: 'Montserrat', sans-serif; }
     .badge-pendiente { background: #fff3cd; color: #856404; }
     .badge-surtido { background: #d4edda; color: #155724; }
     .badge-entregado { background: #cce5ff; color: #004085; }
     .badge-cancelado { background: #f8d7da; color: #721c24; }
 
-    /* TABLAS (Estilo POS) */
+    /* TABLAS */
     .data-table-container { background: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); overflow-x: auto; margin-top: 15px; }
     table.data-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
     table.data-table th { background: var(--bg-dark); color: var(--gold); padding: 12px 15px; font-weight: 600; }
@@ -135,7 +134,7 @@
     .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
     .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
 
-    /* STATS / CAJA (Estilo POS) */
+    /* STATS / CAJA */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
     .stat-card { background: #fff; padding: 20px; border-radius: var(--border-radius); box-shadow: var(--shadow); border-left: 4px solid var(--gold); }
     .stat-card h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; }
@@ -242,7 +241,6 @@
             <label>Nombre de la Clienta *</label>
             <input type="text" id="ord-client" required placeholder="Ej: María López">
           </div>
-          <!-- WHATSAPP AHORA ES OPCIONAL (sin required) -->
           <div class="form-group">
             <label>Teléfono / WhatsApp (Opcional)</label>
             <input type="text" id="ord-phone" placeholder="Dejar vacío si no se tiene">
@@ -431,7 +429,7 @@
       closeModal('modal-order');
     }
 
-    // RENDER PESTAÑA 1: ENCARGOS (Estilo POS)
+    // RENDER PESTAÑA 1: ENCARGOS
     function renderEncargos() {
       const container = document.getElementById('encargos-cards-container');
       container.innerHTML = '';
@@ -491,10 +489,8 @@
       const msg = encodeURIComponent(`¡Hola ${ord.cliente}! Confirmamos tu encargo de: ${ord.prenda} (${ord.detalles}).\nAnticipo recibido: $${ord.anticipo.toFixed(2)}.\nSaldo pendiente al entregar: $${ord.saldo.toFixed(2)}.\n¡Muchas gracias por tu confianza en SARAY HA Boutique!`);
       
       if(ord.telefono && ord.telefono.trim() !== '') {
-        // Enviar directo al número
         window.open(`https://api.whatsapp.com/send?phone=${ord.telefono.trim()}&text=${msg}`, '_blank');
       } else {
-        // Abrir WhatsApp para seleccionar contacto manualmente
         window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
       }
     }
@@ -635,7 +631,7 @@
       }
     }
 
-    // RENDER PESTAÑA 4: RESUMEN (Estilo POS)
+    // RENDER PESTAÑA 4: RESUMEN
     function renderResumen() {
       const totalCount = state.encargos.length;
       const totalAdvances = state.encargos.reduce((acc, o) => acc + (o.anticipo || 0), 0);
