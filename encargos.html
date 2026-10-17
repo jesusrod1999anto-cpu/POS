@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SARAY HA — Encargos & Logística Boutique</title>
+  <title>SARAY HA — Encargos & Surtido Boutique Pro</title>
   
   <!-- PWA Meta Tags -->
-  <meta name="theme-color" content="#8b4255">
+  <meta name="theme-color" content="#722f37">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Firebase SDKs (v10.8.0) -->
@@ -22,31 +22,33 @@
 
   <style>
     :root {
-      --primary: #8b4255;
-      --primary-dark: #6e3141;
-      --primary-soft: #fbf4f6;
-      --accent: #b35d74;
-      --bg-body: #f4f6f8;
-      --surface: #ffffff;
-      --text-main: #2b2d42;
-      --text-muted: #718096;
-      --border: #e8dedf;
-      --border-light: #f0eaec;
+      --primary-vino: #722f37;
+      --primary-accent: #8b4255;
+      --primary-soft: #fbf2f4;
+      --pink-glow: #f4e8eb;
+      --bg-warm: #f8f5f6;
+      --card-white: #ffffff;
       
-      --success: #2a7a4c;
-      --success-bg: #edf7f1;
-      --warning: #d97706;
-      --warning-bg: #fffbe8;
-      --danger: #dc2626;
+      --text-dark: #221d1e;
+      --text-muted: #7a6e71;
+      --border-soft: #ebdcd0;
+      --border-vino: #e8d0d4;
+
+      --success-green: #15803d;
+      --success-bg: #f0fdf4;
+      --warning-gold: #b45309;
+      --warning-bg: #fffbeb;
+      --danger-red: #b91c1c;
       --danger-bg: #fef2f2;
-      --info: #2563eb;
+      --info-blue: #1d4ed8;
       --info-bg: #eff6ff;
 
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
-      --shadow-subtle: 0 4px 20px rgba(139, 66, 85, 0.05);
-      --shadow-hover: 0 8px 28px rgba(139, 66, 85, 0.12);
+      --radius-card: 16px;
+      --radius-pill: 30px;
+      --radius-input: 10px;
+
+      --shadow-chic: 0 10px 30px -5px rgba(114, 47, 55, 0.08);
+      --shadow-hover: 0 16px 35px -4px rgba(114, 47, 55, 0.15);
     }
 
     * {
@@ -58,76 +60,81 @@
     }
 
     body {
-      background-color: var(--bg-body);
-      color: var(--text-main);
-      padding-bottom: 70px;
+      background-color: var(--bg-warm);
+      color: var(--text-dark);
+      padding-bottom: 80px;
     }
 
-    /* HEADER APP */
+    /* LUXURY HEADER */
     header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      background: linear-gradient(135deg, var(--primary-vino) 0%, var(--primary-accent) 100%);
       color: #ffffff;
-      padding: 16px 22px;
+      padding: 18px 24px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 18px rgba(110, 49, 65, 0.2);
+      box-shadow: 0 4px 20px rgba(114, 47, 55, 0.25);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .brand-container {
+    .brand-group {
       display: flex;
       flex-direction: column;
     }
 
     .brand-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
     }
 
     .brand-subtitle {
       font-size: 0.72rem;
-      opacity: 0.88;
+      opacity: 0.9;
       font-weight: 400;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     .status-badge {
       font-size: 0.72rem;
-      padding: 5px 12px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(4px);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
       color: #fff;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .status-dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background-color: #10b981;
-      box-shadow: 0 0 8px #10b981;
+      background-color: #22c55e;
+      box-shadow: 0 0 10px #22c55e;
     }
 
-    /* TABS BAR */
+    /* FLOATING PILL NAVIGATION TABS */
     nav.nav-tabs {
-      background: var(--surface);
+      background: var(--card-white);
       display: flex;
-      border-bottom: 1px solid var(--border-light);
-      box-shadow: var(--shadow-subtle);
+      padding: 8px 12px;
+      margin: 12px 16px 0 16px;
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-chic);
       position: sticky;
-      top: 61px;
+      top: 72px;
       z-index: 90;
       overflow-x: auto;
       scrollbar-width: none;
+      gap: 6px;
+      border: 1px solid var(--border-vino);
     }
 
     nav.nav-tabs::-webkit-scrollbar {
@@ -136,8 +143,8 @@
 
     .nav-tab {
       flex: 1;
-      min-width: 100px;
-      padding: 14px 10px;
+      min-width: 105px;
+      padding: 10px 14px;
       border: none;
       background: transparent;
       color: var(--text-muted);
@@ -145,28 +152,28 @@
       font-weight: 600;
       cursor: pointer;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
       white-space: nowrap;
-      border-bottom: 3px solid transparent;
-      transition: all 0.25s ease;
+      border-radius: var(--radius-pill);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .nav-tab i {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
     }
 
     .nav-tab.active {
-      color: var(--primary);
-      border-bottom-color: var(--primary);
-      background-color: var(--primary-soft);
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary-vino), var(--primary-accent));
+      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.3);
     }
 
     /* CONTAINER & CARDS */
     .container {
-      max-width: 920px;
-      margin: 22px auto;
+      max-width: 940px;
+      margin: 20px auto;
       padding: 0 16px;
     }
 
@@ -176,44 +183,37 @@
 
     .tab-content.active {
       display: block;
-      animation: fadeIn 0.3s ease;
+      animation: tabSlide 0.35s ease-out;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+    @keyframes tabSlide {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
     .card {
-      background: var(--surface);
-      border-radius: var(--radius-md);
-      padding: 22px;
+      background: var(--card-white);
+      border-radius: var(--radius-card);
+      padding: 24px;
       margin-bottom: 22px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-subtle);
-      transition: box-shadow 0.25s ease;
-    }
-
-    .card:hover {
-      box-shadow: var(--shadow-hover);
+      border: 1px solid var(--border-vino);
+      box-shadow: var(--shadow-chic);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      color: var(--primary-dark);
-      margin-bottom: 18px;
+      font-size: 1.3rem;
+      color: var(--primary-vino);
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       gap: 10px;
+      border-bottom: 2px solid var(--primary-soft);
+      padding-bottom: 10px;
     }
 
-    .card-title i {
-      font-size: 1.1rem;
-      color: var(--primary);
-    }
-
-    /* FORM SYSTEM */
+    /* FORM STYLING */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -231,31 +231,31 @@
     }
 
     label {
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--primary-vino);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
     }
 
     input, select, textarea {
-      padding: 11px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      border: 1px solid var(--border-vino);
+      border-radius: var(--radius-input);
       font-size: 0.92rem;
-      background-color: #ffffff;
-      color: var(--text-main);
-      transition: all 0.2s ease;
+      background-color: #fdfbfb;
+      color: var(--text-dark);
+      transition: all 0.25s ease;
     }
 
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: var(--primary);
-      background-color: #fff;
-      box-shadow: 0 0 0 3px rgba(139, 66, 85, 0.12);
+      border-color: var(--primary-vino);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(114, 47, 55, 0.1);
     }
 
-    /* QUICK SIZE CHIPS */
+    /* SIZE BUTTONS CHIPS */
     .size-selector {
       display: flex;
       flex-wrap: wrap;
@@ -264,29 +264,29 @@
     }
 
     .size-btn {
-      padding: 8px 16px;
-      border: 1px solid var(--border);
-      background-color: #fcfcfc;
-      border-radius: var(--radius-sm);
+      padding: 9px 18px;
+      border: 1px solid var(--border-vino);
+      background-color: #ffffff;
+      border-radius: var(--radius-pill);
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      color: var(--text-main);
+      color: var(--text-dark);
       transition: all 0.2s ease;
     }
 
     .size-btn.active, .size-btn:hover {
-      background-color: var(--primary);
+      background-color: var(--primary-vino);
       color: #ffffff;
-      border-color: var(--primary);
-      box-shadow: 0 2px 8px rgba(139, 66, 85, 0.25);
+      border-color: var(--primary-vino);
+      box-shadow: 0 4px 10px rgba(114, 47, 55, 0.25);
     }
 
-    /* BUTTONS */
+    /* BUTTONS SYSTEM */
     .btn {
-      padding: 11px 20px;
+      padding: 12px 22px;
       border: none;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-pill);
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
@@ -294,48 +294,50 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       text-decoration: none;
     }
 
     .btn-primary {
-      background-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-vino), var(--primary-accent));
       color: white;
+      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.2);
     }
 
     .btn-primary:hover {
-      background-color: var(--primary-dark);
-      box-shadow: 0 4px 12px rgba(110, 49, 65, 0.2);
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(114, 47, 55, 0.3);
     }
 
     .btn-secondary {
-      background-color: #e2e8f0;
-      color: var(--text-main);
+      background-color: #f1f5f9;
+      color: var(--text-dark);
     }
 
     .btn-secondary:hover {
-      background-color: #cbd5e1;
+      background-color: #e2e8f0;
     }
 
     .btn-success {
-      background-color: var(--success);
+      background-color: var(--success-green);
       color: white;
     }
 
     .btn-warning {
-      background-color: var(--warning);
+      background-color: var(--warning-gold);
       color: white;
     }
 
     .btn-danger {
-      background-color: var(--danger);
+      background-color: var(--danger-red);
       color: white;
     }
 
     .btn-outline {
       background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
+      border: 1.5px solid var(--primary-vino);
+      color: var(--primary-vino);
     }
 
     .btn-outline:hover {
@@ -343,45 +345,44 @@
     }
 
     .btn-sm {
-      padding: 6px 12px;
+      padding: 7px 14px;
       font-size: 0.78rem;
-      border-radius: 6px;
     }
 
     .btn-block {
       width: 100%;
     }
 
-    /* ITEM CARDS LIST */
+    /* ITEM CARDS */
     .item-card {
-      background: var(--surface);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      margin-bottom: 14px;
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--primary);
-      box-shadow: var(--shadow-subtle);
+      background: var(--card-white);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-vino);
+      box-shadow: var(--shadow-chic);
       display: flex;
       flex-direction: column;
       gap: 12px;
+      position: relative;
     }
 
     .item-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--pink-glow);
       padding-bottom: 10px;
     }
 
     .item-title {
       font-weight: 700;
-      font-size: 1.02rem;
-      color: var(--text-main);
+      font-size: 1.05rem;
+      color: var(--primary-vino);
     }
 
     .item-subtitle {
-      font-size: 0.82rem;
+      font-size: 0.83rem;
       color: var(--text-muted);
       margin-top: 3px;
     }
@@ -389,21 +390,21 @@
     .badge {
       font-size: 0.7rem;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 20px;
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .badge-pending { background-color: var(--warning-bg); color: var(--warning); }
-    .badge-success { background-color: var(--success-bg); color: var(--success); }
-    .badge-danger { background-color: var(--danger-bg); color: var(--danger); }
-    .badge-info { background-color: var(--info-bg); color: var(--info); }
+    .badge-pending { background-color: var(--warning-bg); color: var(--warning-gold); }
+    .badge-success { background-color: var(--success-bg); color: var(--success-green); }
+    .badge-danger { background-color: var(--danger-bg); color: var(--danger-red); }
+    .badge-info { background-color: var(--info-bg); color: var(--info-blue); }
 
     .item-body {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
+      gap: 12px;
       font-size: 0.86rem;
     }
 
@@ -421,88 +422,95 @@
 
     .info-val {
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--text-dark);
     }
 
     .item-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid var(--pink-glow);
       padding-top: 12px;
     }
 
     .photo-preview {
-      width: 65px;
-      height: 65px;
-      border-radius: 8px;
+      width: 70px;
+      height: 70px;
+      border-radius: 10px;
       object-fit: cover;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-vino);
     }
 
-    /* LOGÍSTICA DE DOMICILIO EN TARJETA */
-    .delivery-info-box {
-      background-color: var(--primary-soft);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      font-size: 0.84rem;
+    /* REPARTIDOR & MAPS WIDGET CARD */
+    .delivery-route-widget {
+      background: linear-gradient(135deg, #fff7f8 0%, #fcf0f2 100%);
+      border: 1px solid var(--border-vino);
+      border-radius: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .maps-input-row {
+    .delivery-widget-header {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary-vino);
       display: flex;
+      align-items: center;
       gap: 6px;
     }
 
-    .maps-input-row input {
-      flex: 1;
-      padding: 7px 10px;
-      font-size: 0.8rem;
+    .maps-btn-route {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
     }
 
-    /* SURTIDO AGROUPING */
+    .wsp-btn-driver {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+    }
+
+    /* SURTIDO SUPPLIER GROUP */
     .supplier-group {
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
 
     .supplier-header {
-      background-color: var(--primary-soft);
-      padding: 12px 16px;
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: var(--primary-soft);
+      padding: 14px 18px;
+      border-radius: 12px 12px 0 0;
       font-weight: 700;
-      color: var(--primary-dark);
+      color: var(--primary-vino);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-vino);
       border-bottom: none;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
     }
 
     .supplier-items {
-      border: 1px solid var(--border);
-      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+      border: 1px solid var(--border-vino);
+      border-radius: 0 0 12px 12px;
       background: #ffffff;
-      padding: 12px;
+      padding: 14px;
     }
 
-    /* DASHBOARD METRICS */
+    /* DASHBOARD CARDS */
     .dash-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 22px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
     .dash-card {
       background: white;
-      padding: 18px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-subtle);
+      padding: 20px;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border-vino);
+      box-shadow: var(--shadow-chic);
       display: flex;
       flex-direction: column;
       gap: 6px;
@@ -513,13 +521,13 @@
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
     }
 
     .dash-card .amount {
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-vino);
     }
 
     /* MODAL BOUTIQUE */
@@ -529,8 +537,8 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(3px);
+      background: rgba(34, 29, 30, 0.5);
+      backdrop-filter: blur(6px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -544,44 +552,43 @@
 
     .modal-card {
       background: white;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-card);
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 24px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+      padding: 26px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--pink-glow);
     }
 
     .modal-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.25rem;
-      color: var(--primary-dark);
+      font-size: 1.3rem;
+      color: var(--primary-vino);
     }
 
     .close-btn {
       background: none;
       border: none;
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: var(--text-muted);
       cursor: pointer;
     }
 
-    /* POLICY FOOTER */
-    .policy-note {
-      font-size: 0.75rem;
-      text-align: center;
+    .policy-tag {
+      font-size: 0.76rem;
       color: var(--text-muted);
-      margin-top: 14px;
+      text-align: center;
+      margin-top: 12px;
       font-style: italic;
     }
   </style>
@@ -590,9 +597,9 @@
 
   <!-- HEADER -->
   <header>
-    <div class="brand-container">
+    <div class="brand-group">
       <div class="brand-title">SARAY HA</div>
-      <div class="brand-subtitle">Encargos & Logística Boutique</div>
+      <div class="brand-subtitle">Encargos & Surtido Pro v4.5</div>
     </div>
     <div class="status-badge" id="net-status">
       <div class="status-dot"></div>
@@ -600,7 +607,7 @@
     </div>
   </header>
 
-  <!-- NAVIGATION TABS -->
+  <!-- FLOATING NAVIGATION TABS -->
   <nav class="nav-tabs">
     <button class="nav-tab active" data-tab="encargos"><i class="fa-solid fa-pen-to-square"></i> Encargos</button>
     <button class="nav-tab" data-tab="proveedores"><i class="fa-solid fa-truck-field"></i> Proveedores</button>
@@ -640,7 +647,7 @@
               <input type="text" id="enc-color" placeholder="Ej. Vino / Palo de Rosa">
             </div>
 
-            <!-- Talla Selector Chips -->
+            <!-- Talla Chips -->
             <div class="form-group full-width">
               <label>Talla *</label>
               <div class="size-selector" id="talla-selector">
@@ -678,7 +685,7 @@
 
             <div class="form-group">
               <label>Saldo Pendiente ($)</label>
-              <input type="number" id="enc-saldo" placeholder="0.00" readonly style="background-color: #f7fafc; font-weight:700;">
+              <input type="number" id="enc-saldo" placeholder="0.00" readonly style="background-color: var(--primary-soft); font-weight:700;">
             </div>
 
             <div class="form-group full-width">
@@ -690,25 +697,31 @@
               </select>
             </div>
 
-            <!-- LOGÍSTICA DE ENTREGA A DOMICILIO -->
-            <div id="delivery-details-box" class="form-grid full-width" style="display: none; border-top: 1px solid var(--border-light); padding-top: 14px;">
-              <div class="form-group">
-                <label>Colonia / Sector *</label>
-                <input type="text" id="enc-colonia" placeholder="Ej. Col. Reforma / Fracc. Palmas">
+            <!-- LOGÍSTICA DE DOMICILIO -->
+            <div id="delivery-details-box" class="delivery-route-widget full-width" style="display: none;">
+              <div class="delivery-widget-header">
+                <i class="fa-solid fa-map-location-dot"></i> Datos para Repartidor y Ruta
               </div>
 
-              <div class="form-group full-width">
-                <label>Dirección Completa (Calle, # Ext/Int, Referencias) *</label>
-                <input type="text" id="enc-direccion" placeholder="Ej. Calle de las Rosas #104 entre Amapolas">
-              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Colonia / Sector *</label>
+                  <input type="text" id="enc-colonia" placeholder="Ej. Col. Reforma">
+                </div>
 
-              <div class="form-group full-width">
-                <label>Link de Google Maps (Para Repartidor)</label>
-                <div style="display: flex; gap: 8px;">
-                  <input type="url" id="enc-maps-url" placeholder="https://maps.app.goo.gl/..." style="flex: 1;">
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="generateAutoMapsLink()">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Link
-                  </button>
+                <div class="form-group full-width">
+                  <label>Dirección Completa (Calle, # Ext/Int, Referencias) *</label>
+                  <input type="text" id="enc-direccion" placeholder="Ej. Calle de las Rosas #104 entre Amapolas">
+                </div>
+
+                <div class="form-group full-width">
+                  <label>Link o Ubicación de Google Maps</label>
+                  <div style="display: flex; gap: 8px;">
+                    <input type="url" id="enc-maps-url" placeholder="https://maps.app.goo.gl/..." style="flex: 1;">
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="generateAutoMapsLink()">
+                      <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Link
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -724,7 +737,7 @@
 
             <div class="form-group full-width">
               <label>Notas del Encargo</label>
-              <textarea id="enc-notas" rows="2" placeholder="Especificaciones adicionales o modificaciones..."></textarea>
+              <textarea id="enc-notas" rows="2" placeholder="Especificaciones adicionales o modistas..."></textarea>
             </div>
 
           </div>
@@ -785,7 +798,7 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <h2 class="card-title" style="margin:0;"><i class="fa-solid fa-cart-flatbed"></i> Lista de Surtido</h2>
-          <div id="surtido-total-cash" class="badge badge-info" style="font-size: 0.85rem;">Total Requerido: $0.00</div>
+          <div id="surtido-total-cash" class="badge badge-info" style="font-size: 0.88rem;">Total Requerido: $0.00</div>
         </div>
       </div>
 
@@ -877,17 +890,17 @@
         </div>
         <div class="dash-card">
           <span class="title">Saldo Pendiente</span>
-          <span class="amount" id="dash-saldo-total" style="color: var(--warning);">$0.00</span>
+          <span class="amount" id="dash-saldo-total" style="color: var(--warning-gold);">$0.00</span>
         </div>
-        <div class="dash-card" style="border-left: 4px solid var(--success);">
+        <div class="dash-card" style="border-left: 4px solid var(--success-green);">
           <span class="title">Ganancia Neta</span>
-          <span class="amount" id="dash-ganancia-neta" style="color: var(--success);">$0.00</span>
+          <span class="amount" id="dash-ganancia-neta" style="color: var(--success-green);">$0.00</span>
         </div>
       </div>
 
       <!-- ZONA DE ADMINISTRACIÓN -->
       <div class="card" style="border-color: var(--danger-bg);">
-        <h2 class="card-title" style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Zona de Administración</h2>
+        <h2 class="card-title" style="color: var(--danger-red);"><i class="fa-solid fa-triangle-exclamation"></i> Zona de Administración</h2>
         <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">
           Reinicia la base de datos únicamente si deseas comenzar un nuevo ciclo desde cero.
         </p>
@@ -910,20 +923,20 @@
         <input type="hidden" id="pay-encargo-id">
         <div class="form-group" style="margin-bottom: 12px;">
           <label>Cliente / Prenda:</label>
-          <div id="pay-cliente-name" style="font-weight:700; color:var(--primary-dark);">-</div>
+          <div id="pay-cliente-name" style="font-weight:700; color:var(--primary-vino);">-</div>
         </div>
         <div class="form-grid">
           <div class="form-group">
             <label>Precio de Venta</label>
-            <input type="text" id="pay-precio-venta" readonly style="background:#f7fafc;">
+            <input type="text" id="pay-precio-venta" readonly style="background:#fdf8f9;">
           </div>
           <div class="form-group">
             <label>Anticipo Previo</label>
-            <input type="text" id="pay-anticipo-previo" readonly style="background:#f7fafc;">
+            <input type="text" id="pay-anticipo-previo" readonly style="background:#fdf8f9;">
           </div>
           <div class="form-group full-width">
             <label>Saldo Pendiente a Cobrar</label>
-            <input type="text" id="pay-saldo-pendiente" readonly style="background:var(--warning-bg); color:var(--warning); font-weight:700;">
+            <input type="text" id="pay-saldo-pendiente" readonly style="background:var(--warning-bg); color:var(--warning-gold); font-weight:700;">
           </div>
 
           <div class="form-group full-width">
@@ -942,11 +955,11 @@
 
           <div class="form-group">
             <label>Cambio a Entregar ($)</label>
-            <input type="text" id="pay-cambio" value="$0.00" readonly style="background:var(--success-bg); font-weight:700; color:var(--success);">
+            <input type="text" id="pay-cambio" value="$0.00" readonly style="background:var(--success-bg); font-weight:700; color:var(--success-green);">
           </div>
         </div>
 
-        <p class="policy-note">Políticas SARAY HA: No hay cambios ni devoluciones.</p>
+        <p class="policy-tag">Políticas SARAY HA: No hay cambios ni devoluciones.</p>
 
         <div style="margin-top:16px; display:flex; gap:10px;">
           <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-checkout')">Cancelar</button>
@@ -983,7 +996,7 @@
 
   <!-- SCRIPT LOGIC & FIREBASE -->
   <script>
-    // 1. FIREBASE CONFIGURATION
+    // FIREBASE CONFIGURATION
     const firebaseConfig = {
       apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
       authDomain: "saray-ha-pos.firebaseapp.com",
@@ -1003,11 +1016,11 @@
       db = firebase.firestore();
       isOnline = true;
     } catch (e) {
-      console.warn("Firestore offline mode fallback active.", e);
+      console.warn("Firestore offline mode active.", e);
       isOnline = false;
     }
 
-    // Local Storage Data
+    // Local Data Stores
     let localEncargos = JSON.parse(localStorage.getItem('saray_encargos')) || [];
     let localProveedores = JSON.parse(localStorage.getItem('saray_proveedores')) || [
       { id: 'prov_1', nombre: 'Creaciones Moda MX', ubicacion: 'Pasillo 1 Local 12', telefono: '5511223344' },
@@ -1015,7 +1028,7 @@
     ];
     let localTickets = JSON.parse(localStorage.getItem('saray_tickets')) || [];
 
-    // INIT APP
+    // INIT
     document.addEventListener('DOMContentLoaded', () => {
       updateStatusBadge();
       initNavigation();
@@ -1036,10 +1049,10 @@
       const text = document.getElementById('net-text');
       if (isOnline) {
         text.innerText = "Firebase Conectado";
-        badge.style.background = "rgba(16, 185, 129, 0.2)";
+        badge.style.background = "rgba(34, 197, 94, 0.22)";
       } else {
         text.innerText = "Modo Local";
-        badge.style.background = "rgba(245, 158, 11, 0.2)";
+        badge.style.background = "rgba(245, 158, 11, 0.22)";
       }
     }
 
@@ -1076,7 +1089,7 @@
     function toggleDeliverySection() {
       const tipo = document.getElementById('enc-tipo-entrega').value;
       const box = document.getElementById('delivery-details-box');
-      box.style.display = (tipo === 'A Domicilio' || tipo === 'Envío') ? 'grid' : 'none';
+      box.style.display = (tipo === 'A Domicilio' || tipo === 'Envío') ? 'flex' : 'none';
     }
 
     function generateAutoMapsLink() {
@@ -1230,12 +1243,12 @@
               <div class="info-row"><span class="info-label">Costo de Compra</span><span class="info-val">$${enc.costoCompra.toFixed(2)}</span></div>
               <div class="info-row"><span class="info-label">Precio de Venta</span><span class="info-val">$${enc.precioVenta.toFixed(2)}</span></div>
               <div class="info-row"><span class="info-label">Anticipo</span><span class="info-val">$${enc.anticipo.toFixed(2)}</span></div>
-              <div class="info-row"><span class="info-label">Saldo Pendiente</span><span class="info-val" style="color:var(--warning); font-weight:700;">$${enc.saldoPendiente.toFixed(2)}</span></div>
+              <div class="info-row"><span class="info-label">Saldo Pendiente</span><span class="info-val" style="color:var(--warning-gold); font-weight:700;">$${enc.saldoPendiente.toFixed(2)}</span></div>
               <div class="info-row"><span class="info-label">Entrega</span><span class="info-val">${enc.tipoEntrega}</span></div>
             </div>
 
             ${enc.tipoEntrega === 'A Domicilio' ? `
-              <div style="font-size: 0.8rem; background: var(--primary-soft); padding: 8px 12px; border-radius: 6px;">
+              <div style="font-size: 0.8rem; background: var(--primary-soft); padding: 8px 12px; border-radius: 8px;">
                 <strong>Colonia:</strong> ${enc.colonia || 'N/A'} | <strong>Dirección:</strong> ${enc.direccionEntrega || 'N/A'}
               </div>
             ` : ''}
@@ -1313,9 +1326,9 @@
 
         agrupados[prov].forEach(item => {
           html += `
-            <div style="border-bottom: 1px solid var(--border-light); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="border-bottom: 1px solid var(--pink-glow); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
               <div>
-                <strong style="font-size: 0.9rem; color: var(--primary-dark);">${item.prendaNombre}</strong> (${item.prendaTalla}) - ${item.prendaColor}<br>
+                <strong style="font-size: 0.9rem; color: var(--primary-vino);">${item.prendaNombre}</strong> (${item.prendaTalla}) - ${item.prendaColor}<br>
                 <small style="color: var(--text-muted);">Cliente: ${item.clienteNombre} | Costo Compra: <strong>$${item.costoCompra.toFixed(2)}</strong></small>
               </div>
 
@@ -1391,22 +1404,25 @@
               <div class="info-row"><span class="info-label">Tipo Entrega</span><span class="info-val">${item.tipoEntrega}</span></div>
               <div class="info-row"><span class="info-label">Precio Venta</span><span class="info-val">$${item.precioVenta.toFixed(2)}</span></div>
               <div class="info-row"><span class="info-label">Anticipo</span><span class="info-val">$${item.anticipo.toFixed(2)}</span></div>
-              <div class="info-row"><span class="info-label">Saldo Pendiente</span><span class="info-val" style="color:var(--warning); font-weight:700;">$${item.saldoPendiente.toFixed(2)}</span></div>
+              <div class="info-row"><span class="info-label">Saldo Pendiente</span><span class="info-val" style="color:var(--warning-gold); font-weight:700;">$${item.saldoPendiente.toFixed(2)}</span></div>
             </div>
 
             ${item.tipoEntrega === 'A Domicilio' ? `
-              <div class="delivery-info-box">
+              <div class="delivery-route-widget">
+                <div class="delivery-widget-header">
+                  <i class="fa-solid fa-route"></i> Ficha de Logística para Repartidor
+                </div>
                 <div><strong>📍 Colonia:</strong> ${item.colonia || 'N/A'}</div>
                 <div><strong>🏠 Dirección:</strong> ${item.direccionEntrega || 'N/A'}</div>
                 
-                <div class="maps-input-row">
-                  <input type="url" id="maps-input-${item.id}" value="${item.mapsUrl || ''}" placeholder="Link de Google Maps...">
+                <div style="display:flex; gap:6px;">
+                  <input type="url" id="maps-input-${item.id}" value="${item.mapsUrl || ''}" placeholder="Link de Google Maps..." style="flex:1;">
                   <button class="btn btn-secondary btn-sm" onclick="saveMapsUrl('${item.id}')">💾 Guardar</button>
                 </div>
 
-                <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
-                  ${item.mapsUrl ? `<a href="${item.mapsUrl}" target="_blank" class="btn btn-outline btn-sm" style="flex:1;"><i class="fa-solid fa-location-dot"></i> Navegar en Maps</a>` : ''}
-                  <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="shareRouteToDriver('${item.id}')">
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+                  ${item.mapsUrl ? `<a href="${item.mapsUrl}" target="_blank" class="btn btn-sm maps-btn-route" style="flex:1;"><i class="fa-solid fa-map-location-dot"></i> Abrir Google Maps</a>` : ''}
+                  <button class="btn btn-sm wsp-btn-driver" style="flex:1;" onclick="shareRouteToDriver('${item.id}')">
                     <i class="fa-brands fa-whatsapp"></i> WhatsApp Repartidor
                   </button>
                 </div>
@@ -1414,7 +1430,7 @@
             ` : ''}
 
             ${isEntregado && item.datosEntrega ? `
-              <div style="background:var(--success-bg); padding:10px; border-radius:6px; font-size:0.8rem; color:var(--success);">
+              <div style="background:var(--success-bg); padding:10px; border-radius:8px; font-size:0.8rem; color:var(--success-green);">
                 <strong>Registro de Entrega:</strong> ${item.datosEntrega.metodoPago} | Recibido: $${parseFloat(item.datosEntrega.montoRecibido).toFixed(2)} | Cambio: $${parseFloat(item.datosEntrega.cambio).toFixed(2)}
               </div>
             ` : ''}
@@ -1425,7 +1441,7 @@
                   <i class="fa-solid fa-cash-register"></i> Cobrar y Entregar ($${item.saldoPendiente.toFixed(2)})
                 </button>
               ` : `
-                <span style="color:var(--success); font-weight:700; font-size:0.85rem;">
+                <span style="color:var(--success-green); font-weight:700; font-size:0.85rem;">
                   <i class="fa-solid fa-circle-check"></i> Entregado y Liquidado
                 </span>
               `}
@@ -1458,7 +1474,7 @@
 
       const mensaje = `*SARAY HA — FICHA DE ENTREGA PARA REPARTIDOR*\n\n` +
         `👤 *Cliente:* ${enc.clienteNombre}\n` +
-        `📞 *Tel:* ${enc.clienteTelefono || 'Sin teléfono'}\n` +
+        `📞 *Tel:* ${enc.clienteTelefono || 'Sin número'}\n` +
         `📍 *Colonia:* ${enc.colonia || 'N/A'}\n` +
         `🏠 *Dirección:* ${enc.direccionEntrega || 'N/A'}\n` +
         `👗 *Prenda:* ${enc.prendaNombre} (${enc.prendaTalla})\n` +
