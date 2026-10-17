@@ -1,1346 +1,2090 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SARAY HA — Encargos & Entregas Pro v5.0</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SARAY HA — Encargos & Entregas Pro v5.0</title>
 
-    <!-- Web App & PWA Settings -->
-    <meta name="theme-color" content="#722f37">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="SARAY HA Pro">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Fonts & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Firebase v10.8.0 Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <style>
+    :root {
+      --primary-vino: #722f37;
+      --primary-accent: #8b4255;
+      --primary-soft: #fbf2f4;
+      --primary-hover: #59242b;
+      --bg-warm: #f8f5f6;
+      --card-bg: #ffffff;
+      --text-main: #2b2627;
+      --text-muted: #6e6567;
+      --border-color: #eadcdb;
+      --success-green: #2e7d32;
+      --success-bg: #edf7ed;
+      --warning-amber: #ed6c02;
+      --warning-bg: #fff4e5;
+      --info-blue: #0288d1;
+      --info-bg: #e5f6fd;
+      --danger-red: #c62828;
+      --danger-bg: #fdeded;
+      --shadow-sm: 0 2px 8px rgba(114, 47, 55, 0.06);
+      --shadow-md: 0 4px 16px rgba(114, 47, 55, 0.10);
+      --shadow-lg: 0 8px 24px rgba(114, 47, 55, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+    }
 
-    <style>
-        :root {
-            --primary-vino: #722f37;
-            --primary-accent: #8b4255;
-            --primary-soft: #fbf2f4;
-            --secondary-gold: #c5a059;
-            --bg-warm: #f8f5f6;
-            --card-bg: #ffffff;
-            --text-main: #2b2b2b;
-            --text-muted: #6e6e6e;
-            --border-color: #eadfe2;
-            --success-color: #2e7d32;
-            --warning-color: #ed6c02;
-            --info-color: #0288d1;
-            --danger-color: #d32f2f;
-            --shadow-soft: 0 8px 24px rgba(114, 47, 55, 0.06);
-            --shadow-hover: 0 12px 32px rgba(114, 47, 55, 0.12);
-            --radius-main: 16px;
-            --radius-sm: 10px;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Montserrat', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-warm);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-        body {
-            background-color: var(--bg-warm);
-            color: var(--text-main);
-            padding-bottom: 90px;
-            min-height: 100vh;
-        }
+    /* HEADER BOUTIQUE */
+    .header-app {
+      background: linear-gradient(135deg, var(--primary-vino) 0%, #4a1c22 100%);
+      color: #ffffff;
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        /* App Bar Header */
-        header.app-header {
-            background: linear-gradient(135deg, var(--primary-vino) 0%, #4a1d23 100%);
-            color: #ffffff;
-            padding: 18px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
 
-        .brand-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
 
-        .brand-title i {
-            color: var(--secondary-gold);
-        }
+    .brand-icon {
+      width: 46px;
+      height: 46px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+    }
 
-        .sync-badge {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            padding: 6px 14px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+    .brand-text h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
 
-        .sync-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #4caf50;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px #4caf50;
-        }
+    .brand-text p {
+      font-size: 0.75rem;
+      opacity: 0.85;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
 
-        /* Floating Tab Navigation */
-        nav.nav-tabs-container {
-            position: fixed;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 32px);
-            max-width: 850px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            border-radius: 40px;
-            padding: 6px;
-            box-shadow: 0 10px 30px rgba(114, 47, 55, 0.18);
-            display: flex;
-            justify-content: space-between;
-            z-index: 999;
-            border: 1px solid var(--border-color);
-        }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
 
-        .nav-tab-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 10px 4px;
-            border-radius: 30px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            text-align: center;
-        }
+    .sync-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
-        .nav-tab-btn i {
-            font-size: 1.15rem;
-        }
+    .dot-sync {
+      width: 8px;
+      height: 8px;
+      background-color: #4caf50;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #4caf50;
+    }
 
-        .nav-tab-btn.active {
-            background: var(--primary-vino);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.3);
-        }
+    .btn-reset-sys {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 0.45rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .btn-reset-sys:hover {
+      background: #c62828;
+      border-color: #c62828;
+    }
 
-        /* Main Container */
-        main.container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
+    /* NAVEGACIÓN DE PÍLDORA FLOTANTE */
+    .nav-tabs-wrapper {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    .nav-tabs-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-tabs-container::-webkit-scrollbar { display: none; }
 
-        .section-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--primary-vino); font-weight: 700; }
+    .nav-tab-btn {
+      padding: 0.65rem 1.25rem;
+      border-radius: 25px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+    }
 
-        .card {
-            background: var(--card-bg);
-            border-radius: var(--radius-main);
-            padding: 24px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-color);
-            margin-bottom: 24px;
-        }
+    .nav-tab-btn:hover {
+      background: var(--primary-soft);
+      color: var(--primary-vino);
+    }
 
-        /* Form Controls */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group.full-width { grid-column: 1 / -1; }
-        label { font-size: 0.82rem; font-weight: 600; color: var(--primary-vino); text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input, select, textarea {
-            width: 100%; padding: 12px 14px; border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm); font-size: 0.95rem; background-color: #fff; outline: none;
-            transition: border-color 0.2s ease;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary-vino); box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1); }
-        input[readonly] { background: #f5f5f5; color: #555; font-weight: 600; }
+    .nav-tab-btn.active {
+      background: var(--primary-vino);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
+    }
 
-        /* Quick Suggestion Pills */
-        .quick-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-        .sugg-pill {
-            padding: 5px 12px; border: 1px solid var(--border-color); border-radius: 15px;
-            background: #fff; color: var(--text-muted); font-size: 0.78rem; font-weight: 600;
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .sugg-pill:hover { border-color: var(--primary-vino); color: var(--primary-vino); background: var(--primary-soft); }
+    /* CONTENEDOR PRINCIPAL */
+    .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      width: 100%;
+      flex: 1;
+    }
 
-        .quick-btn-talla {
-            padding: 8px 16px; border: 1.5px solid var(--border-color); border-radius: 20px;
-            background: #fff; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
-            cursor: pointer; transition: all 0.2s ease;
-        }
-        .quick-btn-talla:hover { border-color: var(--primary-vino); color: var(--primary-vino); }
-        .quick-btn-talla.active { background: var(--primary-vino); color: #fff; border-color: var(--primary-vino); }
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .tab-pane.active {
+      display: block;
+    }
 
-        /* Buttons */
-        .btn {
-            padding: 12px 22px; border-radius: 30px; font-weight: 600; font-size: 0.9rem;
-            border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.25s ease; text-decoration: none;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--primary-vino) 0%, var(--primary-accent) 100%); color: #ffffff; box-shadow: 0 4px 14px rgba(114, 47, 55, 0.25); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(114, 47, 55, 0.35); }
-        .btn-secondary { background: #ffffff; color: var(--primary-vino); border: 1.5px solid var(--primary-vino); }
-        .btn-secondary:hover { background: var(--primary-soft); }
-        .btn-whatsapp { background-color: #25d366; color: #fff; }
-        .btn-sm { padding: 7px 14px; font-size: 0.78rem; border-radius: 20px; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .policy-banner {
-            background: linear-gradient(135deg, #722f37 0%, #521d24 100%); color: #fff; padding: 14px 20px;
-            border-radius: var(--radius-sm); margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
-        }
+    /* TARJETAS & CONTENEDORES */
+    .boutique-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
 
-        /* Delivery & Order Cards */
-        .delivery-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
-        .delivery-stat-card { background: #ffffff; border-radius: var(--radius-main); padding: 18px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 14px; box-shadow: var(--shadow-soft); }
-        .delivery-stat-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
-        .icon-orange { background: #fff3e0; color: #ef6c00; }
-        .icon-blue { background: #e3f2fd; color: #1976d2; }
-        .icon-green { background: #e8f5e9; color: #2e7d32; }
-        .icon-vino { background: var(--primary-soft); color: var(--primary-vino); }
-        .delivery-stat-info span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-        .delivery-stat-info h3 { font-size: 1.35rem; color: var(--text-main); font-weight: 700; margin-top: 2px; }
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      color: var(--primary-vino);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 2px solid var(--primary-soft);
+      padding-bottom: 0.6rem;
+    }
 
-        /* Delivery Filters */
-        .filter-toolbar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .filter-pills { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
-        .pill-btn { border: 1px solid var(--border-color); background: #fff; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
-        .pill-btn.active { background: var(--primary-vino); color: #fff; border-color: var(--primary-vino); }
+    /* FORMULARIOS & INPUTS */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
 
-        .delivery-order-card { background: #fff; border-radius: var(--radius-main); border: 1px solid var(--border-color); box-shadow: var(--shadow-soft); overflow: hidden; margin-bottom: 16px; }
-        .delivery-header { background: var(--bg-warm); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-        .delivery-body { padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
-        .address-box { background: #fafafa; border: 1px dashed var(--border-color); padding: 14px; border-radius: var(--radius-sm); }
-        .financial-pills { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
-        .fin-pill { font-size: 0.78rem; font-weight: 700; padding: 6px 12px; border-radius: 12px; }
-        .fin-pill.paid { background: #e8f5e9; color: #2e7d32; }
-        .fin-pill.pending { background: #ffebee; color: #c62828; }
-        .delivery-footer-actions { background: #ffffff; padding: 14px 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .driver-action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
 
-        /* Table Styles */
-        .table-responsive { width: 100%; overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; text-align: left; background: #ffffff; font-size: 0.88rem; }
-        th { background: var(--primary-soft); color: var(--primary-vino); padding: 14px; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid var(--border-color); }
-        td { padding: 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
-        tr:hover td { background-color: #fdfbfb; }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
 
-        /* Modals & POS Checkout Terminal */
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 16px; }
-        .modal-overlay.active { display: flex; }
-        .modal-card { background: #ffffff; border-radius: var(--radius-main); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.25); animation: modalSlideUp 0.3s ease; }
-        @keyframes modalSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header { padding: 18px 24px; background: var(--primary-vino); color: #fff; display: flex; justify-content: space-between; align-items: center; }
-        .modal-close { background: transparent; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; }
-        .modal-body { padding: 24px; }
-        
-        .pos-amount-display { background: var(--bg-warm); padding: 20px; border-radius: var(--radius-main); text-align: center; margin-bottom: 20px; border: 1px solid var(--border-color); }
-        .pos-amount-display p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
-        .pos-amount-display h2 { font-size: 2.2rem; color: var(--danger-color); font-weight: 700; }
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-main);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        .pos-methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
-        .pos-method-btn { padding: 16px 10px; border-radius: 12px; border: 2px solid var(--border-color); background: #fff; cursor: pointer; text-align: center; transition: 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .pos-method-btn i { font-size: 1.5rem; color: var(--text-muted); }
-        .pos-method-btn span { font-size: 0.8rem; font-weight: 700; color: var(--text-main); }
-        .pos-method-btn.active { border-color: var(--primary-vino); background: var(--primary-soft); }
-        .pos-method-btn.active i, .pos-method-btn.active span { color: var(--primary-vino); }
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.9rem;
+      background-color: #faf8f8;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
 
-        .pos-cash-calculator { background: #fafafa; padding: 16px; border-radius: 12px; border: 1.5px dashed var(--border-color); display: none; }
-        .pos-cash-calculator.active { display: block; animation: fadeIn 0.3s ease; }
-        .pos-change-display { font-size: 1.8rem; font-weight: 700; color: var(--success-color); margin-top: 8px; }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-accent);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(139, 66, 85, 0.15);
+    }
 
-        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 6px; }
-        .badge-pendiente { background: #fff3e0; color: #ef6c00; }
-        .badge-ruta { background: #e3f2fd; color: #0288d1; }
-        .badge-entregado { background: #e8f5e9; color: #2e7d32; }
-        .badge-domicilio { background: #f3e5f5; color: #7b1fa2; }
-        .badge-sucursal { background: #e0f2f1; color: #00695c; }
-        .badge-sin-telefono { background: #f0f0f0; color: #757575; }
+    .form-control[readonly] {
+      background-color: #eee9ea;
+      cursor: not-allowed;
+    }
 
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+    /* PÍLDORAS DE SUGERENCIAS & SELECCIÓN */
+    .pills-suggestion-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.35rem;
+    }
 
-        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-        .toast { background: #323232; color: #fff; padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; font-size: 0.88rem; animation: toastIn 0.3s forwards; display: flex; align-items: center; gap: 10px; }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-    </style>
+    .pill-opt {
+      padding: 0.3rem 0.65rem;
+      background: #f0eaeb;
+      border: 1px solid #e2d5d7;
+      border-radius: 15px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary-vino);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pill-opt:hover {
+      background: var(--primary-accent);
+      color: #ffffff;
+      border-color: var(--primary-accent);
+    }
+
+    .pill-opt.selected {
+      background: var(--primary-vino);
+      color: #ffffff;
+      border-color: var(--primary-vino);
+    }
+
+    /* BOTONES GENERALES */
+    .btn {
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-vino);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.3);
+    }
+
+    .btn-secondary {
+      background: #efe7e8;
+      color: var(--primary-vino);
+    }
+    .btn-secondary:hover {
+      background: #e2d3d5;
+    }
+
+    .btn-success {
+      background: var(--success-green);
+      color: #ffffff;
+    }
+    .btn-success:hover {
+      background: #236327;
+    }
+
+    .btn-whatsapp {
+      background: #25d366;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .btn-whatsapp:hover {
+      background: #1eb956;
+    }
+
+    .btn-danger {
+      background: var(--danger-red);
+      color: #ffffff;
+    }
+    .btn-danger:hover {
+      background: #a31f1f;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.78rem;
+    }
+
+    .badge-no-phone {
+      background: #dedede;
+      color: #757575;
+      padding: 0.35rem 0.65rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* FILTROS & BÚSQUEDA */
+    .filters-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-box input {
+      padding-left: 2.3rem;
+    }
+
+    .filter-pills-list {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+    }
+
+    /* CARDS & TABLAS DE ENCARGOS / LOGÍSTICA */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .order-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 0.6rem;
+    }
+
+    .customer-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--primary-vino);
+    }
+
+    .order-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      padding: 0.25rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-pendiente { background: var(--warning-bg); color: var(--warning-amber); border: 1px solid #ffe0b2; }
+    .status-enruta { background: var(--info-bg); color: var(--info-blue); border: 1px solid #b3e5fc; }
+    .status-entregado { background: var(--success-bg); color: var(--success-green); border: 1px solid #c8e6c9; }
+
+    .order-body {
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+    }
+
+    .order-item-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .order-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .tag-attr {
+      background: var(--primary-soft);
+      color: var(--primary-vino);
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .financial-summary-box {
+      background: #faf6f7;
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-top: 0.3rem;
+      border: 1px solid #f0e2e4;
+    }
+
+    .fin-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .fin-row.bold {
+      font-weight: 700;
+    }
+
+    .order-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* METRICAS & KPIS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .kpi-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .kpi-val {
+      font-weight: 800;
+      font-size: 1.3rem;
+      line-height: 1.1;
+      color: var(--primary-vino);
+    }
+
+    .kpi-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* MODALES DE COBRO Y EDICIÓN DE LOGÍSTICA */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(43, 38, 39, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      max-width: 520px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color);
+      animation: modalUp 0.25s ease;
+    }
+
+    @keyframes modalUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      background: var(--primary-vino);
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+    }
+
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .payment-methods-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .btn-pay-method {
+      padding: 0.75rem 0.5rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .btn-pay-method.selected {
+      border-color: var(--primary-vino);
+      background: var(--primary-soft);
+      color: var(--primary-vino);
+    }
+
+    .cash-calc-box {
+      background: #faf5f6;
+      border: 1px dashed var(--primary-accent);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .quick-cash-pills {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    /* TOAST SYSTEM */
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      background: #323232;
+      color: #ffffff;
+      padding: 0.8rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- App Header -->
-    <header class="app-header">
-        <div class="brand-title"><i class="fa-solid fa-crown"></i> SARAY HA</div>
-        <div class="sync-badge"><span class="sync-dot"></span> Firestore Conectado</div>
-    </header>
-
-    <!-- Navigation Bar -->
-    <nav class="nav-tabs-container">
-        <button class="nav-tab-btn active" onclick="switchTab('encargos')">
-            <i class="fa-solid fa-calendar-plus"></i><span>Encargos</span>
-        </button>
-        <button class="nav-tab-btn" onclick="switchTab('inventario')">
-            <i class="fa-solid fa-boxes-stacked"></i><span>Inventario Encargos</span>
-        </button>
-        <button class="nav-tab-btn" onclick="switchTab('entregas')">
-            <i class="fa-solid fa-truck-fast"></i><span>Entregas y Logística</span>
-        </button>
-        <button class="nav-tab-btn" onclick="switchTab('proveedores')">
-            <i class="fa-solid fa-handshake"></i><span>Proveedores</span>
-        </button>
-        <button class="nav-tab-btn" onclick="switchTab('reportes')">
-            <i class="fa-solid fa-chart-pie"></i><span>Reportes y Finanzas</span>
-        </button>
-    </nav>
-
-    <main class="container">
-
-        <!-- TAB 1: REGISTRO DE ENCARGO -->
-        <div id="tab-encargos" class="tab-content active">
-            <div class="policy-banner">
-                <i class="fa-solid fa-shield-halved"></i>
-                <p>POLÍTICA DEL SISTEMA: "NO HAY CAMBIOS NI DEVOLUCIONES EN ENCARGOS Y VENTAS".</p>
-            </div>
-
-            <div class="section-header">
-                <h2 class="section-title">Registro de Nuevo Encargo</h2>
-            </div>
-
-            <div class="card">
-                <form id="form-encargo" novalidate onsubmit="guardarEncargo(event)">
-                    <input type="hidden" id="enc-talla-val" value="">
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Fecha de Registro</label>
-                            <input type="date" id="enc-fecha-registro" required readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre del Cliente *</label>
-                            <input type="text" id="enc-cliente" placeholder="Ej. Ana Sofía Morales" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono (WhatsApp)</label>
-                            <input type="tel" id="enc-telefono" placeholder="Ej. 9991234567 (Opcional)">
-                        </div>
-                        
-                        <!-- NOMBRE DEL PRODUCTO (TEXTO MANUAL + SUGERENCIAS) -->
-                        <div class="form-group full-width">
-                            <label>Nombre del Producto / Artículo *</label>
-                            <input type="text" id="enc-producto-nombre" placeholder="Escribe el producto (Ej. Vestido de Seda Satinado)..." required>
-                            <div class="quick-suggestions">
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Vestido')">+ Vestido</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Blusa')">+ Blusa</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Conjunto')">+ Conjunto</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Pantalón')">+ Pantalón</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Falda')">+ Falda</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Accesorio')">+ Accesorio</span>
-                            </div>
-                        </div>
-
-                        <!-- TALLA (BOTONES) -->
-                        <div class="form-group full-width">
-                            <label>Talla *</label>
-                            <div class="quick-suggestions" id="group-talla">
-                                <button type="button" class="quick-btn-talla" onclick="selectTalla('XS', this)">XS</button>
-                                <button type="button" class="quick-btn-talla" onclick="selectTalla('S', this)">S</button>
-                                <button type="button" class="quick-btn-talla" onclick="selectTalla('M', this)">M</button>
-                                <button type="button" class="quick-btn-talla" onclick="selectTalla('L', this)">L</button>
-                                <button type="button" class="quick-btn-talla" onclick="selectTalla('XL', this)">XL</button>
-                                <button type="button" class="quick-btn-talla" onclick="selectTalla('Unitalla', this)">Unitalla</button>
-                            </div>
-                        </div>
-
-                        <!-- COLOR (TEXTO MANUAL + SUGERENCIAS) -->
-                        <div class="form-group full-width">
-                            <label>Color *</label>
-                            <input type="text" id="enc-color-nombre" placeholder="Escribe el color (Ej. Palo de Rosa, Verde Esmeralda)..." required>
-                            <div class="quick-suggestions">
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Blanco')">Blanco</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Negro')">Negro</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Rojo / Vino')">Rojo / Vino</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Rosa')">Rosa</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Azul')">Azul</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Beige')">Beige</span>
-                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Estampado')">Estampado</span>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group full-width">
-                            <label>Detalle Extra del Producto (Opcional)</label>
-                            <input type="text" id="enc-detalle-extra" placeholder="Ej. Lentejuelas en escote, manga larga...">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>Proveedor a Surtir *</label>
-                            <select id="enc-proveedor" required>
-                                <option value="" disabled selected>Cargando proveedores...</option>
-                            </select>
-                            <small style="color:var(--text-muted); font-size:0.75rem; margin-top:2px;">Puedes agregar proveedores en la pestaña "Proveedores".</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Modalidad de Entrega *</label>
-                            <select id="enc-modalidad" onchange="toggleDomicilioFields()" required>
-                                <option value="sucursal">Recoge en Sucursal</option>
-                                <option value="domicilio">Entrega a Domicilio</option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="group-colonia" style="display: none;">
-                            <label>Colonia *</label>
-                            <input type="text" id="enc-colonia" placeholder="Ej. Colonia Altabrisa">
-                        </div>
-
-                        <!-- Financieros Oficiales -->
-                        <div class="form-group">
-                            <label>Costo de Compra ($)</label>
-                            <input type="number" step="0.01" id="enc-costo-compra" placeholder="0.00" value="0" oninput="calcularFinanzasEncargo()">
-                        </div>
-                        <div class="form-group">
-                            <label>Precio de Venta ($) *</label>
-                            <input type="number" step="0.01" id="enc-precio-venta" placeholder="0.00" required oninput="calcularFinanzasEncargo()">
-                        </div>
-                        <div class="form-group">
-                            <label>Anticipo ($)</label>
-                            <input type="number" step="0.01" id="enc-anticipo" placeholder="0.00" value="0" oninput="calcularFinanzasEncargo()">
-                        </div>
-                        <div class="form-group">
-                            <label>Saldo Pendiente ($)</label>
-                            <input type="number" step="0.01" id="enc-saldo" placeholder="0.00" readonly style="color:var(--danger-color); font-weight:bold;">
-                        </div>
-                        <div class="form-group">
-                            <label>Ganancia Neta ($)</label>
-                            <input type="number" step="0.01" id="enc-ganancia" placeholder="0.00" readonly style="color:var(--success-color); font-weight:bold;">
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Notas Adicionales de Venta</label>
-                            <input type="text" id="enc-notas" placeholder="Ej. Empacar para regalo, cliente frecuente...">
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 24px; text-align: right;">
-                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Registrar Encargo</button>
-                    </div>
-                </form>
-            </div>
+  <!-- HEADER BOUTIQUE -->
+  <header class="header-app">
+    <div class="header-container">
+      <div class="brand-box">
+        <div class="brand-icon">
+          <i class="fa-solid fa-gem"></i>
         </div>
-
-        <!-- TAB 2: INVENTARIO ENCARGOS -->
-        <div id="tab-inventario" class="tab-content">
-            <div class="section-header">
-                <h2 class="section-title">Inventario de Encargos</h2>
-                <input type="text" id="search-inventario" placeholder="Buscar cliente, producto..." onkeyup="filtrarInventario()" style="max-width: 250px;">
-            </div>
-            <div class="card" style="padding: 0; overflow: hidden;">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Registro</th>
-                                <th>Cliente</th>
-                                <th>Contacto</th>
-                                <th>Producto (Detalles)</th>
-                                <th>Proveedor</th>
-                                <th>Venta</th>
-                                <th>Saldo</th>
-                                <th>Entrega</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-inventario"></tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="brand-text">
+          <h1>SARAY HA</h1>
+          <p>Encargos & Entregas Pro v5.0</p>
         </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-reset-sys" onclick="abrirModalResetSistema()">
+          <i class="fa-solid fa-triangle-exclamation"></i> Reiniciar Sistema
+        </button>
+        <div class="sync-status">
+          <span class="dot-sync"></span>
+          <span id="txt-sync-status">Firestore Conectado</span>
+        </div>
+      </div>
+    </div>
+  </header>
 
-        <!-- TAB 3: ENTREGAS Y LOGÍSTICA -->
-        <div id="tab-entregas" class="tab-content">
-            <div class="section-header">
-                <h2 class="section-title">Panel de Entregas y Logística</h2>
-            </div>
+  <!-- PÍLDORAS DE NAVEGACIÓN PRINCIPAL -->
+  <div class="nav-tabs-wrapper">
+    <div class="nav-tabs-container">
+      <button class="nav-tab-btn active" onclick="switchTab('tab-encargos', this)">
+        <i class="fa-solid fa-boxes-packing"></i> Inventario Encargos
+      </button>
+      <button class="nav-tab-btn" onclick="switchTab('tab-entregas', this)">
+        <i class="fa-solid fa-truck-ramp-box"></i> Entregas y Logística
+      </button>
+      <button class="nav-tab-btn" onclick="switchTab('tab-proveedores', this)">
+        <i class="fa-solid fa-store"></i> Proveedores
+      </button>
+      <button class="nav-tab-btn" onclick="switchTab('tab-tickets', this)">
+        <i class="fa-solid fa-receipt"></i> Tickets Proveedor
+      </button>
+      <button class="nav-tab-btn" onclick="switchTab('tab-reportes', this)">
+        <i class="fa-solid fa-chart-line"></i> Reportes Financieros
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-content">
+
+    <!-- TAB 1: INVENTARIO ENCARGOS -->
+    <div id="tab-encargos" class="tab-pane active">
+      
+      <!-- FORMULARIO NUEVO ENCARGO -->
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-pen-to-square"></i> Registro de Nuevo Encargo
+        </h2>
+        <form id="form-nuevo-encargo" novalidate onsubmit="guardarNuevoEncargo(event)">
+          <div class="form-grid">
             
-            <!-- Dashboard KPI Top -->
-            <div class="delivery-stats-grid">
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-orange"><i class="fa-solid fa-clock"></i></div>
-                    <div class="delivery-stat-info"><span>Pendientes</span><h3 id="stat-del-pendientes">0</h3></div>
-                </div>
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-blue"><i class="fa-solid fa-truck-ram"></i></div>
-                    <div class="delivery-stat-info"><span>En Ruta</span><h3 id="stat-del-ruta">0</h3></div>
-                </div>
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-green"><i class="fa-solid fa-house-circle-check"></i></div>
-                    <div class="delivery-stat-info"><span>Entregados</span><h3 id="stat-del-entregados">0</h3></div>
-                </div>
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-vino"><i class="fa-solid fa-hand-holding-dollar"></i></div>
-                    <div class="delivery-stat-info"><span>Por Cobrar en Ruta</span><h3 id="stat-del-cobrar">$0.00</h3></div>
-                </div>
+            <div class="form-group">
+              <label>Fecha de Registro</label>
+              <input type="text" id="enc-fecha-registro" class="form-control" readonly>
             </div>
 
-            <!-- Filtros de Logística -->
-            <div class="filter-toolbar">
-                <div class="filter-pills">
-                    <button class="pill-btn active" onclick="filtrarEntregas('todos', this)">Todos</button>
-                    <button class="pill-btn" onclick="filtrarEntregas('pendiente', this)">Pendientes</button>
-                    <button class="pill-btn" onclick="filtrarEntregas('en_ruta', this)">En Ruta</button>
-                    <button class="pill-btn" onclick="filtrarEntregas('entregado', this)">Entregados</button>
-                    <button class="pill-btn" onclick="filtrarEntregas('domicilio', this)">Solo Domicilio</button>
-                    <button class="pill-btn" onclick="filtrarEntregas('sucursal', this)">En Sucursal</button>
-                </div>
-                <input type="text" id="search-entregas" placeholder="Buscar colonia, cliente..." onkeyup="renderEntregas()" style="width: 220px;">
+            <div class="form-group">
+              <label>Nombre del Cliente *</label>
+              <input type="text" id="enc-cliente" class="form-control" placeholder="Ej. Sofia Ramos" required>
             </div>
 
-            <!-- Contenedor Tarjetas Entregas -->
-            <div id="delivery-cards-container" class="delivery-card-list"></div>
+            <div class="form-group">
+              <label>Teléfono (Opcional)</label>
+              <input type="tel" id="enc-telefono" class="form-control" placeholder="Ej. 8112345678">
+            </div>
+
+            <div class="form-group full-width">
+              <label>Nombre del Producto / Artículo *</label>
+              <input type="text" id="enc-producto-nombre" class="form-control" placeholder="Escribe o selecciona una opción rápida" required>
+              <div class="pills-suggestion-container">
+                <span class="pill-opt" onclick="setProductoInput('Vestido Elegante Satinado')">Vestido Satinado</span>
+                <span class="pill-opt" onclick="setProductoInput('Blusa de Seda Botones')">Blusa Seda</span>
+                <span class="pill-opt" onclick="setProductoInput('Conjunto Blazer y Pantalón')">Conjunto Blazer</span>
+                <span class="pill-opt" onclick="setProductoInput('Falda Plisada Midi')">Falda Plisada</span>
+                <span class="pill-opt" onclick="setProductoInput('Jumpsuit Casual')">Jumpsuit</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Talla</label>
+              <input type="hidden" id="enc-talla-val" value="M">
+              <div class="pills-suggestion-container" id="pills-tallas">
+                <span class="pill-opt" onclick="seleccionarTalla('XS', this)">XS</span>
+                <span class="pill-opt" onclick="seleccionarTalla('S', this)">S</span>
+                <span class="pill-opt selected" onclick="seleccionarTalla('M', this)">M</span>
+                <span class="pill-opt" onclick="seleccionarTalla('L', this)">L</span>
+                <span class="pill-opt" onclick="seleccionarTalla('XL', this)">XL</span>
+                <span class="pill-opt" onclick="seleccionarTalla('Unitalla', this)">Unitalla</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Color</label>
+              <input type="text" id="enc-color-nombre" class="form-control" placeholder="Ej. Palo de Rosa">
+              <div class="pills-suggestion-container">
+                <span class="pill-opt" onclick="setColorInput('Negro')">Negro</span>
+                <span class="pill-opt" onclick="setColorInput('Blanco')">Blanco</span>
+                <span class="pill-opt" onclick="setColorInput('Palo de Rosa')">Palo de Rosa</span>
+                <span class="pill-opt" onclick="setColorInput('Vino')">Vino</span>
+                <span class="pill-opt" onclick="setColorInput('Azul Marino')">Azul Marino</span>
+                <span class="pill-opt" onclick="setColorInput('Verde Esmeralda')">Esmeralda</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Detalle / Modelo Extra</label>
+              <input type="text" id="enc-detalle-extra" class="form-control" placeholder="Ej. Con escote en V y cinto">
+            </div>
+
+            <div class="form-group">
+              <label>Proveedor</label>
+              <select id="enc-proveedor" class="form-control">
+                <!-- Se puebla dinámicamente -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Modalidad de Entrega</label>
+              <select id="enc-modalidad" class="form-control" onchange="toggleColoniaInput()">
+                <option value="Recoge en local">Recoge en local</option>
+                <option value="Envío a Domicilio">Envío a Domicilio</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="grp-enc-colonia" style="display:none;">
+              <label>Colonia / Sector</label>
+              <input type="text" id="enc-colonia" class="form-control" placeholder="Ej. Col. Cumbres 3er Sector">
+            </div>
+
+            <div class="form-group">
+              <label>Costo de Compra ($)</label>
+              <input type="number" step="0.01" id="enc-costo-compra" class="form-control" value="0.00" oninput="calcularFinanzasEncargo()">
+            </div>
+
+            <div class="form-group">
+              <label>Precio de Venta ($)</label>
+              <input type="number" step="0.01" id="enc-precio-venta" class="form-control" value="0.00" oninput="calcularFinanzasEncargo()">
+            </div>
+
+            <div class="form-group">
+              <label>Anticipo ($)</label>
+              <input type="number" step="0.01" id="enc-anticipo" class="form-control" value="0.00" oninput="calcularFinanzasEncargo()">
+            </div>
+
+            <div class="form-group">
+              <label>Saldo Pendiente ($)</label>
+              <input type="number" step="0.01" id="enc-saldo" class="form-control" value="0.00" readonly>
+            </div>
+
+            <div class="form-group">
+              <label>Ganancia Neta ($)</label>
+              <input type="number" step="0.01" id="enc-ganancia" class="form-control" value="0.00" readonly>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Notas Adicionales</label>
+              <input type="text" id="enc-notas" class="form-control" placeholder="Observaciones especiales del cliente">
+            </div>
+
+          </div>
+
+          <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-plus-circle"></i> Guardar Encargo
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- LISTADO DE ENCARGOS -->
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-list-check"></i> Registro de Encargos
+        </h2>
+
+        <div class="filters-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-encargos" class="form-control" placeholder="Buscar por cliente, producto o proveedor..." oninput="filtrarEncargos()">
+          </div>
+          <div class="filter-pills-list">
+            <button class="pill-opt selected" onclick="filtrarEstadoEncargo('TODOS', this)">Todos</button>
+            <button class="pill-opt" onclick="filtrarEstadoEncargo('Pendiente', this)">Pendientes</button>
+            <button class="pill-opt" onclick="filtrarEstadoEncargo('En Ruta', this)">En Ruta</button>
+            <button class="pill-opt" onclick="filtrarEstadoEncargo('Entregado', this)">Entregados</button>
+          </div>
         </div>
 
-        <!-- TAB 4: PROVEEDORES Y COMPRAS -->
-        <div id="tab-proveedores" class="tab-content">
-            <div class="section-header">
-                <h2 class="section-title">Directorio de Proveedores y Compras</h2>
-            </div>
-
-            <!-- DIRECTORIO PROVEEDORES -->
-            <div class="card">
-                <h3 style="font-family:'Playfair Display'; margin-bottom: 16px; color: var(--primary-vino);"><i class="fa-solid fa-address-book"></i> Dar de Alta Nuevo Proveedor</h3>
-                <form id="form-nuevo-proveedor" onsubmit="guardarDirectorioProveedor(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Nombre del Proveedor / Marca *</label>
-                            <input type="text" id="dir-prov-nombre" placeholder="Ej. Distribuidora Moda GDL" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono / Contacto</label>
-                            <input type="text" id="dir-prov-tel" placeholder="Ej. 3312345678">
-                        </div>
-                        <div class="form-group full-width">
-                            <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-user-plus"></i> Guardar Proveedor en Directorio</button>
-                        </div>
-                    </div>
-                </form>
-                
-                <div class="table-responsive" style="margin-top: 20px;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre del Proveedor</th>
-                                <th>Contacto</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-directorio-proveedores"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- TICKETS DE COMPRA -->
-            <div class="card">
-                <h3 style="font-family:'Playfair Display'; margin-bottom: 16px; color: var(--primary-vino);"><i class="fa-solid fa-receipt"></i> Registrar Ticket de Compra</h3>
-                <form id="form-ticket-proveedor" onsubmit="guardarTicketProveedor(event)">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Proveedor *</label>
-                            <select id="prov-select-nombre" required>
-                                <option value="" disabled selected>Selecciona proveedor...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>N° Ticket / Factura *</label>
-                            <input type="text" id="prov-ticket" placeholder="Ej. F-98234" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Fecha de Compra *</label>
-                            <input type="date" id="prov-fecha" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Costo de Compra Total ($) *</label>
-                            <input type="number" step="0.01" id="prov-monto" placeholder="0.00" required>
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Concepto / Detalle de la Compra</label>
-                            <input type="text" id="prov-concepto" placeholder="Ej. Lote 50 vestidos de seda">
-                        </div>
-                    </div>
-                    <div style="margin-top: 18px; text-align: right;">
-                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Ticket</button>
-                    </div>
-                </form>
-                <div class="table-responsive" style="margin-top:20px;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Proveedor</th>
-                                <th>N° Ticket</th>
-                                <th>Costo de Compra</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-tickets-proveedores"></tbody>
-                    </table>
-                </div>
-            </div>
+        <div id="grid-encargos" class="cards-grid">
+          <!-- Tarjetas renderizadas dinámicamente -->
         </div>
+      </div>
 
-        <!-- TAB 5: REPORTES Y FINANZAS -->
-        <div id="tab-reportes" class="tab-content">
-            <div class="section-header">
-                <h2 class="section-title">Reportes y Finanzas</h2>
-            </div>
-            
-            <div class="delivery-stats-grid">
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-vino"><i class="fa-solid fa-sack-dollar"></i></div>
-                    <div class="delivery-stat-info"><span>Precio de Venta Total</span><h3 id="rep-total-ventas">$0.00</h3></div>
-                </div>
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-orange"><i class="fa-solid fa-box-open"></i></div>
-                    <div class="delivery-stat-info"><span>Costo de Compra Total</span><h3 id="rep-total-costos">$0.00</h3></div>
-                </div>
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-green"><i class="fa-solid fa-chart-line"></i></div>
-                    <div class="delivery-stat-info"><span>Ganancia Neta Total</span><h3 id="rep-total-ganancia">$0.00</h3></div>
-                </div>
-                <div class="delivery-stat-card">
-                    <div class="delivery-stat-icon icon-blue"><i class="fa-solid fa-vault"></i></div>
-                    <div class="delivery-stat-info"><span>Saldos Pendientes</span><h3 id="rep-total-saldos">$0.00</h3></div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 style="font-family:'Playfair Display'; margin-bottom: 16px; color: var(--primary-vino);">Resumen General Consolidado</h3>
-                <div class="table-responsive">
-                    <table>
-                        <tbody>
-                            <tr><td><strong>(+) Total Precio de Venta Encargos</strong></td><td id="rep-sub-ventas">$0.00</td></tr>
-                            <tr><td><strong>(-) Total Costo de Compra Encargos</strong></td><td id="rep-sub-costos-encargos">$0.00</td></tr>
-                            <tr><td><strong>(-) Total Compras a Proveedores (Tickets)</strong></td><td id="rep-sub-compras-prov">$0.00</td></tr>
-                            <tr style="background: var(--primary-soft);">
-                                <td><strong style="color:var(--primary-vino);">(=) Ganancia Neta Consolidada</strong></td>
-                                <td><strong style="color:var(--success-color); font-size:1.1rem;" id="rep-sub-ganancia-neta">$0.00</strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- MODAL POS: TERMINAL DE COBRO -->
-    <div id="modal-cobro-entrega" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-cash-register"></i> Terminal de Cobro POS</h3>
-                <button class="modal-close" onclick="closeModal('modal-cobro-entrega')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="pos-amount-display">
-                    <p id="cobro-modal-cliente">Cliente: -</p>
-                    <p>Saldo Pendiente a Cobrar</p>
-                    <h2 id="cobro-modal-saldo-text">$0.00</h2>
-                </div>
-
-                <form id="form-cobro-entrega" onsubmit="confirmarCobroEntrega(event)">
-                    <input type="hidden" id="cobro-del-id">
-                    <input type="hidden" id="cobro-monto-exacto">
-
-                    <label style="display:block; margin-bottom:10px;">Selecciona Método de Pago Recibido:</label>
-                    <div class="pos-methods-grid">
-                        <div class="pos-method-btn active" id="btn-metodo-efectivo" onclick="seleccionarMetodoPago('Efectivo')">
-                            <i class="fa-solid fa-money-bill-wave"></i><span>Efectivo</span>
-                        </div>
-                        <div class="pos-method-btn" id="btn-metodo-tarjeta" onclick="seleccionarMetodoPago('Tarjeta')">
-                            <i class="fa-solid fa-credit-card"></i><span>Tarjeta</span>
-                        </div>
-                        <div class="pos-method-btn" id="btn-metodo-transferencia" onclick="seleccionarMetodoPago('Transferencia')">
-                            <i class="fa-solid fa-building-columns"></i><span>Transferencia</span>
-                        </div>
-                    </div>
-                    <input type="hidden" id="cobro-metodo-seleccionado" value="Efectivo">
-
-                    <!-- Calculadora de Cambio en Efectivo -->
-                    <div id="caja-calculadora-efectivo" class="pos-cash-calculator active">
-                        <div class="form-group">
-                            <label>Monto recibido en efectivo ($)</label>
-                            <input type="number" step="0.01" id="cobro-efectivo-recibido" placeholder="0.00" oninput="calcularCambioPOS()" style="font-size: 1.2rem; font-weight: bold; text-align: center;">
-                        </div>
-                        <div style="text-align: center; margin-top: 12px;">
-                            <label>Cambio a Devolver al Cliente:</label>
-                            <div id="cobro-cambio-mostrar" class="pos-change-display">$0.00</div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 24px; text-align: center;">
-                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; font-size: 1.1rem; border-radius: 12px;">
-                            <i class="fa-solid fa-check-circle"></i> Confirmar Pago y Marcar Entregado
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
 
-    <!-- MODAL EDITAR DIRECCIÓN Y RUTA LOGÍSTICA -->
-    <div id="modal-edit-delivery" class="modal-overlay">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3><i class="fa-solid fa-route"></i> Dirección y Ruta de Reparto</h3>
-                <button class="modal-close" onclick="closeModal('modal-edit-delivery')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="form-edit-delivery" onsubmit="guardarEdicionEntrega(event)">
-                    <input type="hidden" id="edit-del-id">
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label>Colonia</label>
-                        <input type="text" id="edit-del-colonia" required>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label>Dirección Exacta y Referencias</label>
-                        <textarea id="edit-del-direccion" rows="3" placeholder="Calle 45 #123 x 20 y 22, fachada blanca con portón café..."></textarea>
-                    </div>
-                    <div class="form-group" style="margin-bottom: 14px;">
-                        <label>Link de Google Maps / Waze</label>
-                        <input type="url" id="edit-del-maps" placeholder="https://maps.google.com/?q=...">
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Repartidor Asignado</label>
-                            <input type="text" id="edit-del-repartidor" placeholder="Ej. Carlos Chofer">
-                        </div>
-                        <div class="form-group">
-                            <label>Horario Promesa</label>
-                            <input type="text" id="edit-del-horario" placeholder="Ej. 2:00 PM - 4:00 PM">
-                        </div>
-                    </div>
-                    <div style="margin-top: 20px; text-align: right;">
-                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios de Ruta</button>
-                    </div>
-                </form>
-            </div>
+    <!-- TAB 2: ENTREGAS Y LOGÍSTICA -->
+    <div id="tab-entregas" class="tab-pane">
+      
+      <!-- METRICAS DE LOGÍSTICA -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#fbe9e7; color:#d84315;">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </div>
+          <div>
+            <div class="kpi-val" id="kpi-total-pedidos">0</div>
+            <div class="kpi-lbl">Total Pedidos</div>
+          </div>
         </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#fff8e1; color:#f57f17;">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div>
+            <div class="kpi-val" id="kpi-pendientes">0</div>
+            <div class="kpi-lbl">Pendientes</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#e1f5fe; color:#0288d1;">
+            <i class="fa-solid fa-truck"></i>
+          </div>
+          <div>
+            <div class="kpi-val" id="kpi-enruta">0</div>
+            <div class="kpi-lbl">En Ruta</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#e8f5e9; color:#2e7d32;">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div>
+            <div class="kpi-val" id="kpi-entregados">0</div>
+            <div class="kpi-lbl">Entregados</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#f3e5f5; color:#7b1fa2;">
+            <i class="fa-solid fa-house"></i>
+          </div>
+          <div>
+            <div class="kpi-val" id="kpi-domicilio">0</div>
+            <div class="kpi-lbl">A Domicilio</div>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:#e0f2f1; color:#00695c;">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div>
+            <div class="kpi-val" id="kpi-sucursal">0</div>
+            <div class="kpi-lbl">Recoge en Local</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL CONTROL DE LOGÍSTICA -->
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-route"></i> Control de Entregas y Envíos
+        </h2>
+
+        <div class="filters-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-logistica" class="form-control" placeholder="Filtrar por cliente, colonia o repartidor..." oninput="filtrarLogistica()">
+          </div>
+          <div class="filter-pills-list">
+            <button class="pill-opt selected" onclick="filtrarFiltroLogistica('TODOS', this)">Todos</button>
+            <button class="pill-opt" onclick="filtrarFiltroLogistica('Pendiente', this)">Pendientes</button>
+            <button class="pill-opt" onclick="filtrarFiltroLogistica('En Ruta', this)">En Ruta</button>
+            <button class="pill-opt" onclick="filtrarFiltroLogistica('Entregado', this)">Entregados</button>
+            <button class="pill-opt" onclick="filtrarFiltroLogistica('DOMICILIO', this)">Solo Domicilio</button>
+            <button class="pill-opt" onclick="filtrarFiltroLogistica('LOCAL', this)">Recoge en Local</button>
+          </div>
+        </div>
+
+        <div id="grid-logistica" class="cards-grid">
+          <!-- Tarjetas renderizadas dinámicamente -->
+        </div>
+      </div>
+
     </div>
 
-    <div id="toast-container"></div>
-
-    <script>
-        // CONFIG FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
-            authDomain: "saray-ha-pos.firebaseapp.com",
-            projectId: "saray-ha-pos",
-            storageBucket: "saray-ha-pos.appspot.com",
-            messagingSenderId: "910404250860",
-            appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
-        };
-        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-        const db = firebase.firestore();
-
-        // ESTADO GLOBAL
-        let encargosData = [];
-        let proveedoresDirectorio = [];
-        let ticketsProveedores = [];
-        let filtroLogisticaActual = 'todos';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('enc-fecha-registro').value = today;
-            document.getElementById('prov-fecha').value = today;
-            escucharColecciones();
-        });
-
-        // NAVEGACIÓN
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
-            const activeBtn = Array.from(document.querySelectorAll('.nav-tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabName));
-            if(activeBtn) activeBtn.classList.add('active');
-            
-            if (tabName === 'entregas') renderEntregas();
-            if (tabName === 'reportes') renderReportes();
-        }
-
-        // FUNCIONES DE TEXTO RÁPIDO & SUGERENCIAS
-        function sugerirTexto(inputId, texto) {
-            const input = document.getElementById(inputId);
-            if (input.value.trim() === '') {
-                input.value = texto;
-            } else {
-                input.value = input.value.trim() + ' ' + texto;
-            }
-            input.focus();
-        }
-
-        function selectTalla(valor, btnElement) {
-            document.querySelectorAll('#group-talla .quick-btn-talla').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
-            document.getElementById('enc-talla-val').value = valor;
-        }
-
-        function toggleDomicilioFields() {
-            const isDom = document.getElementById('enc-modalidad').value === 'domicilio';
-            const groupCol = document.getElementById('group-colonia');
-            groupCol.style.display = isDom ? 'flex' : 'none';
-            if (isDom) {
-                document.getElementById('enc-colonia').setAttribute('required', 'true');
-            } else {
-                document.getElementById('enc-colonia').removeAttribute('required');
-            }
-        }
-
-        function calcularFinanzasEncargo() {
-            const costo = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
-            const venta = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
-            const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
-            
-            const saldo = Math.max(0, venta - anticipo);
-            const ganancia = venta - costo;
-
-            document.getElementById('enc-saldo').value = saldo.toFixed(2);
-            document.getElementById('enc-ganancia').value = ganancia.toFixed(2);
-        }
-
-        // FIREBASE LISTENERS EN TIEMPO REAL
-        function escucharColecciones() {
-            // Directorio de Proveedores
-            db.collection('proveedores').onSnapshot(snap => {
-                proveedoresDirectorio = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                renderDirectorioProveedores();
-            }, err => console.error("Error Proveedores:", err));
-
-            // Tickets de Proveedores
-            db.collection('tickets_proveedores').onSnapshot(snap => {
-                ticketsProveedores = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                renderTicketsProveedores();
-                renderReportes();
-            }, err => console.error("Error Tickets:", err));
-
-            // Encargos
-            db.collection('encargos_pedidos').onSnapshot(snap => {
-                encargosData = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                renderInventario();
-                renderEntregas();
-                renderReportes();
-            }, err => console.error("Error Encargos:", err));
-        }
-
-        // DIRECTORIO PROVEEDORES
-        async function guardarDirectorioProveedor(e) {
-            e.preventDefault();
-            const nombre = document.getElementById('dir-prov-nombre').value.trim();
-            const telefono = document.getElementById('dir-prov-tel').value.trim();
-            if(!nombre) return;
-
-            try {
-                await db.collection('proveedores').add({ nombre, telefono, fecha: new Date().toISOString() });
-                document.getElementById('form-nuevo-proveedor').reset();
-                showToast("Proveedor guardado en el directorio.", "success");
-            } catch (err) { 
-                showToast("Error al guardar proveedor.", "error"); 
-            }
-        }
-
-        function renderDirectorioProveedores() {
-            const tbody = document.getElementById('tbody-directorio-proveedores');
-            const selEncargos = document.getElementById('enc-proveedor');
-            const selTickets = document.getElementById('prov-select-nombre');
-            
-            tbody.innerHTML = '';
-            
-            if (proveedoresDirectorio.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No hay proveedores registrados en el directorio.</td></tr>`;
-                selEncargos.innerHTML = '<option value="" disabled selected>No hay proveedores disponibles</option>';
-                selTickets.innerHTML = '<option value="" disabled selected>No hay proveedores disponibles</option>';
-                return;
-            }
-
-            selEncargos.innerHTML = '<option value="" disabled selected>Selecciona un proveedor...</option>';
-            selTickets.innerHTML = '<option value="" disabled selected>Selecciona proveedor...</option>';
-
-            proveedoresDirectorio.forEach(p => {
-                tbody.innerHTML += `
-                <tr>
-                    <td><strong>${escapeHtml(p.nombre)}</strong></td>
-                    <td>${escapeHtml(p.telefono || '-')}</td>
-                    <td><button class="btn btn-secondary btn-sm" onclick="eliminarProveedorDirectorio('${p.id}')"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-                
-                selEncargos.innerHTML += `<option value="${escapeHtml(p.nombre)}">${escapeHtml(p.nombre)}</option>`;
-                selTickets.innerHTML += `<option value="${escapeHtml(p.nombre)}">${escapeHtml(p.nombre)}</option>`;
-            });
-        }
-
-        async function eliminarProveedorDirectorio(id) {
-            if(confirm("¿Eliminar este proveedor del directorio?")) {
-                try {
-                    await db.collection('proveedores').doc(id).delete();
-                    showToast("Proveedor eliminado.", "success");
-                } catch(e) { showToast("Error al eliminar.", "error"); }
-            }
-        }
-
-        // TICKETS COMPRA
-        async function guardarTicketProveedor(e) {
-            e.preventDefault();
-            const prov = document.getElementById('prov-select-nombre').value;
-            const ticket = document.getElementById('prov-ticket').value.trim();
-            const fecha = document.getElementById('prov-fecha').value;
-            const monto = parseFloat(document.getElementById('prov-monto').value) || 0;
-            const concepto = document.getElementById('prov-concepto').value.trim();
-
-            if(!prov) { showToast("Selecciona un proveedor del directorio.", "error"); return; }
-            
-            try {
-                await db.collection('tickets_proveedores').add({ proveedor: prov, ticket, fecha, costoCompra: monto, concepto });
-                document.getElementById('form-ticket-proveedor').reset();
-                showToast("Ticket de compra registrado.", "success");
-            } catch(e) { showToast("Error al registrar ticket.", "error"); }
-        }
-
-        function renderTicketsProveedores() {
-            const tbody = document.getElementById('tbody-tickets-proveedores');
-            if (ticketsProveedores.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No hay tickets de compras registrados.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = ticketsProveedores.map(t => `
-                <tr>
-                    <td>${t.fecha}</td>
-                    <td><strong>${escapeHtml(t.proveedor)}</strong></td>
-                    <td>${escapeHtml(t.ticket)}</td>
-                    <td style="font-weight:700;">$${(t.costoCompra || 0).toFixed(2)}</td>
-                    <td><button class="btn btn-secondary btn-sm" onclick="db.collection('tickets_proveedores').doc('${t.id}').delete()"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>
-            `).join('');
-        }
-
-        // GUARDAR Y RENDER DE ENCARGOS
-        async function guardarEncargo(e) {
-            e.preventDefault();
-
-            const productoNombre = document.getElementById('enc-producto-nombre').value.trim();
-            const talla = document.getElementById('enc-talla-val').value;
-            const colorNombre = document.getElementById('enc-color-nombre').value.trim();
-            const cliente = document.getElementById('enc-cliente').value.trim();
-            const proveedor = document.getElementById('enc-proveedor').value;
-
-            if (!cliente) { showToast("Escribe el nombre del cliente.", "error"); return; }
-            if (!productoNombre) { showToast("Escribe el nombre del producto.", "error"); return; }
-            if (!talla) { showToast("Selecciona la talla.", "error"); return; }
-            if (!colorNombre) { showToast("Escribe el color.", "error"); return; }
-            if (!proveedor) { showToast("Selecciona el proveedor a surtir.", "error"); return; }
-
-            const detalleExtra = document.getElementById('enc-detalle-extra').value.trim();
-            let productoConsolidado = `${productoNombre} | Talla: ${talla} | Color: ${colorNombre}`;
-            if (detalleExtra) productoConsolidado += ` | Extra: ${detalleExtra}`;
-
-            const modalidad = document.getElementById('enc-modalidad').value;
-            const colonia = modalidad === 'domicilio' ? document.getElementById('enc-colonia').value.trim() : 'Sucursal';
-
-            const costoCompra = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
-            const precioVenta = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
-            const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
-            const saldoPendiente = Math.max(0, precioVenta - anticipo);
-            const gananciaNeta = precioVenta - costoCompra;
-
-            const nuevoEncargo = {
-                fechaRegistro: document.getElementById('enc-fecha-registro').value,
-                cliente,
-                telefono: document.getElementById('enc-telefono').value.trim() || "",
-                productos: productoConsolidado,
-                proveedor,
-                modalidad,
-                colonia,
-                direccionExacta: "",
-                mapsLink: "",
-                repartidor: "",
-                horarioEntrega: "",
-                costoCompra,
-                precioVenta,
-                anticipo,
-                saldoPendiente,
-                gananciaNeta,
-                notas: document.getElementById('enc-notas').value.trim(),
-                estadoEntrega: 'pendiente',
-                politica: "No hay cambios ni devoluciones"
-            };
-
-            try {
-                await db.collection('encargos_pedidos').add(nuevoEncargo);
-                
-                // Limpiar Formulario
-                document.getElementById('form-encargo').reset();
-                document.querySelectorAll('#group-talla .quick-btn-talla').forEach(b => b.classList.remove('active'));
-                document.getElementById('enc-talla-val').value = "";
-                
-                // Restaurar defaults
-                document.getElementById('enc-fecha-registro').value = new Date().toISOString().split('T')[0];
-                document.getElementById('enc-costo-compra').value = 0;
-                document.getElementById('enc-anticipo').value = 0;
-                document.getElementById('enc-saldo').value = "0.00";
-                document.getElementById('enc-ganancia').value = "0.00";
-                toggleDomicilioFields();
-
-                showToast("¡Encargo registrado exitosamente!", "success");
-            } catch (err) {
-                console.error("Error al guardar:", err);
-                showToast("Error al guardar en Firestore.", "error");
-            }
-        }
-
-        function renderInventario() {
-            const tbody = document.getElementById('tbody-inventario');
-            if (encargosData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No hay encargos registrados.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = encargosData.map(item => {
-                let waButton = `<span class="badge badge-sin-telefono"><i class="fa-solid fa-phone-slash"></i> Sin tel</span>`;
-                if(item.telefono && item.telefono.trim() !== '') {
-                    const cleanPhone = item.telefono.replace(/\D/g,'');
-                    waButton = `<a href="https://wa.me/52${cleanPhone}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> ${item.telefono}</a>`;
-                }
-
-                let badgeEstado = `<span class="badge badge-pendiente">Pendiente</span>`;
-                if(item.estadoEntrega === 'en_ruta') badgeEstado = `<span class="badge badge-ruta">En Ruta</span>`;
-                if(item.estadoEntrega === 'entregado') badgeEstado = `<span class="badge badge-entregado">Entregado</span>`;
-
-                return `
-                <tr>
-                    <td>${item.fechaRegistro}</td>
-                    <td><strong>${escapeHtml(item.cliente)}</strong></td>
-                    <td>${waButton}</td>
-                    <td>${escapeHtml(item.productos)}</td>
-                    <td><span class="badge" style="background:#e0f7fa; color:#006064;">${escapeHtml(item.proveedor || '-')}</span></td>
-                    <td>$${(item.precioVenta||0).toFixed(2)}</td>
-                    <td style="color:var(--danger-color); font-weight:700;">$${(item.saldoPendiente||0).toFixed(2)}</td>
-                    <td><span class="badge ${item.modalidad==='domicilio'?'badge-domicilio':'badge-sucursal'}">${item.modalidad}</span></td>
-                    <td>${badgeEstado}</td>
-                    <td><button class="btn btn-secondary btn-sm" onclick="eliminarEncargo('${item.id}')"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>`;
-            }).join('');
-        }
-
-        function filtrarInventario() {
-            const q = document.getElementById('search-inventario').value.toLowerCase();
-            document.querySelectorAll('#tbody-inventario tr').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(q) ? '' : 'none';
-            });
-        }
-
-        // LOGÍSTICA & ENTREGAS (TARJETAS Y MÉTODOS)
-        function renderEntregas() {
-            const cont = document.getElementById('delivery-cards-container');
-            let pend=0, ruta=0, ent=0, cobrar=0;
-
-            const searchQuery = (document.getElementById('search-entregas')?.value || '').toLowerCase();
-
-            const filtered = encargosData.filter(item => {
-                if (filtroLogisticaActual === 'pendiente' && item.estadoEntrega !== 'pendiente') return false;
-                if (filtroLogisticaActual === 'en_ruta' && item.estadoEntrega !== 'en_ruta') return false;
-                if (filtroLogisticaActual === 'entregado' && item.estadoEntrega !== 'entregado') return false;
-                if (filtroLogisticaActual === 'domicilio' && item.modalidad !== 'domicilio') return false;
-                if (filtroLogisticaActual === 'sucursal' && item.modalidad !== 'sucursal') return false;
-
-                if (searchQuery) {
-                    const mName = item.cliente?.toLowerCase().includes(searchQuery);
-                    const mCol = item.colonia?.toLowerCase().includes(searchQuery);
-                    return mName || mCol;
-                }
-                return true;
-            });
-
-            encargosData.forEach(item => {
-                if(item.estadoEntrega === 'pendiente') pend++;
-                if(item.estadoEntrega === 'en_ruta') ruta++;
-                if(item.estadoEntrega === 'entregado') ent++;
-                if(item.estadoEntrega !== 'entregado' && item.modalidad === 'domicilio') cobrar += (item.saldoPendiente||0);
-            });
-            
-            document.getElementById('stat-del-pendientes').innerText = pend;
-            document.getElementById('stat-del-ruta').innerText = ruta;
-            document.getElementById('stat-del-entregados').innerText = ent;
-            document.getElementById('stat-del-cobrar').innerText = `$${cobrar.toFixed(2)}`;
-
-            if(filtered.length === 0) {
-                cont.innerHTML = '<p class="empty-state"><i class="fa-solid fa-truck-ramp-box"></i><br><br>No hay entregas pendientes con el filtro seleccionado.</p>';
-                return;
-            }
-
-            cont.innerHTML = filtered.map(item => {
-                const phone = item.telefono ? item.telefono.replace(/\D/g,'') : null;
-                const hasPhone = phone && phone.length >= 7;
-                const mapsUrl = item.mapsLink && item.mapsLink.trim() !== '' ? item.mapsLink : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.colonia + ' ' + (item.direccionExacta || ''))}`;
-                
-                let badgeEst = `<span class="badge badge-pendiente">Pendiente</span>`;
-                if(item.estadoEntrega === 'en_ruta') badgeEst = `<span class="badge badge-ruta">En Ruta</span>`;
-                if(item.estadoEntrega === 'entregado') badgeEst = `<span class="badge badge-entregado">Entregado</span>`;
-
-                return `
-                <div class="delivery-order-card">
-                    <div class="delivery-header">
-                        <div>
-                            <strong style="color:var(--primary-vino); font-size:1.1rem;">${escapeHtml(item.cliente)}</strong> 
-                            <span class="badge ${item.modalidad==='domicilio'?'badge-domicilio':'badge-sucursal'}" style="margin-left:8px;">${item.modalidad}</span>
-                        </div>
-                        <div>${badgeEst}</div>
-                    </div>
-                    <div class="delivery-body">
-                        <div class="address-box">
-                            <strong><i class="fa-solid fa-map-pin"></i> ${escapeHtml(item.colonia)}</strong>
-                            <p style="font-size:0.85rem; margin-top:5px; color:#444;">${escapeHtml(item.direccionExacta || 'Sin dirección exacta registrada.')}</p>
-                            ${item.horarioEntrega ? `<p style="font-size:0.8rem; color:var(--primary-vino); font-weight:600; margin-top:5px;"><i class="fa-solid fa-clock"></i> Horario: ${escapeHtml(item.horarioEntrega)}</p>` : ''}
-                            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;">
-                                <strong style="color:var(--primary-vino); font-size:0.8rem;">DETALLE DEL PEDIDO:</strong>
-                                <p style="font-size:0.85rem;">${escapeHtml(item.productos)}</p>
-                            </div>
-                        </div>
-                        <div style="text-align:right;">
-                            <h2 style="color:var(--danger-color); font-size:1.8rem; font-weight:700;">$${(item.saldoPendiente||0).toFixed(2)}</h2>
-                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Saldo Pendiente</span>
-                            <div style="margin-top:15px;">
-                                <span class="fin-pill paid">Anticipo: $${(item.anticipo||0).toFixed(2)}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="delivery-footer-actions">
-                        <div class="driver-action-btns">
-                            <button class="btn btn-secondary btn-sm" onclick="openEditDeliveryModal('${item.id}')">
-                                <i class="fa-solid fa-pen-to-square"></i> Editar Dirección/Ruta
-                            </button>
-                            <a href="${mapsUrl}" target="_blank" class="btn btn-secondary btn-sm" style="color:#0288d1; border-color:#0288d1;">
-                                <i class="fa-solid fa-map-location-dot"></i> GPS Mapa
-                            </a>
-                        </div>
-                        <div class="driver-action-btns">
-                            ${hasPhone && item.estadoEntrega !== 'entregado' ? `<button class="btn btn-whatsapp btn-sm" onclick="window.open('https://wa.me/52${phone}?text=¡Hola! Tu pedido de SARAY HA va en camino. El saldo pendiente es de $${(item.saldoPendiente||0).toFixed(2)}', '_blank')"><i class="fa-brands fa-whatsapp"></i> Avisar "En Camino"</button>` : ''}
-                            ${item.estadoEntrega === 'pendiente' ? `<button class="btn btn-primary btn-sm" onclick="actualizarEstadoRuta('${item.id}', 'en_ruta')"><i class="fa-solid fa-truck-fast"></i> Marcar En Ruta</button>` : ''}
-                            ${item.estadoEntrega !== 'entregado' ? `<button class="btn btn-primary btn-sm" style="background:var(--success-color);" onclick="prepararCobroPOS('${item.id}')"><i class="fa-solid fa-cash-register"></i> Cobrar y Entregar</button>` : ''}
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        function filtrarEntregas(filtro, btnEl) {
-            filtroLogisticaActual = filtro;
-            document.querySelectorAll('.filter-pills .pill-btn').forEach(b => b.classList.remove('active'));
-            if(btnEl) btnEl.classList.add('active');
-            renderEntregas();
-        }
-
-        async function actualizarEstadoRuta(id, estado) {
-            try {
-                await db.collection('encargos_pedidos').doc(id).update({estadoEntrega: estado});
-                showToast("Estado de ruta actualizado.", "success");
-            } catch(e) { showToast("Error al actualizar.", "error"); }
-        }
-
-        // MODAL EDITAR DIRECCIÓN Y RUTA
-        function openEditDeliveryModal(id) {
-            const item = encargosData.find(e => e.id === id);
-            if (!item) return;
-            document.getElementById('edit-del-id').value = item.id;
-            document.getElementById('edit-del-colonia').value = item.colonia || '';
-            document.getElementById('edit-del-direccion').value = item.direccionExacta || '';
-            document.getElementById('edit-del-maps').value = item.mapsLink || '';
-            document.getElementById('edit-del-repartidor').value = item.repartidor || '';
-            document.getElementById('edit-del-horario').value = item.horarioEntrega || '';
-            document.getElementById('modal-edit-delivery').classList.add('active');
-        }
-
-        async function guardarEdicionEntrega(e) {
-            e.preventDefault();
-            const id = document.getElementById('edit-del-id').value;
-            try {
-                await db.collection('encargos_pedidos').doc(id).update({
-                    colonia: document.getElementById('edit-del-colonia').value.trim(),
-                    direccionExacta: document.getElementById('edit-del-direccion').value.trim(),
-                    mapsLink: document.getElementById('edit-del-maps').value.trim(),
-                    repartidor: document.getElementById('edit-del-repartidor').value.trim(),
-                    horarioEntrega: document.getElementById('edit-del-horario').value.trim()
-                });
-                closeModal('modal-edit-delivery');
-                showToast("Datos de ruta actualizados con éxito.", "success");
-            } catch (err) { showToast("Error al guardar la ruta.", "error"); }
-        }
-
-        // TERMINAL DE COBRO POS (DESPACHO DE ENTREGAS)
-        function prepararCobroPOS(id) {
-            const item = encargosData.find(e => e.id === id);
-            if(!item) return;
-
-            const saldo = item.saldoPendiente || 0;
-
-            if(saldo <= 0) {
-                db.collection('encargos_pedidos').doc(id).update({
-                    estadoEntrega: 'entregado',
-                    fechaLiquidacion: new Date().toISOString()
-                }).then(() => showToast("Pedido entregado (Saldo $0).", "success"));
-                return;
-            }
-
-            document.getElementById('cobro-del-id').value = item.id;
-            document.getElementById('cobro-modal-cliente').innerText = `Cliente: ${item.cliente}`;
-            document.getElementById('cobro-modal-saldo-text').innerText = `$${saldo.toFixed(2)}`;
-            document.getElementById('cobro-monto-exacto').value = saldo;
-            
-            document.getElementById('cobro-efectivo-recibido').value = '';
-            document.getElementById('cobro-cambio-mostrar').innerText = '$0.00';
-            document.getElementById('cobro-cambio-mostrar').style.color = 'var(--text-muted)';
-            
-            seleccionarMetodoPago('Efectivo');
-            document.getElementById('modal-cobro-entrega').classList.add('active');
-        }
-
-        function seleccionarMetodoPago(metodo) {
-            document.querySelectorAll('.pos-method-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-metodo-${metodo.toLowerCase()}`).classList.add('active');
-            document.getElementById('cobro-metodo-seleccionado').value = metodo;
-
-            const calc = document.getElementById('caja-calculadora-efectivo');
-            if(metodo === 'Efectivo') {
-                calc.classList.add('active');
-                setTimeout(()=> document.getElementById('cobro-efectivo-recibido').focus(), 150);
-            } else {
-                calc.classList.remove('active');
-            }
-        }
-
-        function calcularCambioPOS() {
-            const cobrar = parseFloat(document.getElementById('cobro-monto-exacto').value) || 0;
-            const textRecibido = document.getElementById('cobro-efectivo-recibido').value;
-            const recibido = textRecibido ? parseFloat(textRecibido) : 0;
-            const display = document.getElementById('cobro-cambio-mostrar');
-
-            if(recibido >= cobrar) {
-                const cambio = recibido - cobrar;
-                display.innerText = `$${cambio.toFixed(2)}`;
-                display.style.color = 'var(--success-color)';
-            } else {
-                display.innerText = 'Monto insuficiente';
-                display.style.color = 'var(--danger-color)';
-            }
-        }
-
-        async function confirmarCobroEntrega(e) {
-            e.preventDefault();
-            const id = document.getElementById('cobro-del-id').value;
-            const cobrar = parseFloat(document.getElementById('cobro-monto-exacto').value) || 0;
-            const metodo = document.getElementById('cobro-metodo-seleccionado').value;
-            
-            const textRecibido = document.getElementById('cobro-efectivo-recibido').value;
-            const recibido = textRecibido ? parseFloat(textRecibido) : 0;
-
-            if(metodo === 'Efectivo' && recibido < cobrar) {
-                showToast("El monto recibido no alcanza a cubrir el saldo.", "error");
-                return;
-            }
-
-            const item = encargosData.find(x => x.id === id);
-            try {
-                await db.collection('encargos_pedidos').doc(id).update({
-                    anticipo: (item.anticipo || 0) + cobrar,
-                    saldoPendiente: 0,
-                    estadoEntrega: 'entregado',
-                    metodoPagoLiquidacion: metodo,
-                    fechaLiquidacion: new Date().toISOString()
-                });
-                closeModal('modal-cobro-entrega');
-                showToast("Cobro completado y pedido entregado con éxito.", "success");
-            } catch(err) {
-                showToast("Error al procesar el cobro.", "error");
-            }
-        }
-
-        // REPORTES Y FINANZAS
-        function renderReportes() {
-            let vt = 0, ct = 0, saldosTotales = 0;
-            encargosData.forEach(i => { 
-                vt += (i.precioVenta || 0); 
-                ct += (i.costoCompra || 0); 
-                saldosTotales += (i.saldoPendiente || 0);
-            });
-            
-            let cprov = 0;
-            ticketsProveedores.forEach(i => { cprov += (i.costoCompra || 0); });
-
-            const costoTotalConsolidado = ct + cprov;
-            const gananciaNetaConsolidada = vt - costoTotalConsolidado;
-            
-            document.getElementById('rep-total-ventas').innerText = `$${vt.toFixed(2)}`;
-            document.getElementById('rep-total-costos').innerText = `$${costoTotalConsolidado.toFixed(2)}`;
-            document.getElementById('rep-total-ganancia').innerText = `$${gananciaNetaConsolidada.toFixed(2)}`;
-            document.getElementById('rep-total-saldos').innerText = `$${saldosTotales.toFixed(2)}`;
-
-            document.getElementById('rep-sub-ventas').innerText = `$${vt.toFixed(2)}`;
-            document.getElementById('rep-sub-costos-encargos').innerText = `$${ct.toFixed(2)}`;
-            document.getElementById('rep-sub-compras-prov').innerText = `$${cprov.toFixed(2)}`;
-            document.getElementById('rep-sub-ganancia-neta').innerText = `$${gananciaNetaConsolidada.toFixed(2)}`;
-        }
-
-        async function eliminarEncargo(id) {
-            if (confirm("¿Estás seguro de eliminar este encargo definitivamente?")) {
-                try {
-                    await db.collection('encargos_pedidos').doc(id).delete();
-                    showToast("Encargo eliminado.", "success");
-                } catch (e) {
-                    showToast("Error al eliminar.", "error");
-                }
-            }
-        }
-
-        // UTILS
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function escapeHtml(s) { return s ? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;") : ''; }
+    <!-- TAB 3: PROVEEDORES -->
+    <div id="tab-proveedores" class="tab-pane">
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-address-book"></i> Directorio de Proveedores
+        </h2>
+        <form id="form-proveedor" onsubmit="guardarProveedor(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nombre del Proveedor *</label>
+              <input type="text" id="prov-nombre" class="form-control" placeholder="Ej. Creaciones Moda MX" required>
+            </div>
+            <div class="form-group">
+              <label>Contacto / Teléfono</label>
+              <input type="tel" id="prov-contacto" class="form-control" placeholder="Ej. 8189998877">
+            </div>
+            <div class="form-group">
+              <label>Categoría / Tipo de Productos</label>
+              <input type="text" id="prov-categoria" class="form-control" placeholder="Ej. Vestidos de Noche, Calzado">
+            </div>
+            <div class="form-group full-width">
+              <label>Notas / Dirección Proveedor</label>
+              <input type="text" id="prov-notas" class="form-control" placeholder="Ej. Bodega #4 Plaza Mayoreo">
+            </div>
+          </div>
+          <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-user-plus"></i> Registrar Proveedor
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-building-user"></i> Lista de Proveedores Registrados
+        </h2>
+        <div id="grid-proveedores" class="cards-grid">
+          <!-- Proveedores renderizados -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: TICKETS PROVEEDOR -->
+    <div id="tab-tickets" class="tab-pane">
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-receipt"></i> Registro de Ticket o Factura de Proveedor
+        </h2>
+        <form id="form-ticket-prov" onsubmit="guardarTicketProveedor(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Seleccionar Proveedor *</label>
+              <select id="ticket-proveedor-select" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+              <label>Folio / Ticket N°</label>
+              <input type="text" id="ticket-folio" class="form-control" placeholder="Ej. TCK-9942">
+            </div>
+            <div class="form-group">
+              <label>Fecha de Compra</label>
+              <input type="date" id="ticket-fecha" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Monto Total Ticket ($) *</label>
+              <input type="number" step="0.01" id="ticket-monto" class="form-control" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+              <label>Estatus de Pago</label>
+              <select id="ticket-estatus-pago" class="form-control">
+                <option value="Pagado">Pagado</option>
+                <option value="Pendiente de Pago">Pendiente de Pago</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label>Notas / Concepto de Compra</label>
+              <input type="text" id="ticket-concepto" class="form-control" placeholder="Ej. Lote 25 vestidos temporada verano">
+            </div>
+          </div>
+          <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-file-invoice-dollar"></i> Registrar Ticket
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-list-ol"></i> Historial de Compras a Proveedores
+        </h2>
+        <div id="grid-tickets-prov" class="cards-grid">
+          <!-- Renderizado de tickets -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: REPORTES FINANCIEROS -->
+    <div id="tab-reportes" class="tab-pane">
+      <div class="boutique-card">
+        <h2 class="card-title">
+          <i class="fa-solid fa-chart-pie"></i> Resumen de Balance General
+        </h2>
         
-        function showToast(m, t='info') {
-            const cont = document.getElementById('toast-container');
-            const to = document.createElement('div');
-            to.className = 'toast';
-            to.style.background = t === 'error' ? '#d32f2f' : '#2e7d32';
-            to.innerHTML = `<i class="fa-solid ${t === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${m}`;
-            cont.appendChild(to);
-            setTimeout(() => to.remove(), 3500);
-        }
-    </script>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#e8f5e9; color:#2e7d32;">
+              <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div>
+              <div class="kpi-val" id="rep-total-ventas">$0.00</div>
+              <div class="kpi-lbl">Total Ventas (Precio)</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#e3f2fd; color:#1565c0;">
+              <i class="fa-solid fa-piggy-bank"></i>
+            </div>
+            <div>
+              <div class="kpi-val" id="rep-total-anticipos">$0.00</div>
+              <div class="kpi-lbl">Total Anticipos Recibidos</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#fff3e0; color:#e65100;">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div>
+              <div class="kpi-val" id="rep-total-liquidaciones">$0.00</div>
+              <div class="kpi-lbl">Total Pagos en Entrega</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#f3e5f5; color:#6a1b9a;">
+              <i class="fa-solid fa-chart-line-up"></i>
+            </div>
+            <div>
+              <div class="kpi-val" id="rep-total-ganancia">$0.00</div>
+              <div class="kpi-lbl">Ganancia Neta Estimada</div>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon" style="background:#ffebee; color:#c62828;">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div>
+              <div class="kpi-val" id="rep-compras-prov">$0.00</div>
+              <div class="kpi-lbl">Gastos Tickets Proveedor</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: POS CHECKOUT Y COBRO -->
+  <div id="modal-cobro-entrega" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-cash-register"></i> Finalizar Entrega y Cobro</h3>
+        <button class="btn-close-modal" onclick="cerrarModalCobro()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="cobro-encargo-id">
+        <div style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <h4 id="cobro-cliente-nombre" style="color: var(--primary-vino); font-size: 1.1rem;">Cliente</h4>
+          <p id="cobro-producto-desc" style="font-size: 0.85rem; color: var(--text-muted);">Producto</p>
+        </div>
+
+        <div class="financial-summary-box" style="margin-bottom: 1rem;">
+          <div class="fin-row">
+            <span>Precio Total:</span>
+            <span id="cobro-precio-total" class="bold">$0.00</span>
+          </div>
+          <div class="fin-row">
+            <span>Anticipo Inicial:</span>
+            <span id="cobro-anticipo-inicial">$0.00</span>
+          </div>
+          <div class="fin-row bold" style="color: var(--primary-vino); font-size: 0.95rem; border-top: 1px dashed var(--border-color); padding-top: 0.3rem; margin-top: 0.3rem;">
+            <span>Saldo a Cobrar / Liquidar:</span>
+            <span id="cobro-saldo-pendiente">$0.00</span>
+          </div>
+        </div>
+
+        <label>Seleccionar Método de Pago:</label>
+        <div class="payment-methods-grid">
+          <button type="button" class="btn-pay-method selected" id="pay-btn-efectivo" onclick="seleccionarMetodoPago('Efectivo')">
+            <i class="fa-solid fa-money-bill-wave"></i> Efectivo
+          </button>
+          <button type="button" class="btn-pay-method" id="pay-btn-tarjeta" onclick="seleccionarMetodoPago('Tarjeta')">
+            <i class="fa-solid fa-credit-card"></i> Tarjeta
+          </button>
+          <button type="button" class="btn-pay-method" id="pay-btn-transferencia" onclick="seleccionarMetodoPago('Transferencia')">
+            <i class="fa-solid fa-mobile-screen-button"></i> Transfer
+          </button>
+        </div>
+
+        <!-- CALCULADORA DE CAMBIO DE EFECTIVO -->
+        <div id="caja-calculadora-efectivo" class="cash-calc-box">
+          <label>Monto Recibido del Cliente ($)</label>
+          <input type="number" step="0.01" id="cobro-efectivo-recibido" class="form-control" style="font-size: 1.1rem; font-weight:700;" placeholder="0.00" oninput="calcularCambioEfectivo()">
+          
+          <div class="quick-cash-pills">
+            <span class="pill-opt" onclick="setCashFast(100)">$100</span>
+            <span class="pill-opt" onclick="setCashFast(200)">$200</span>
+            <span class="pill-opt" onclick="setCashFast(500)">$500</span>
+            <span class="pill-opt" onclick="setCashFast(1000)">$1000</span>
+            <span class="pill-opt" onclick="setCashExacto()">Exacto</span>
+          </div>
+
+          <div style="margin-top: 0.8rem; display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1rem; color: var(--success-green);">
+            <span>Cambio a Entregar:</span>
+            <span id="cobro-cambio-mostrar" style="font-size: 1.2rem;">$0.00</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="cerrarModalCobro()">Cancelar</button>
+          <button type="button" class="btn btn-success" onclick="confirmarCobroEntrega()">
+            <i class="fa-solid fa-check"></i> Marcar Entregado y Pagado
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: EDITAR DATOS DE LOGÍSTICA / RUTA -->
+  <div id="modal-edit-delivery" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-truck-fast"></i> Detalles de Envío y Dirección</h3>
+        <button class="btn-close-modal" onclick="cerrarModalEditDelivery()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-edit-delivery" onsubmit="guardarRutaLogistica(event)">
+          <input type="hidden" id="route-encargo-id">
+          
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Modalidad</label>
+            <select id="route-modalidad" class="form-control">
+              <option value="Recoge en local">Recoge en local</option>
+              <option value="Envío a Domicilio">Envío a Domicilio</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Colonia / Sector</label>
+            <input type="text" id="route-colonia" class="form-control" placeholder="Ej. Col. Cumbres 3er Sector">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Dirección Exacta (Calle y Número)</label>
+            <input type="text" id="route-direccion" class="form-control" placeholder="Ej. Calle Av. de los Leones #4502">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Referencias de Entrega</label>
+            <input type="text" id="route-referencias" class="form-control" placeholder="Ej. Casa portón negro frente al parque">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Link Ubicación Google Maps / GPS</label>
+            <input type="url" id="route-maps-link" class="form-control" placeholder="Ej. https://maps.google.com/?q=...">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0.8rem;">
+            <label>Repartidor / Mensajero</label>
+            <input type="text" id="route-repartidor" class="form-control" placeholder="Nombre de quien entrega">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.2rem;">
+            <label>Horario Estacio / Ventana de Entrega</label>
+            <input type="text" id="route-horario" class="form-control" placeholder="Ej. Entre 4:00 PM y 6:00 PM">
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalEditDelivery()">Cancelar</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-save"></i> Actualizar Ruta</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: REINICIAR SISTEMA (SEGURIDAD) -->
+  <div id="modal-reset-sistema" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header" style="background: var(--danger-red);">
+        <h3><i class="fa-solid fa-triangle-exclamation"></i> Reiniciar Datos del Sistema</h3>
+        <button class="btn-close-modal" onclick="cerrarModalResetSistema()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem; line-height: 1.5;">
+          <strong>¡ADVERTENCIA CRÍTICA!</strong> Esta acción eliminará permanentemente todos los registros de <strong>Encargos, Proveedores y Tickets</strong> almacenados en la base de datos de Firebase. Esta acción <strong>NO SE PUEDE DESHACER</strong>.
+        </p>
+        <p style="font-size: 0.85rem; color: var(--danger-red); font-weight:700; margin-bottom: 0.8rem;">
+          Para confirmar la eliminación total, escriba la palabra <span style="text-decoration: underline;">BORRAR</span> a continuación:
+        </p>
+        <input type="text" id="reset-confirm-input" class="form-control" placeholder="Escriba BORRAR aquí" style="margin-bottom: 1.25rem; border-color: var(--danger-red);">
+        
+        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+          <button type="button" class="btn btn-secondary" onclick="cerrarModalResetSistema()">Cancelar</button>
+          <button type="button" class="btn btn-danger" onclick="ejecutarResetSistema()">
+            <i class="fa-solid fa-trash-can"></i> Confirmar y Eliminar Todo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- LOGICA JS E INTEGRACIÓN CON FIREBASE FIRESTORE -->
+  <script>
+    // Configuración Firebase Pro SARAY HA
+    const firebaseConfig = {
+      apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
+      authDomain: "saray-ha-pos.firebaseapp.com",
+      projectId: "saray-ha-pos",
+      storageBucket: "saray-ha-pos.appspot.com",
+      messagingSenderId: "910404250860",
+      appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Estado Local de la Aplicación
+    let encargosLista = [];
+    let proveedoresLista = [];
+    let ticketsLista = [];
+
+    let filtroEstadoEncargos = 'TODOS';
+    let filtroLogisticaActual = 'TODOS';
+    let metodoPagoSeleccionado = 'Efectivo';
+
+    // Inicialización al cargar el DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      autoSetFechaRegistro();
+      escucharColeccionesFirebase();
+    });
+
+    // Poner Fecha Actual Automática en Registro
+    function autoSetFechaRegistro() {
+      const hoy = new Date();
+      const opciones = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+      const fechaStr = hoy.toLocaleDateString('es-MX', opciones);
+      document.getElementById('enc-fecha-registro').value = fechaStr;
+    }
+
+    // Navegación por pestañas
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      btn.classList.add('active');
+    }
+
+    // Notificaciones Toast
+    function showToast(mensaje, tipo = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      let icon = '<i class="fa-solid fa-circle-info"></i>';
+      if(tipo === 'success') icon = '<i class="fa-solid fa-circle-check" style="color:#4caf50;"></i>';
+      if(tipo === 'error') icon = '<i class="fa-solid fa-triangle-exclamation" style="color:#f44336;"></i>';
+      
+      toast.innerHTML = `${icon} <span>${mensaje}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 3500);
+    }
+
+    // Sugerencias de Formulario (Producto y Color)
+    function setProductoInput(val) {
+      document.getElementById('enc-producto-nombre').value = val;
+    }
+    function setColorInput(val) {
+      document.getElementById('enc-color-nombre').value = val;
+    }
+    function seleccionarTalla(talla, elem) {
+      document.getElementById('enc-talla-val').value = talla;
+      const parent = document.getElementById('pills-tallas');
+      parent.querySelectorAll('.pill-opt').forEach(p => p.classList.remove('selected'));
+      elem.classList.add('selected');
+    }
+
+    function toggleColoniaInput() {
+      const mod = document.getElementById('enc-modalidad').value;
+      const grp = document.getElementById('grp-enc-colonia');
+      if(mod === 'Envío a Domicilio') {
+        grp.style.display = 'flex';
+      } else {
+        grp.style.display = 'none';
+      }
+    }
+
+    // Cálculo Financiero en Vivo (Formulario Encargos)
+    function calcularFinanzasEncargo() {
+      const costo = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
+      const precio = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
+      const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
+
+      const saldo = Math.max(0, precio - anticipo);
+      const ganancia = precio - costo;
+
+      document.getElementById('enc-saldo').value = saldo.toFixed(2);
+      document.getElementById('enc-ganancia').value = ganancia.toFixed(2);
+    }
+
+    // ESCUCHAR FIREBASE FIRESTORE EN TIEMPO REAL
+    function escucharColeccionesFirebase() {
+      // 1. Encargos
+      db.collection('encargos_pedidos').onSnapshot(snapshot => {
+        encargosLista = [];
+        snapshot.forEach(doc => {
+          encargosLista.push({ id: doc.id, ...doc.data() });
+        });
+        // Ordenar por fecha reciente
+        encargosLista.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+        renderInventario();
+        renderLogistica();
+        actualizarKPIs();
+        renderReportes();
+      }, err => {
+        console.error("Error en Snapshot Encargos:", err);
+        showToast("Error de conexión con Firestore", "error");
+      });
+
+      // 2. Proveedores
+      db.collection('proveedores').onSnapshot(snapshot => {
+        proveedoresLista = [];
+        snapshot.forEach(doc => {
+          proveedoresLista.push({ id: doc.id, ...doc.data() });
+        });
+        renderProveedores();
+        poblarDropdownsProveedores();
+      });
+
+      // 3. Tickets Proveedor
+      db.collection('tickets_proveedores').onSnapshot(snapshot => {
+        ticketsLista = [];
+        snapshot.forEach(doc => {
+          ticketsLista.push({ id: doc.id, ...doc.data() });
+        });
+        renderTicketsProveedores();
+        renderReportes();
+      });
+    }
+
+    // Poblar Dropdowns de Proveedores
+    function poblarDropdownsProveedores() {
+      const selEncargo = document.getElementById('enc-proveedor');
+      const selTicket = document.getElementById('ticket-proveedor-select');
+      
+      let html = '<option value="Sin Especificar">Seleccionar Proveedor...</option>';
+      proveedoresLista.forEach(p => {
+        html += `<option value="${p.nombre}">${p.nombre}</option>`;
+      });
+
+      selEncargo.innerHTML = html;
+      selTicket.innerHTML = html;
+    }
+
+    // GUARDAR NUEVO ENCARGO
+    function guardarNuevoEncargo(e) {
+      e.preventDefault();
+
+      const cliente = document.getElementById('enc-cliente').value.trim();
+      const producto = document.getElementById('enc-producto-nombre').value.trim();
+      
+      if(!cliente || !producto) {
+        showToast("Por favor complete el nombre del cliente y producto", "error");
+        return;
+      }
+
+      const nuevoObj = {
+        fechaRegistro: document.getElementById('enc-fecha-registro').value,
+        timestamp: Date.now(),
+        cliente: cliente,
+        telefono: document.getElementById('enc-telefono').value.trim() || "",
+        productoNombre: producto,
+        talla: document.getElementById('enc-talla-val').value || "Unitalla",
+        color: document.getElementById('enc-color-nombre').value.trim() || "Sin especificar",
+        detalleExtra: document.getElementById('enc-detalle-extra').value.trim() || "",
+        proveedor: document.getElementById('enc-proveedor').value || "Sin Especificar",
+        modalidad: document.getElementById('enc-modalidad').value,
+        colonia: document.getElementById('enc-colonia').value.trim() || "",
+        direccionExacta: "",
+        referencias: "",
+        linkMaps: "",
+        repartidor: "",
+        horarioEntrega: "",
+        costoCompra: parseFloat(document.getElementById('enc-costo-compra').value) || 0,
+        precioVenta: parseFloat(document.getElementById('enc-precio-venta').value) || 0,
+        anticipo: parseFloat(document.getElementById('enc-anticipo').value) || 0,
+        saldoPendiente: parseFloat(document.getElementById('enc-saldo').value) || 0,
+        gananciaNeta: parseFloat(document.getElementById('enc-ganancia').value) || 0,
+        pagoEntrega: 0,
+        metodoPagoEntrega: "",
+        fechaEntrega: "",
+        notas: document.getElementById('enc-notas').value.trim() || "",
+        estado: 'Pendiente'
+      };
+
+      db.collection('encargos_pedidos').add(nuevoObj).then(() => {
+        showToast("Encargo registrado exitosamente", "success");
+        document.getElementById('form-nuevo-encargo').reset();
+        autoSetFechaRegistro();
+        document.getElementById('enc-talla-val').value = 'M';
+        toggleColoniaInput();
+      }).catch(err => {
+        showToast("Error al guardar encargo: " + err.message, "error");
+      });
+    }
+
+    // RENDERIZAR TAB 1: INVENTARIO ENCARGOS
+    function renderInventario() {
+      const container = document.getElementById('grid-encargos');
+      const busqueda = document.getElementById('search-encargos').value.toLowerCase();
+
+      const filtrados = encargosLista.filter(item => {
+        const coincideFiltro = (filtroEstadoEncargos === 'TODOS') || (item.estado === filtroEstadoEncargos);
+        const coincideText = item.cliente.toLowerCase().includes(busqueda) || 
+                             item.productoNombre.toLowerCase().includes(busqueda) || 
+                             (item.proveedor && item.proveedor.toLowerCase().includes(busqueda));
+        return coincideFiltro && coincideText;
+      });
+
+      if(filtrados.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 2rem;">No se encontraron encargos registrados.</div>`;
+        return;
+      }
+
+      let html = '';
+      filtrados.forEach(item => {
+        const esEntregado = item.estado === 'Entregado';
+        let badgeClass = 'status-pendiente';
+        if(item.estado === 'En Ruta') badgeClass = 'status-enruta';
+        if(esEntregado) badgeClass = 'status-entregado';
+
+        const btnWa = item.telefono 
+          ? `<a href="https://wa.me/52${item.telefono.replace(/\D/g,'')}?text=${encodeURIComponent('Hola '+item.cliente+', te saludamos de SARAY HA respecto a tu encargo: '+item.productoNombre)}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>`
+          : `<span class="badge-no-phone"><i class="fa-solid fa-phone-slash"></i> Sin teléfono</span>`;
+
+        // Desglose financiero sin confundir anticipo con pago de entrega
+        const anticipoVal = item.anticipo || 0;
+        const pagoEntregaVal = item.pagoEntrega || 0;
+        const saldoVal = esEntregado ? 0 : (item.saldoPendiente || 0);
+
+        html += `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="customer-name">${item.cliente}</div>
+                <div class="order-date"><i class="fa-regular fa-calendar"></i> ${item.fechaRegistro}</div>
+              </div>
+              <span class="badge-status ${badgeClass}">${item.estado}</span>
+            </div>
+
+            <div class="order-body">
+              <div class="order-item-title">${item.productoNombre}</div>
+              <div class="order-tags">
+                <span class="tag-attr">Talla: ${item.talla}</span>
+                <span class="tag-attr">Color: ${item.color}</span>
+                ${item.proveedor ? `<span class="tag-attr" style="background:#e8eaf6; color:#1a237e;">Prov: ${item.proveedor}</span>` : ''}
+              </div>
+              ${item.detalleExtra ? `<div style="font-size:0.8rem; color:var(--text-muted);"><em>${item.detalleExtra}</em></div>` : ''}
+              <div style="font-size:0.8rem; font-weight:600; color:var(--primary-accent); margin-top:0.2rem;">
+                <i class="fa-solid fa-location-dot"></i> ${item.modalidad} ${item.colonia ? `(${item.colonia})` : ''}
+              </div>
+
+              <div class="financial-summary-box">
+                <div class="fin-row"><span>Precio de Venta:</span> <strong>$${item.precioVenta.toFixed(2)}</strong></div>
+                <div class="fin-row"><span>Anticipo Inicial:</span> <span>$${anticipoVal.toFixed(2)}</span></div>
+                ${esEntregado ? `<div class="fin-row" style="color:var(--success-green); font-weight:600;"><span>Pago al Entregar:</span> <span>$${pagoEntregaVal.toFixed(2)}</span></div>` : ''}
+                <div class="fin-row bold" style="color:${saldoVal > 0 ? 'var(--danger-red)' : 'var(--success-green)'};">
+                  <span>Saldo Pendiente:</span> <span>$${saldoVal.toFixed(2)}</span>
+                </div>
+                <div class="fin-row" style="border-top: 1px dashed var(--border-color); padding-top:0.2rem; margin-top:0.2rem; font-size:0.75rem;">
+                  <span>Ganancia Neta:</span> <span>$${item.gananciaNeta.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-card-actions">
+              ${btnWa}
+              <button class="btn btn-secondary btn-sm" onclick="eliminarEncargo('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function filtrarEstadoEncargo(est, btn) {
+      filtroEstadoEncargos = est;
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.pill-opt').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      renderInventario();
+    }
+
+    function filtrarEncargos() {
+      renderInventario();
+    }
+
+    function eliminarEncargo(id) {
+      if(confirm("¿Está seguro de eliminar este encargo del registro?")) {
+        db.collection('encargos_pedidos').doc(id).delete().then(() => {
+          showToast("Encargo eliminado", "info");
+        });
+      }
+    }
+
+    // RENDERIZAR TAB 2: ENTREGAS Y LOGÍSTICA
+    function renderLogistica() {
+      const container = document.getElementById('grid-logistica');
+      const busqueda = document.getElementById('search-logistica').value.toLowerCase();
+
+      const filtrados = encargosLista.filter(item => {
+        let coincideFiltro = true;
+        if(filtroLogisticaActual === 'Pendiente') coincideFiltro = item.estado === 'Pendiente';
+        else if(filtroLogisticaActual === 'En Ruta') coincideFiltro = item.estado === 'En Ruta';
+        else if(filtroLogisticaActual === 'Entregado') coincideFiltro = item.estado === 'Entregado';
+        else if(filtroLogisticaActual === 'DOMICILIO') coincideFiltro = item.modalidad === 'Envío a Domicilio';
+        else if(filtroLogisticaActual === 'LOCAL') coincideFiltro = item.modalidad === 'Recoge en local';
+
+        const coincideText = item.cliente.toLowerCase().includes(busqueda) || 
+                             (item.colonia && item.colonia.toLowerCase().includes(busqueda)) ||
+                             (item.repartidor && item.repartidor.toLowerCase().includes(busqueda));
+        return coincideFiltro && coincideText;
+      });
+
+      if(filtrados.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 2rem;">No hay registros de entrega en esta categoría.</div>`;
+        return;
+      }
+
+      let html = '';
+      filtrados.forEach(item => {
+        const esEntregado = item.estado === 'Entregado';
+        let badgeClass = 'status-pendiente';
+        if(item.estado === 'En Ruta') badgeClass = 'status-enruta';
+        if(esEntregado) badgeClass = 'status-entregado';
+
+        const btnWa = item.telefono 
+          ? `<a href="https://wa.me/52${item.telefono.replace(/\D/g,'')}?text=${encodeURIComponent('Hola '+item.cliente+', tu pedido en SARAY HA está: '+item.estado)}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> Chat WhatsApp</a>`
+          : `<span class="badge-no-phone"><i class="fa-solid fa-phone-slash"></i> Sin teléfono</span>`;
+
+        const anticipoVal = item.anticipo || 0;
+        const pagoEntregaVal = item.pagoEntrega || 0;
+        const saldoVal = esEntregado ? 0 : (item.saldoPendiente || 0);
+
+        html += `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="customer-name">${item.cliente}</div>
+                <div class="order-date"><i class="fa-solid fa-truck"></i> ${item.modalidad}</div>
+              </div>
+              <span class="badge-status ${badgeClass}">${item.estado}</span>
+            </div>
+
+            <div class="order-body">
+              <div class="order-item-title">${item.productoNombre} (Talla ${item.talla} / ${item.color})</div>
+              
+              <div style="background:#f5f2f3; padding:0.6rem; border-radius:8px; font-size:0.8rem; margin-top:0.3rem;">
+                <div><strong>Colonia:</strong> ${item.colonia || 'No especificada'}</div>
+                ${item.direccionExacta ? `<div><strong>Dirección:</strong> ${item.direccionExacta}</div>` : ''}
+                ${item.referencias ? `<div><strong>Ref:</strong> ${item.referencias}</div>` : ''}
+                ${item.repartidor ? `<div><strong>Repartidor:</strong> ${item.repartidor}</div>` : ''}
+                ${item.linkMaps ? `<div style="margin-top:0.3rem;"><a href="${item.linkMaps}" target="_blank" style="color:var(--info-blue); font-weight:600;"><i class="fa-solid fa-map-location-dot"></i> Ver Mapa GPS</a></div>` : ''}
+              </div>
+
+              <!-- DESGLOSE FINANCIERO CORREGIDO -->
+              <div class="financial-summary-box">
+                <div class="fin-row"><span>Precio Total:</span> <strong>$${item.precioVenta.toFixed(2)}</strong></div>
+                <div class="fin-row"><span>Anticipo Inicial:</span> <span>$${anticipoVal.toFixed(2)}</span></div>
+                <div class="fin-row bold" style="color:${saldoVal > 0 ? 'var(--danger-red)' : 'var(--success-green)'};">
+                  <span>Saldo Pendiente:</span> <span>$${saldoVal.toFixed(2)}</span>
+                </div>
+                ${esEntregado ? `<div class="fin-row" style="color:var(--success-green); font-weight:700; border-top:1px dashed #d0c0c2; padding-top:0.25rem;"><span>Pago al Entregar:</span> <span>$${pagoEntregaVal.toFixed(2)} (${item.metodoPagoEntrega || 'Efectivo'})</span></div>` : ''}
+              </div>
+            </div>
+
+            <div class="order-card-actions">
+              ${btnWa}
+              <button class="btn btn-secondary btn-sm" onclick="abrirModalEditDelivery('${item.id}')" title="Editar Ruta/Dirección"><i class="fa-solid fa-pen-to-square"></i></button>
+              ${!esEntregado ? `
+                <button class="btn btn-primary btn-sm" onclick="cambiarEstadoRuta('${item.id}', 'En Ruta')"><i class="fa-solid fa-motorcycle"></i> En Ruta</button>
+                <button class="btn btn-success btn-sm" onclick="abrirModalCobro('${item.id}')"><i class="fa-solid fa-hand-holding-dollar"></i> Cobrar y Entregar</button>
+              ` : `<span style="font-size:0.75rem; color:var(--success-green); font-weight:700;"><i class="fa-solid fa-check-double"></i> Entregado</span>`}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function filtrarFiltroLogistica(filtro, btn) {
+      filtroLogisticaActual = filtro;
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.pill-opt').forEach(p => p.classList.remove('selected'));
+      btn.classList.add('selected');
+      renderLogistica();
+    }
+
+    function filtrarLogistica() {
+      renderLogistica();
+    }
+
+    function cambiarEstadoRuta(id, nuevoEstado) {
+      db.collection('encargos_pedidos').doc(id).update({
+        estado: nuevoEstado
+      }).then(() => {
+        showToast(`Pedido actualizado a: ${nuevoEstado}`, "success");
+      });
+    }
+
+    // MODAL EDITAR RUTA DE LOGÍSTICA
+    function abrirModalEditDelivery(id) {
+      const item = encargosLista.find(x => x.id === id);
+      if(!item) return;
+
+      document.getElementById('route-encargo-id').value = item.id;
+      document.getElementById('route-modalidad').value = item.modalidad || 'Recoge en local';
+      document.getElementById('route-colonia').value = item.colonia || '';
+      document.getElementById('route-direccion').value = item.direccionExacta || '';
+      document.getElementById('route-referencias').value = item.referencias || '';
+      document.getElementById('route-maps-link').value = item.linkMaps || '';
+      document.getElementById('route-repartidor').value = item.repartidor || '';
+      document.getElementById('route-horario').value = item.horarioEntrega || '';
+
+      document.getElementById('modal-edit-delivery').classList.add('show');
+    }
+
+    function cerrarModalEditDelivery() {
+      document.getElementById('modal-edit-delivery').classList.remove('show');
+    }
+
+    function guardarRutaLogistica(e) {
+      e.preventDefault();
+      const id = document.getElementById('route-encargo-id').value;
+
+      db.collection('encargos_pedidos').doc(id).update({
+        modalidad: document.getElementById('route-modalidad').value,
+        colonia: document.getElementById('route-colonia').value.trim(),
+        direccionExacta: document.getElementById('route-direccion').value.trim(),
+        referencias: document.getElementById('route-referencias').value.trim(),
+        linkMaps: document.getElementById('route-maps-link').value.trim(),
+        repartidor: document.getElementById('route-repartidor').value.trim(),
+        horarioEntrega: document.getElementById('route-horario').value.trim()
+      }).then(() => {
+        showToast("Ruta y dirección actualizadas", "success");
+        cerrarModalEditDelivery();
+      });
+    }
+
+    // MODAL POS CHECKOUT / COBRO
+    function abrirModalCobro(id) {
+      const item = encargosLista.find(x => x.id === id);
+      if(!item) return;
+
+      document.getElementById('cobro-encargo-id').value = item.id;
+      document.getElementById('cobro-cliente-nombre').innerText = item.cliente;
+      document.getElementById('cobro-producto-desc').innerText = `${item.productoNombre} (Talla: ${item.talla}, Color: ${item.color})`;
+      document.getElementById('cobro-precio-total').innerText = `$${item.precioVenta.toFixed(2)}`;
+      document.getElementById('cobro-anticipo-inicial').innerText = `$${(item.anticipo || 0).toFixed(2)}`;
+      
+      const saldo = item.saldoPendiente || 0;
+      document.getElementById('cobro-saldo-pendiente').innerText = `$${saldo.toFixed(2)}`;
+      
+      document.getElementById('cobro-efectivo-recibido').value = saldo.toFixed(2);
+      seleccionarMetodoPago('Efectivo');
+      calcularCambioEfectivo();
+
+      document.getElementById('modal-cobro-entrega').classList.add('show');
+    }
+
+    function cerrarModalCobro() {
+      document.getElementById('modal-cobro-entrega').classList.remove('show');
+    }
+
+    function seleccionarMetodoPago(metodo) {
+      metodoPagoSeleccionado = metodo;
+      document.getElementById('pay-btn-efectivo').classList.remove('selected');
+      document.getElementById('pay-btn-tarjeta').classList.remove('selected');
+      document.getElementById('pay-btn-transferencia').classList.remove('selected');
+
+      const calcBox = document.getElementById('caja-calculadora-efectivo');
+
+      if(metodo === 'Efectivo') {
+        document.getElementById('pay-btn-efectivo').classList.add('selected');
+        calcBox.style.display = 'block';
+      } else if(metodo === 'Tarjeta') {
+        document.getElementById('pay-btn-tarjeta').classList.add('selected');
+        calcBox.style.display = 'none';
+      } else {
+        document.getElementById('pay-btn-transferencia').classList.add('selected');
+        calcBox.style.display = 'none';
+      }
+    }
+
+    function setCashFast(monto) {
+      document.getElementById('cobro-efectivo-recibido').value = monto;
+      calcularCambioEfectivo();
+    }
+    function setCashExacto() {
+      const id = document.getElementById('cobro-encargo-id').value;
+      const item = encargosLista.find(x => x.id === id);
+      if(item) {
+        document.getElementById('cobro-efectivo-recibido').value = item.saldoPendiente.toFixed(2);
+        calcularCambioEfectivo();
+      }
+    }
+
+    function calcularCambioEfectivo() {
+      const id = document.getElementById('cobro-encargo-id').value;
+      const item = encargosLista.find(x => x.id === id);
+      if(!item) return;
+
+      const saldo = item.saldoPendiente || 0;
+      const recibido = parseFloat(document.getElementById('cobro-efectivo-recibido').value) || 0;
+      const cambio = Math.max(0, recibido - saldo);
+
+      document.getElementById('cobro-cambio-mostrar').innerText = `$${cambio.toFixed(2)}`;
+    }
+
+    function confirmarCobroEntrega() {
+      const id = document.getElementById('cobro-encargo-id').value;
+      const item = encargosLista.find(x => x.id === id);
+      if(!item) return;
+
+      const montoCobrado = item.saldoPendiente || 0;
+
+      db.collection('encargos_pedidos').doc(id).update({
+        estado: 'Entregado',
+        pagoEntrega: montoCobrado,
+        saldoPendiente: 0,
+        metodoPagoEntrega: metodoPagoSeleccionado,
+        fechaEntrega: new Date().toLocaleDateString('es-MX')
+      }).then(() => {
+        showToast("Entrega y pago registrados correctamente", "success");
+        cerrarModalCobro();
+      });
+    }
+
+    // TAB 3: PROVEEDORES
+    function guardarProveedor(e) {
+      e.preventDefault();
+      const nombre = document.getElementById('prov-nombre').value.trim();
+      if(!nombre) return;
+
+      db.collection('proveedores').add({
+        nombre: nombre,
+        contacto: document.getElementById('prov-contacto').value.trim(),
+        categoria: document.getElementById('prov-categoria').value.trim(),
+        notas: document.getElementById('prov-notas').value.trim()
+      }).then(() => {
+        showToast("Proveedor guardado con éxito", "success");
+        document.getElementById('form-proveedor').reset();
+      });
+    }
+
+    function renderProveedores() {
+      const container = document.getElementById('grid-proveedores');
+      if(proveedoresLista.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 1.5rem;">No hay proveedores registrados.</div>`;
+        return;
+      }
+
+      let html = '';
+      proveedoresLista.forEach(p => {
+        html += `
+          <div class="order-card">
+            <div class="customer-name"><i class="fa-solid fa-store"></i> ${p.nombre}</div>
+            <div class="order-body" style="margin-top:0.5rem;">
+              <div><strong>Contacto:</strong> ${p.contacto || 'N/A'}</div>
+              <div><strong>Categoría:</strong> ${p.categoria || 'General'}</div>
+              ${p.notas ? `<div style="font-size:0.8rem; color:var(--text-muted);"><em>${p.notas}</em></div>` : ''}
+            </div>
+            <div class="order-card-actions">
+              ${p.contacto ? `<a href="https://wa.me/52${p.contacto.replace(/\D/g,'')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> Contactar</a>` : ''}
+              <button class="btn btn-secondary btn-sm" onclick="eliminarProveedor('${p.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function eliminarProveedor(id) {
+      if(confirm("¿Eliminar este proveedor del directorio?")) {
+        db.collection('proveedores').doc(id).delete();
+      }
+    }
+
+    // TAB 4: TICKETS PROVEEDOR
+    function guardarTicketProveedor(e) {
+      e.preventDefault();
+      const prov = document.getElementById('ticket-proveedor-select').value;
+      const monto = parseFloat(document.getElementById('ticket-monto').value) || 0;
+
+      if(!prov || prov === 'Sin Especificar' || monto <= 0) {
+        showToast("Seleccione un proveedor y un monto válido", "error");
+        return;
+      }
+
+      db.collection('tickets_proveedores').add({
+        proveedor: prov,
+        folio: document.getElementById('ticket-folio').value.trim() || 'N/A',
+        fecha: document.getElementById('ticket-fecha').value || new Date().toISOString().split('T')[0],
+        monto: monto,
+        estatusPago: document.getElementById('ticket-estatus-pago').value,
+        concepto: document.getElementById('ticket-concepto').value.trim() || ""
+      }).then(() => {
+        showToast("Ticket de compra registrado", "success");
+        document.getElementById('form-ticket-prov').reset();
+      });
+    }
+
+    function renderTicketsProveedores() {
+      const container = document.getElementById('grid-tickets-prov');
+      if(ticketsLista.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color: var(--text-muted); padding: 1.5rem;">No hay tickets de proveedores.</div>`;
+        return;
+      }
+
+      let html = '';
+      ticketsLista.forEach(t => {
+        html += `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div class="customer-name">${t.proveedor}</div>
+              <span class="badge-status ${t.estatusPago === 'Pagado' ? 'status-entregado' : 'status-pendiente'}">${t.estatusPago}</span>
+            </div>
+            <div class="order-body">
+              <div><strong>Folio:</strong> ${t.folio}</div>
+              <div><strong>Fecha:</strong> ${t.fecha}</div>
+              <div><strong>Concepto:</strong> ${t.concepto || 'Sin detalle'}</div>
+              <div style="font-size:1.1rem; font-weight:800; color:var(--primary-vino); margin-top:0.3rem;">Total: $${t.monto.toFixed(2)}</div>
+            </div>
+            <div class="order-card-actions">
+              <button class="btn btn-secondary btn-sm" onclick="eliminarTicket('${t.id}')"><i class="fa-solid fa-trash"></i> Borrar</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function eliminarTicket(id) {
+      if(confirm("¿Desea borrar este ticket de compra?")) {
+        db.collection('tickets_proveedores').doc(id).delete();
+      }
+    }
+
+    // METRICAS & KPIS
+    function actualizarKPIs() {
+      const total = encargosLista.length;
+      const pendientes = encargosLista.filter(x => x.estado === 'Pendiente').length;
+      const enruta = encargosLista.filter(x => x.estado === 'En Ruta').length;
+      const entregados = encargosLista.filter(x => x.estado === 'Entregado').length;
+      const domicilio = encargosLista.filter(x => x.modalidad === 'Envío a Domicilio').length;
+      const sucursal = encargosLista.filter(x => x.modalidad === 'Recoge en local').length;
+
+      document.getElementById('kpi-total-pedidos').innerText = total;
+      document.getElementById('kpi-pendientes').innerText = pendientes;
+      document.getElementById('kpi-enruta').innerText = enruta;
+      document.getElementById('kpi-entregados').innerText = entregados;
+      document.getElementById('kpi-domicilio').innerText = domicilio;
+      document.getElementById('kpi-sucursal').innerText = sucursal;
+    }
+
+    // TAB 5: REPORTES FINANCIEROS
+    function renderReportes() {
+      let totalVentas = 0;
+      let totalAnticipos = 0;
+      let totalLiquidaciones = 0;
+      let totalGanancia = 0;
+      let totalComprasProv = 0;
+
+      encargosLista.forEach(x => {
+        totalVentas += (x.precioVenta || 0);
+        totalAnticipos += (x.anticipo || 0);
+        totalLiquidaciones += (x.pagoEntrega || 0);
+        totalGanancia += (x.gananciaNeta || 0);
+      });
+
+      ticketsLista.forEach(t => {
+        totalComprasProv += (t.monto || 0);
+      });
+
+      document.getElementById('rep-total-ventas').innerText = `$${totalVentas.toFixed(2)}`;
+      document.getElementById('rep-total-anticipos').innerText = `$${totalAnticipos.toFixed(2)}`;
+      document.getElementById('rep-total-liquidaciones').innerText = `$${totalLiquidaciones.toFixed(2)}`;
+      document.getElementById('rep-total-ganancia').innerText = `$${totalGanancia.toFixed(2)}`;
+      document.getElementById('rep-compras-prov').innerText = `$${totalComprasProv.toFixed(2)}`;
+    }
+
+    // MODAL DE REINICIO DE SISTEMA CON CONFIRMACIÓN SEGURA
+    function abrirModalResetSistema() {
+      document.getElementById('reset-confirm-input').value = '';
+      document.getElementById('modal-reset-sistema').classList.add('show');
+    }
+
+    function cerrarModalResetSistema() {
+      document.getElementById('modal-reset-sistema').classList.remove('show');
+    }
+
+    async function ejecutarResetSistema() {
+      const confirmacion = document.getElementById('reset-confirm-input').value.trim();
+      if(confirmacion !== 'BORRAR') {
+        showToast("Debe escribir exactamente BORRAR para proceder", "error");
+        return;
+      }
+
+      showToast("Reiniciando base de datos...", "info");
+
+      try {
+        // Borrar Encargos
+        const encSnap = await db.collection('encargos_pedidos').get();
+        const b1 = db.batch();
+        encSnap.forEach(doc => b1.delete(doc.ref));
+        await b1.commit();
+
+        // Borrar Proveedores
+        const provSnap = await db.collection('proveedores').get();
+        const b2 = db.batch();
+        provSnap.forEach(doc => b2.delete(doc.ref));
+        await b2.commit();
+
+        // Borrar Tickets
+        const tickSnap = await db.collection('tickets_proveedores').get();
+        const b3 = db.batch();
+        tickSnap.forEach(doc => b3.delete(doc.ref));
+        await b3.commit();
+
+        showToast("Sistema borrado y reiniciado con éxito", "success");
+        cerrarModalResetSistema();
+      } catch(err) {
+        console.error(err);
+        showToast("Error al reiniciar el sistema: " + err.message, "error");
+      }
+    }
+  </script>
 </body>
 </html>
