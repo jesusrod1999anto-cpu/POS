@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SARAY HA — Encargos & Surtido</title>
+  <title>SARAY HA — Encargos & Logística Boutique</title>
   
   <!-- PWA Meta Tags -->
   <meta name="theme-color" content="#8b4255">
@@ -13,7 +13,7 @@
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Firebase SDKs (v10.8.0) -->
@@ -23,24 +23,30 @@
   <style>
     :root {
       --primary: #8b4255;
-      --primary-hover: #733343;
+      --primary-dark: #6e3141;
+      --primary-soft: #fbf4f6;
       --accent: #b35d74;
-      --accent-light: #f9ecef;
-      --bg-main: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-dark: #2d3748;
+      --bg-body: #f4f6f8;
+      --surface: #ffffff;
+      --text-main: #2b2d42;
       --text-muted: #718096;
-      --border-color: #e2e8f0;
-      --success: #2e7d32;
-      --success-bg: #e8f5e9;
-      --warning: #ed6c02;
-      --warning-bg: #fff3e0;
-      --danger: #d32f2f;
-      --danger-bg: #ffebee;
-      --info: #0288d1;
-      --info-bg: #e0f7fa;
-      --radius: 10px;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --border: #e8dedf;
+      --border-light: #f0eaec;
+      
+      --success: #2a7a4c;
+      --success-bg: #edf7f1;
+      --warning: #d97706;
+      --warning-bg: #fffbe8;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-subtle: 0 4px 20px rgba(139, 66, 85, 0.05);
+      --shadow-hover: 0 8px 28px rgba(139, 66, 85, 0.12);
     }
 
     * {
@@ -48,65 +54,75 @@
       margin: 0;
       padding: 0;
       font-family: 'Montserrat', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: var(--bg-main);
-      color: var(--text-dark);
-      padding-bottom: 60px;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding-bottom: 70px;
     }
 
-    /* HEADER */
+    /* HEADER APP */
     header {
-      background-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: #ffffff;
-      padding: 16px 20px;
+      padding: 16px 22px;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 18px rgba(110, 49, 65, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
+    .brand-container {
+      display: flex;
+      flex-direction: column;
+    }
+
     .brand-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.8px;
     }
 
     .brand-subtitle {
-      font-size: 0.75rem;
-      opacity: 0.85;
+      font-size: 0.72rem;
+      opacity: 0.88;
       font-weight: 400;
+      letter-spacing: 0.4px;
     }
 
     .status-badge {
-      font-size: 0.75rem;
-      padding: 4px 10px;
+      font-size: 0.72rem;
+      padding: 5px 12px;
       border-radius: 20px;
-      background-color: rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(4px);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       color: #fff;
+      font-weight: 500;
     }
 
     .status-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background-color: #4caf50;
+      background-color: #10b981;
+      box-shadow: 0 0 8px #10b981;
     }
 
-    /* NAVIGATION TABS */
+    /* TABS BAR */
     nav.nav-tabs {
-      background: var(--card-bg);
+      background: var(--surface);
       display: flex;
-      border-bottom: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: var(--shadow-subtle);
       position: sticky;
       top: 61px;
       z-index: 90;
@@ -120,37 +136,37 @@
 
     .nav-tab {
       flex: 1;
-      min-width: 95px;
+      min-width: 100px;
       padding: 14px 10px;
       border: none;
       background: transparent;
       color: var(--text-muted);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       white-space: nowrap;
       border-bottom: 3px solid transparent;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .nav-tab i {
-      font-size: 1rem;
+      font-size: 1.05rem;
     }
 
     .nav-tab.active {
       color: var(--primary);
       border-bottom-color: var(--primary);
-      background-color: var(--accent-light);
+      background-color: var(--primary-soft);
     }
 
     /* CONTAINER & CARDS */
     .container {
-      max-width: 900px;
-      margin: 20px auto;
+      max-width: 920px;
+      margin: 22px auto;
       padding: 0 16px;
     }
 
@@ -160,38 +176,54 @@
 
     .tab-content.active {
       display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-subtle);
+      transition: box-shadow 0.25s ease;
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-hover);
     }
 
     .card-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin-bottom: 16px;
+      font-size: 1.25rem;
+      color: var(--primary-dark);
+      margin-bottom: 18px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    /* FORM LAYOUT */
+    .card-title i {
+      font-size: 1.1rem;
+      color: var(--primary);
+    }
+
+    /* FORM SYSTEM */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
+      gap: 16px;
     }
 
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
     }
 
     .form-group.full-width {
@@ -199,45 +231,47 @@
     }
 
     label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text-dark);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-main);
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.5px;
     }
 
     input, select, textarea {
-      padding: 10px 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 0.9rem;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
       background-color: #ffffff;
+      color: var(--text-main);
       transition: all 0.2s ease;
     }
 
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(139, 66, 85, 0.1);
+      background-color: #fff;
+      box-shadow: 0 0 0 3px rgba(139, 66, 85, 0.12);
     }
 
-    /* SIZE BUTTONS */
+    /* QUICK SIZE CHIPS */
     .size-selector {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 2px;
+      gap: 8px;
+      margin-top: 4px;
     }
 
     .size-btn {
-      padding: 7px 14px;
-      border: 1px solid var(--border-color);
-      background-color: #ffffff;
-      border-radius: 6px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      background-color: #fcfcfc;
+      border-radius: var(--radius-sm);
       font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      color: var(--text-dark);
+      color: var(--text-main);
       transition: all 0.2s ease;
     }
 
@@ -245,20 +279,21 @@
       background-color: var(--primary);
       color: #ffffff;
       border-color: var(--primary);
+      box-shadow: 0 2px 8px rgba(139, 66, 85, 0.25);
     }
 
     /* BUTTONS */
     .btn {
-      padding: 10px 18px;
+      padding: 11px 20px;
       border: none;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 8px;
       transition: all 0.2s ease;
       text-decoration: none;
     }
@@ -269,12 +304,13 @@
     }
 
     .btn-primary:hover {
-      background-color: var(--primary-hover);
+      background-color: var(--primary-dark);
+      box-shadow: 0 4px 12px rgba(110, 49, 65, 0.2);
     }
 
     .btn-secondary {
       background-color: #e2e8f0;
-      color: var(--text-dark);
+      color: var(--text-main);
     }
 
     .btn-secondary:hover {
@@ -303,57 +339,60 @@
     }
 
     .btn-outline:hover {
-      background: var(--accent-light);
+      background: var(--primary-soft);
     }
 
     .btn-sm {
       padding: 6px 12px;
       font-size: 0.78rem;
+      border-radius: 6px;
     }
 
     .btn-block {
       width: 100%;
     }
 
-    /* CARDS & ITEMS DISPLAY */
+    /* ITEM CARDS LIST */
     .item-card {
-      background: var(--card-bg);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 14px;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      box-shadow: var(--shadow-subtle);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .item-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 1px solid #edf2f7;
-      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 10px;
     }
 
     .item-title {
       font-weight: 700;
-      font-size: 0.98rem;
-      color: var(--text-dark);
+      font-size: 1.02rem;
+      color: var(--text-main);
     }
 
     .item-subtitle {
       font-size: 0.82rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 3px;
     }
 
     .badge {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      padding: 4px 8px;
-      border-radius: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .badge-pending { background-color: var(--warning-bg); color: var(--warning); }
@@ -363,9 +402,9 @@
 
     .item-body {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 8px;
-      font-size: 0.85rem;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      font-size: 0.86rem;
     }
 
     .info-row {
@@ -374,99 +413,124 @@
     }
 
     .info-label {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
     }
 
     .info-val {
       font-weight: 600;
-      color: var(--text-dark);
+      color: var(--text-main);
     }
 
     .item-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      border-top: 1px solid #edf2f7;
-      padding-top: 10px;
+      border-top: 1px solid var(--border-light);
+      padding-top: 12px;
     }
 
     .photo-preview {
-      width: 60px;
-      height: 60px;
-      border-radius: 6px;
+      width: 65px;
+      height: 65px;
+      border-radius: 8px;
       object-fit: cover;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
     }
 
-    /* SURTIDO GROUPING */
+    /* LOGÍSTICA DE DOMICILIO EN TARJETA */
+    .delivery-info-box {
+      background-color: var(--primary-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 0.84rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .maps-input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .maps-input-row input {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+    }
+
+    /* SURTIDO AGROUPING */
     .supplier-group {
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
     .supplier-header {
-      background-color: var(--accent-light);
-      padding: 10px 14px;
-      border-radius: 6px 6px 0 0;
+      background-color: var(--primary-soft);
+      padding: 12px 16px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--primary-dark);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-bottom: none;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
     }
 
     .supplier-items {
-      border: 1px solid var(--border-color);
-      border-radius: 0 0 6px 6px;
+      border: 1px solid var(--border);
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
       background: #ffffff;
-      padding: 10px;
+      padding: 12px;
     }
 
-    /* DASHBOARD CARDS */
+    /* DASHBOARD METRICS */
     .dash-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 14px;
+      margin-bottom: 22px;
     }
 
     .dash-card {
       background: white;
-      padding: 16px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
+      padding: 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-subtle);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .dash-card .title {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .dash-card .amount {
-      font-size: 1.35rem;
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--primary);
     }
 
-    /* MODAL */
+    /* MODAL BOUTIQUE */
     .modal-backdrop {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
       display: none;
       justify-content: center;
       align-items: center;
@@ -480,28 +544,28 @@
 
     .modal-card {
       background: white;
-      border-radius: var(--radius);
+      border-radius: var(--radius-md);
       width: 100%;
       max-width: 480px;
       max-height: 90vh;
       overflow-y: auto;
-      padding: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      padding: 24px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.18);
     }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-light);
     }
 
     .modal-title {
       font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      color: var(--primary);
+      font-size: 1.25rem;
+      color: var(--primary-dark);
     }
 
     .close-btn {
@@ -511,15 +575,24 @@
       color: var(--text-muted);
       cursor: pointer;
     }
+
+    /* POLICY FOOTER */
+    .policy-note {
+      font-size: 0.75rem;
+      text-align: center;
+      color: var(--text-muted);
+      margin-top: 14px;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header>
-    <div>
+    <div class="brand-container">
       <div class="brand-title">SARAY HA</div>
-      <div class="brand-subtitle">Encargos & Surtido</div>
+      <div class="brand-subtitle">Encargos & Logística Boutique</div>
     </div>
     <div class="status-badge" id="net-status">
       <div class="status-dot"></div>
@@ -559,15 +632,15 @@
 
             <div class="form-group">
               <label>Prenda / Producto *</label>
-              <input type="text" id="enc-prenda" placeholder="Ej. Vestido Satinado" required>
+              <input type="text" id="enc-prenda" placeholder="Ej. Vestido Gala Satinado" required>
             </div>
 
             <div class="form-group">
               <label>Color</label>
-              <input type="text" id="enc-color" placeholder="Ej. Vino / Negro">
+              <input type="text" id="enc-color" placeholder="Ej. Vino / Palo de Rosa">
             </div>
 
-            <!-- Talla Selector -->
+            <!-- Talla Selector Chips -->
             <div class="form-group full-width">
               <label>Talla *</label>
               <div class="size-selector" id="talla-selector">
@@ -605,7 +678,7 @@
 
             <div class="form-group">
               <label>Saldo Pendiente ($)</label>
-              <input type="number" id="enc-saldo" placeholder="0.00" readonly style="background-color: #edf2f7; font-weight:700;">
+              <input type="number" id="enc-saldo" placeholder="0.00" readonly style="background-color: #f7fafc; font-weight:700;">
             </div>
 
             <div class="form-group full-width">
@@ -618,19 +691,19 @@
             </div>
 
             <!-- LOGÍSTICA DE ENTREGA A DOMICILIO -->
-            <div id="delivery-details-box" class="form-grid full-width" style="display: none; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 4px;">
+            <div id="delivery-details-box" class="form-grid full-width" style="display: none; border-top: 1px solid var(--border-light); padding-top: 14px;">
               <div class="form-group">
                 <label>Colonia / Sector *</label>
-                <input type="text" id="enc-colonia" placeholder="Ej. Col. Reforma">
+                <input type="text" id="enc-colonia" placeholder="Ej. Col. Reforma / Fracc. Palmas">
               </div>
 
               <div class="form-group full-width">
-                <label>Dirección Completa (Calle, Num, Referencias) *</label>
+                <label>Dirección Completa (Calle, # Ext/Int, Referencias) *</label>
                 <input type="text" id="enc-direccion" placeholder="Ej. Calle de las Rosas #104 entre Amapolas">
               </div>
 
               <div class="form-group full-width">
-                <label>Ubicación de Google Maps</label>
+                <label>Link de Google Maps (Para Repartidor)</label>
                 <div style="display: flex; gap: 8px;">
                   <input type="url" id="enc-maps-url" placeholder="https://maps.app.goo.gl/..." style="flex: 1;">
                   <button type="button" class="btn btn-secondary btn-sm" onclick="generateAutoMapsLink()">
@@ -651,12 +724,12 @@
 
             <div class="form-group full-width">
               <label>Notas del Encargo</label>
-              <textarea id="enc-notas" rows="2" placeholder="Detalles o especificaciones adicionales..."></textarea>
+              <textarea id="enc-notas" rows="2" placeholder="Especificaciones adicionales o modificaciones..."></textarea>
             </div>
 
           </div>
 
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;">
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 18px;">
             <i class="fa-solid fa-floppy-disk"></i> Guardar Encargo
           </button>
         </form>
@@ -693,7 +766,7 @@
               <input type="text" id="prov-notas" placeholder="Días de atención, condiciones, etc.">
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 14px;">
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;">
             <i class="fa-solid fa-plus"></i> Guardar Proveedor
           </button>
         </form>
@@ -712,7 +785,7 @@
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
           <h2 class="card-title" style="margin:0;"><i class="fa-solid fa-cart-flatbed"></i> Lista de Surtido</h2>
-          <div id="surtido-total-cash" class="badge badge-info" style="font-size: 0.88rem;">Total Requerido: $0.00</div>
+          <div id="surtido-total-cash" class="badge badge-info" style="font-size: 0.85rem;">Total Requerido: $0.00</div>
         </div>
       </div>
 
@@ -725,7 +798,7 @@
     <div id="tab-entregas" class="tab-content">
       <div class="card">
         <h2 class="card-title"><i class="fa-solid fa-box-open"></i> Control de Entregas y Ruta de Repartidor</h2>
-        <div style="margin-bottom: 14px;">
+        <div style="margin-bottom: 16px;">
           <select id="filtro-entregas" onchange="renderEntregas()" style="width: 100%;">
             <option value="todos">Todos los pedidos surtidos / entregados</option>
             <option value="A Domicilio">Solo Entregas A Domicilio</option>
@@ -771,7 +844,7 @@
               <input type="text" id="ticket-notas" placeholder="Folio, detalle de prendas, etc.">
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 14px;">
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;">
             <i class="fa-solid fa-cloud-arrow-up"></i> Registrar Ticket
           </button>
         </form>
@@ -787,7 +860,7 @@
 
     <!-- TAB 6: RESUMEN FINANCIERO -->
     <div id="tab-resumen" class="tab-content">
-      <h2 class="card-title" style="margin-bottom: 14px;"><i class="fa-solid fa-chart-line"></i> Resumen de Operación</h2>
+      <h2 class="card-title" style="margin-bottom: 16px;"><i class="fa-solid fa-chart-line"></i> Resumen de Operación</h2>
       
       <div class="dash-grid">
         <div class="dash-card">
@@ -815,8 +888,8 @@
       <!-- ZONA DE ADMINISTRACIÓN -->
       <div class="card" style="border-color: var(--danger-bg);">
         <h2 class="card-title" style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Zona de Administración</h2>
-        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
-          Reinicia la base de datos de encargos, proveedores y tickets únicamente si deseas comenzar un nuevo ciclo.
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 16px;">
+          Reinicia la base de datos únicamente si deseas comenzar un nuevo ciclo desde cero.
         </p>
         <button type="button" class="btn btn-danger" onclick="confirmResetDatabase()">
           <i class="fa-solid fa-trash-can"></i> Restablecer Base de Datos Completa
@@ -835,18 +908,18 @@
       </div>
       <form id="form-checkout" onsubmit="executeCheckout(event)">
         <input type="hidden" id="pay-encargo-id">
-        <div class="form-group" style="margin-bottom: 10px;">
-          <label>Cliente:</label>
-          <div id="pay-cliente-name" style="font-weight:700;">-</div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label>Cliente / Prenda:</label>
+          <div id="pay-cliente-name" style="font-weight:700; color:var(--primary-dark);">-</div>
         </div>
         <div class="form-grid">
           <div class="form-group">
             <label>Precio de Venta</label>
-            <input type="text" id="pay-precio-venta" readonly style="background:#edf2f7;">
+            <input type="text" id="pay-precio-venta" readonly style="background:#f7fafc;">
           </div>
           <div class="form-group">
             <label>Anticipo Previo</label>
-            <input type="text" id="pay-anticipo-previo" readonly style="background:#edf2f7;">
+            <input type="text" id="pay-anticipo-previo" readonly style="background:#f7fafc;">
           </div>
           <div class="form-group full-width">
             <label>Saldo Pendiente a Cobrar</label>
@@ -869,9 +942,11 @@
 
           <div class="form-group">
             <label>Cambio a Entregar ($)</label>
-            <input type="text" id="pay-cambio" value="$0.00" readonly style="background:#e8f5e9; font-weight:700; color:var(--success);">
+            <input type="text" id="pay-cambio" value="$0.00" readonly style="background:var(--success-bg); font-weight:700; color:var(--success);">
           </div>
         </div>
+
+        <p class="policy-note">Políticas SARAY HA: No hay cambios ni devoluciones.</p>
 
         <div style="margin-top:16px; display:flex; gap:10px;">
           <button type="button" class="btn btn-secondary" style="flex:1;" onclick="closeModal('modal-checkout')">Cancelar</button>
@@ -889,7 +964,7 @@
         <button class="close-btn" onclick="closeModal('modal-whatsapp')">&times;</button>
       </div>
       <input type="hidden" id="ws-encargo-id">
-      <div style="display:flex; flex-direction:column; gap:8px;">
+      <div style="display:flex; flex-direction:column; gap:10px;">
         <button class="btn btn-outline btn-block" onclick="sendWSPTemplate('confirmacion')">
           <i class="fa-solid fa-file-signature"></i> 1. Confirmación de Encargo
         </button>
@@ -928,7 +1003,7 @@
       db = firebase.firestore();
       isOnline = true;
     } catch (e) {
-      console.warn("Firestore offline mode fallback.", e);
+      console.warn("Firestore offline mode fallback active.", e);
       isOnline = false;
     }
 
@@ -961,10 +1036,10 @@
       const text = document.getElementById('net-text');
       if (isOnline) {
         text.innerText = "Firebase Conectado";
-        badge.style.background = "rgba(76, 175, 80, 0.2)";
+        badge.style.background = "rgba(16, 185, 129, 0.2)";
       } else {
         text.innerText = "Modo Local";
-        badge.style.background = "rgba(255, 152, 0, 0.2)";
+        badge.style.background = "rgba(245, 158, 11, 0.2)";
       }
     }
 
@@ -1160,7 +1235,7 @@
             </div>
 
             ${enc.tipoEntrega === 'A Domicilio' ? `
-              <div style="font-size: 0.8rem; border-top: 1px dashed var(--border-color); padding-top: 6px;">
+              <div style="font-size: 0.8rem; background: var(--primary-soft); padding: 8px 12px; border-radius: 6px;">
                 <strong>Colonia:</strong> ${enc.colonia || 'N/A'} | <strong>Dirección:</strong> ${enc.direccionEntrega || 'N/A'}
               </div>
             ` : ''}
@@ -1238,9 +1313,9 @@
 
         agrupados[prov].forEach(item => {
           html += `
-            <div style="border-bottom: 1px solid var(--border-color); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="border-bottom: 1px solid var(--border-light); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
               <div>
-                <strong style="font-size: 0.9rem; color: var(--primary);">${item.prendaNombre}</strong> (${item.prendaTalla}) - ${item.prendaColor}<br>
+                <strong style="font-size: 0.9rem; color: var(--primary-dark);">${item.prendaNombre}</strong> (${item.prendaTalla}) - ${item.prendaColor}<br>
                 <small style="color: var(--text-muted);">Cliente: ${item.clienteNombre} | Costo Compra: <strong>$${item.costoCompra.toFixed(2)}</strong></small>
               </div>
 
@@ -1320,27 +1395,27 @@
             </div>
 
             ${item.tipoEntrega === 'A Domicilio' ? `
-              <div style="font-size: 0.82rem; background: #fafafa; border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; display:flex; flex-direction:column; gap:6px;">
-                <div><strong>Colonia:</strong> ${item.colonia || 'N/A'}</div>
-                <div><strong>Dirección:</strong> ${item.direccionEntrega || 'N/A'}</div>
+              <div class="delivery-info-box">
+                <div><strong>📍 Colonia:</strong> ${item.colonia || 'N/A'}</div>
+                <div><strong>🏠 Dirección:</strong> ${item.direccionEntrega || 'N/A'}</div>
                 
-                <div style="display:flex; gap:6px; margin-top:2px;">
-                  <input type="url" id="maps-input-${item.id}" value="${item.mapsUrl || ''}" placeholder="Link de Google Maps..." style="flex:1; padding:6px; font-size:0.8rem;">
+                <div class="maps-input-row">
+                  <input type="url" id="maps-input-${item.id}" value="${item.mapsUrl || ''}" placeholder="Link de Google Maps...">
                   <button class="btn btn-secondary btn-sm" onclick="saveMapsUrl('${item.id}')">💾 Guardar</button>
                 </div>
 
                 <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
-                  ${item.mapsUrl ? `<a href="${item.mapsUrl}" target="_blank" class="btn btn-outline btn-sm" style="flex:1;"><i class="fa-solid fa-location-dot"></i> Abrir en Maps</a>` : ''}
+                  ${item.mapsUrl ? `<a href="${item.mapsUrl}" target="_blank" class="btn btn-outline btn-sm" style="flex:1;"><i class="fa-solid fa-location-dot"></i> Navegar en Maps</a>` : ''}
                   <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="shareRouteToDriver('${item.id}')">
-                    <i class="fa-brands fa-whatsapp"></i> Enviar a Repartidor
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp Repartidor
                   </button>
                 </div>
               </div>
             ` : ''}
 
             ${isEntregado && item.datosEntrega ? `
-              <div style="background:#f0fdf4; padding:8px 10px; border-radius:6px; font-size:0.78rem;">
-                <strong>Detalle de Pago:</strong> ${item.datosEntrega.metodoPago} | Recibido: $${parseFloat(item.datosEntrega.montoRecibido).toFixed(2)} | Cambio: $${parseFloat(item.datosEntrega.cambio).toFixed(2)}
+              <div style="background:var(--success-bg); padding:10px; border-radius:6px; font-size:0.8rem; color:var(--success);">
+                <strong>Registro de Entrega:</strong> ${item.datosEntrega.metodoPago} | Recibido: $${parseFloat(item.datosEntrega.montoRecibido).toFixed(2)} | Cambio: $${parseFloat(item.datosEntrega.cambio).toFixed(2)}
               </div>
             ` : ''}
 
@@ -1350,7 +1425,7 @@
                   <i class="fa-solid fa-cash-register"></i> Cobrar y Entregar ($${item.saldoPendiente.toFixed(2)})
                 </button>
               ` : `
-                <span style="color:var(--success); font-weight:700; font-size:0.82rem;">
+                <span style="color:var(--success); font-weight:700; font-size:0.85rem;">
                   <i class="fa-solid fa-circle-check"></i> Entregado y Liquidado
                 </span>
               `}
@@ -1381,14 +1456,14 @@
       const enc = localEncargos.find(e => e.id === id);
       if (!enc) return;
 
-      const mensaje = `*SARAY HA — RUTA DE ENTREGA*\n\n` +
+      const mensaje = `*SARAY HA — FICHA DE ENTREGA PARA REPARTIDOR*\n\n` +
         `👤 *Cliente:* ${enc.clienteNombre}\n` +
-        `📞 *Tel:* ${enc.clienteTelefono || 'Sin número'}\n` +
+        `📞 *Tel:* ${enc.clienteTelefono || 'Sin teléfono'}\n` +
         `📍 *Colonia:* ${enc.colonia || 'N/A'}\n` +
         `🏠 *Dirección:* ${enc.direccionEntrega || 'N/A'}\n` +
         `👗 *Prenda:* ${enc.prendaNombre} (${enc.prendaTalla})\n` +
-        `💵 *Cobro en Entrega:* $${enc.saldoPendiente.toFixed(2)}\n\n` +
-        `🗺️ *Google Maps:* ${enc.mapsUrl || 'No especificada'}`;
+        `💵 *Cobro al Entregar:* $${enc.saldoPendiente.toFixed(2)}\n\n` +
+        `🗺️ *Ubicación Maps:* ${enc.mapsUrl || 'No especificada'}`;
 
       window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
