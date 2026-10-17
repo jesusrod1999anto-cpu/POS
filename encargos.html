@@ -80,6 +80,10 @@
             gap: 10px;
         }
 
+        .brand-title i {
+            color: var(--secondary-gold);
+        }
+
         .sync-badge {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(8px);
@@ -138,6 +142,10 @@
             text-align: center;
         }
 
+        .nav-tab-btn i {
+            font-size: 1.15rem;
+        }
+
         .nav-tab-btn.active {
             background: var(--primary-vino);
             color: #ffffff;
@@ -180,10 +188,10 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary-vino); box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1); }
         input[readonly] { background: #f5f5f5; color: #555; font-weight: 600; }
 
-        /* Quick Selection Pills (Products, Sizes, Colors) */
-        .quick-select-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+        /* Quick Selection Pills */
+        .quick-select-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
         .quick-btn {
-            padding: 8px 16px; border: 1.5px solid var(--border-color); border-radius: 20px;
+            padding: 9px 18px; border: 1.5px solid var(--border-color); border-radius: 20px;
             background: #fff; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
             cursor: pointer; transition: all 0.2s ease;
         }
@@ -242,7 +250,7 @@
         td { padding: 14px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
         tr:hover td { background-color: #fdfbfb; }
 
-        /* Professional POS Checkout Modal & General Modals */
+        /* Modals & POS Checkout Terminal */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 16px; }
         .modal-overlay.active { display: flex; }
         .modal-card { background: #ffffff; border-radius: var(--radius-main); width: 100%; max-width: 550px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.25); animation: modalSlideUp 0.3s ease; }
@@ -252,7 +260,7 @@
         .modal-body { padding: 24px; }
         
         .pos-amount-display { background: var(--bg-warm); padding: 20px; border-radius: var(--radius-main); text-align: center; margin-bottom: 20px; border: 1px solid var(--border-color); }
-        .pos-amount-display p { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 5px; }
+        .pos-amount-display p { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
         .pos-amount-display h2 { font-size: 2.2rem; color: var(--danger-color); font-weight: 700; }
 
         .pos-methods-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
@@ -262,9 +270,9 @@
         .pos-method-btn.active { border-color: var(--primary-vino); background: var(--primary-soft); }
         .pos-method-btn.active i, .pos-method-btn.active span { color: var(--primary-vino); }
 
-        .pos-cash-calculator { background: #fdfdfd; padding: 16px; border-radius: 12px; border: 1px dashed #ccc; display: none; }
+        .pos-cash-calculator { background: #fafafa; padding: 16px; border-radius: 12px; border: 1.5px dashed var(--border-color); display: none; }
         .pos-cash-calculator.active { display: block; animation: fadeIn 0.3s ease; }
-        .pos-change-display { font-size: 1.6rem; font-weight: 700; color: var(--success-color); margin-top: 10px; }
+        .pos-change-display { font-size: 1.8rem; font-weight: 700; color: var(--success-color); margin-top: 8px; }
 
         .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; display: inline-flex; align-items: center; gap: 6px; }
         .badge-pendiente { background: #fff3e0; color: #ef6c00; }
@@ -283,11 +291,13 @@
 </head>
 <body>
 
+    <!-- App Header -->
     <header class="app-header">
         <div class="brand-title"><i class="fa-solid fa-crown"></i> SARAY HA</div>
         <div class="sync-badge"><span class="sync-dot"></span> Firestore Conectado</div>
     </header>
 
+    <!-- Navigation Bar -->
     <nav class="nav-tabs-container">
         <button class="nav-tab-btn active" onclick="switchTab('encargos')">
             <i class="fa-solid fa-calendar-plus"></i><span>Encargos</span>
@@ -308,7 +318,7 @@
 
     <main class="container">
 
-        <!-- TAB 1: ENCARGOS (NUEVO PEDIDO) -->
+        <!-- TAB 1: REGISTRO DE ENCARGO -->
         <div id="tab-encargos" class="tab-content active">
             <div class="policy-banner">
                 <i class="fa-solid fa-shield-halved"></i>
@@ -321,9 +331,14 @@
 
             <div class="card">
                 <form id="form-encargo" novalidate onsubmit="guardarEncargo(event)">
+                    <!-- Hidden inputs para almacenar selecciones de pills -->
+                    <input type="hidden" id="enc-categoria-val" value="">
+                    <input type="hidden" id="enc-talla-val" value="">
+                    <input type="hidden" id="enc-color-val" value="">
+
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Fecha de Registro (Automática)</label>
+                            <label>Fecha de Registro</label>
                             <input type="date" id="enc-fecha-registro" required readonly>
                         </div>
                         <div class="form-group">
@@ -335,55 +350,56 @@
                             <input type="tel" id="enc-telefono" placeholder="Ej. 9991234567 (Opcional)">
                         </div>
                         
-                        <!-- Quick Selects para Productos -->
-                        <div class="form-group full-width" style="margin-top: 10px;">
-                            <label>Categoría / Producto *</label>
+                        <!-- Píldoras de Selección Rápida de Producto -->
+                        <div class="form-group full-width" style="margin-top: 6px;">
+                            <label>Categoría del Producto *</label>
                             <div class="quick-select-group" id="group-categoria">
-                                <button type="button" class="quick-btn" onclick="selectPill('group-categoria', 'Vestido', this)">Vestido</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-categoria', 'Blusa', this)">Blusa</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-categoria', 'Conjunto', this)">Conjunto</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-categoria', 'Pantalón', this)">Pantalón</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-categoria', 'Falda', this)">Falda</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-categoria', 'Accesorio', this)">Accesorio</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Vestido', this)">Vestido</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Blusa', this)">Blusa</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Conjunto', this)">Conjunto</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Pantalón', this)">Pantalón</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Falda', this)">Falda</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Accesorio', this)">Accesorio</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Otro', this)">Otro</button>
                             </div>
                         </div>
 
                         <div class="form-group full-width">
                             <label>Talla *</label>
                             <div class="quick-select-group" id="group-talla">
-                                <button type="button" class="quick-btn" onclick="selectPill('group-talla', 'XS', this)">XS</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-talla', 'S', this)">S</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-talla', 'M', this)">M</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-talla', 'L', this)">L</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-talla', 'XL', this)">XL</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-talla', 'Unitalla', this)">Unitalla</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'XS', this)">XS</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'S', this)">S</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'M', this)">M</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'L', this)">L</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'XL', this)">XL</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'Unitalla', this)">Unitalla</button>
                             </div>
                         </div>
 
                         <div class="form-group full-width">
-                            <label>Color Principal *</label>
+                            <label>Color *</label>
                             <div class="quick-select-group" id="group-color">
-                                <button type="button" class="quick-btn" onclick="selectPill('group-color', 'Blanco', this)">Blanco</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-color', 'Negro', this)">Negro</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-color', 'Rojo/Vino', this)">Rojo/Vino</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-color', 'Rosa', this)">Rosa</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-color', 'Azul', this)">Azul</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('group-color', 'Estampado', this)">Estampado</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Blanco', this)">Blanco</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Negro', this)">Negro</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Rojo / Vino', this)">Rojo / Vino</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Rosa', this)">Rosa</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Azul', this)">Azul</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Beige', this)">Beige</button>
+                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Estampado', this)">Estampado</button>
                             </div>
                         </div>
                         
                         <div class="form-group full-width">
                             <label>Detalle Extra del Producto (Opcional)</label>
-                            <input type="text" id="enc-detalle-extra" placeholder="Ej. Lentejuelas en cuello, sin mangas...">
+                            <input type="text" id="enc-detalle-extra" placeholder="Ej. Lentejuelas en escote, manga larga...">
                         </div>
 
                         <div class="form-group full-width">
                             <label>Proveedor a Surtir *</label>
                             <select id="enc-proveedor" required>
-                                <option value="" disabled selected>Selecciona un proveedor...</option>
-                                <!-- Se llena dinámicamente -->
+                                <option value="" disabled selected>Cargando proveedores...</option>
                             </select>
-                            <small style="color:var(--text-muted); font-size:0.75rem;">Puedes dar de alta más proveedores en la pestaña "Proveedores".</small>
+                            <small style="color:var(--text-muted); font-size:0.75rem; margin-top:2px;">Puedes agregar proveedores en la pestaña "Proveedores".</small>
                         </div>
 
                         <div class="form-group">
@@ -398,7 +414,7 @@
                             <input type="text" id="enc-colonia" placeholder="Ej. Colonia Altabrisa">
                         </div>
 
-                        <!-- Financieros -->
+                        <!-- Financieros Oficiales -->
                         <div class="form-group">
                             <label>Costo de Compra ($)</label>
                             <input type="number" step="0.01" id="enc-costo-compra" placeholder="0.00" value="0" oninput="calcularFinanzasEncargo()">
@@ -413,15 +429,15 @@
                         </div>
                         <div class="form-group">
                             <label>Saldo Pendiente ($)</label>
-                            <input type="number" step="0.01" id="enc-saldo" placeholder="0.00" readonly>
+                            <input type="number" step="0.01" id="enc-saldo" placeholder="0.00" readonly style="color:var(--danger-color); font-weight:bold;">
                         </div>
                         <div class="form-group">
                             <label>Ganancia Neta ($)</label>
-                            <input type="number" step="0.01" id="enc-ganancia" placeholder="0.00" readonly style="color:var(--success-color);">
+                            <input type="number" step="0.01" id="enc-ganancia" placeholder="0.00" readonly style="color:var(--success-color); font-weight:bold;">
                         </div>
                         <div class="form-group full-width">
                             <label>Notas Adicionales de Venta</label>
-                            <input type="text" id="enc-notas" placeholder="Ej. Empacar para regalo...">
+                            <input type="text" id="enc-notas" placeholder="Ej. Empacar para regalo, cliente frecuente...">
                         </div>
                     </div>
 
@@ -467,7 +483,7 @@
                 <h2 class="section-title">Panel de Entregas y Logística</h2>
             </div>
             
-            <!-- Dashboard KPI -->
+            <!-- Dashboard KPI Top -->
             <div class="delivery-stats-grid">
                 <div class="delivery-stat-card">
                     <div class="delivery-stat-icon icon-orange"><i class="fa-solid fa-clock"></i></div>
@@ -487,7 +503,7 @@
                 </div>
             </div>
 
-            <!-- Filtros de Logística Restaurados -->
+            <!-- Filtros de Logística -->
             <div class="filter-toolbar">
                 <div class="filter-pills">
                     <button class="pill-btn active" onclick="filtrarEntregas('todos', this)">Todos</button>
@@ -517,7 +533,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Nombre del Proveedor / Marca *</label>
-                            <input type="text" id="dir-prov-nombre" placeholder="Ej. Moda GDL" required>
+                            <input type="text" id="dir-prov-nombre" placeholder="Ej. Distribuidora Moda GDL" required>
                         </div>
                         <div class="form-group">
                             <label>Teléfono / Contacto</label>
@@ -528,6 +544,7 @@
                         </div>
                     </div>
                 </form>
+                
                 <div class="table-responsive" style="margin-top: 20px;">
                     <table>
                         <thead>
@@ -567,7 +584,7 @@
                         </div>
                         <div class="form-group full-width">
                             <label>Concepto / Detalle de la Compra</label>
-                            <input type="text" id="prov-concepto" placeholder="Ej. Lote 50 vestidos">
+                            <input type="text" id="prov-concepto" placeholder="Ej. Lote 50 vestidos de seda">
                         </div>
                     </div>
                     <div style="margin-top: 18px; text-align: right;">
@@ -636,11 +653,11 @@
 
     </main>
 
-    <!-- MODAL POS: TERMINAL DE COBRO (CORREGIDO) -->
+    <!-- MODAL POS: TERMINAL DE COBRO -->
     <div id="modal-cobro-entrega" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
-                <h3><i class="fa-solid fa-cash-register"></i> Terminal de Cobro</h3>
+                <h3><i class="fa-solid fa-cash-register"></i> Terminal de Cobro POS</h3>
                 <button class="modal-close" onclick="closeModal('modal-cobro-entrega')">&times;</button>
             </div>
             <div class="modal-body">
@@ -671,10 +688,10 @@
                     <!-- Calculadora de Cambio en Efectivo -->
                     <div id="caja-calculadora-efectivo" class="pos-cash-calculator active">
                         <div class="form-group">
-                            <label>¿Con cuánto paga el cliente en total? ($)</label>
+                            <label>Monto recibido en efectivo ($)</label>
                             <input type="number" step="0.01" id="cobro-efectivo-recibido" placeholder="0.00" oninput="calcularCambioPOS()" style="font-size: 1.2rem; font-weight: bold; text-align: center;">
                         </div>
-                        <div style="text-align: center; margin-top: 15px;">
+                        <div style="text-align: center; margin-top: 12px;">
                             <label>Cambio a Devolver al Cliente:</label>
                             <div id="cobro-cambio-mostrar" class="pos-change-display">$0.00</div>
                         </div>
@@ -690,7 +707,7 @@
         </div>
     </div>
 
-    <!-- MODAL EDITAR DIRECCIÓN Y RUTA LOGÍSTICA (RESTAURADO) -->
+    <!-- MODAL EDITAR DIRECCIÓN Y RUTA LOGÍSTICA -->
     <div id="modal-edit-delivery" class="modal-overlay">
         <div class="modal-card">
             <div class="modal-header">
@@ -750,9 +767,6 @@
         let proveedoresDirectorio = [];
         let ticketsProveedores = [];
         let filtroLogisticaActual = 'todos';
-        
-        // Variables para los Quick Selects (Píldoras)
-        let selCategoria = "", selTalla = "", selColor = "";
 
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
@@ -761,60 +775,76 @@
             escucharColecciones();
         });
 
-        // TAB SWITCHING
+        // NAVEGACIÓN
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
+            
             document.getElementById(`tab-${tabName}`).classList.add('active');
             
             const activeBtn = Array.from(document.querySelectorAll('.nav-tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabName));
             if(activeBtn) activeBtn.classList.add('active');
             
             if (tabName === 'entregas') renderEntregas();
+            if (tabName === 'reportes') renderReportes();
         }
 
         // LÓGICA DE QUICK SELECTS (PILLS) EN ENCARGOS
-        function selectPill(groupId, valor, btnElement) {
-            const group = document.getElementById(groupId);
-            group.querySelectorAll('.quick-btn').forEach(btn => btn.classList.remove('active'));
+        function selectPill(tipo, valor, btnElement) {
+            const container = btnElement.parentElement;
+            container.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
             btnElement.classList.add('active');
 
-            if (groupId === 'group-categoria') selCategoria = valor;
-            if (groupId === 'group-talla') selTalla = valor;
-            if (groupId === 'group-color') selColor = valor;
+            if (tipo === 'categoria') document.getElementById('enc-categoria-val').value = valor;
+            if (tipo === 'talla') document.getElementById('enc-talla-val').value = valor;
+            if (tipo === 'color') document.getElementById('enc-color-val').value = valor;
         }
 
         function toggleDomicilioFields() {
             const isDom = document.getElementById('enc-modalidad').value === 'domicilio';
-            document.getElementById('group-colonia').style.display = isDom ? 'flex' : 'none';
-            isDom ? document.getElementById('enc-colonia').setAttribute('required', 'true') : document.getElementById('enc-colonia').removeAttribute('required');
+            const groupCol = document.getElementById('group-colonia');
+            groupCol.style.display = isDom ? 'flex' : 'none';
+            if (isDom) {
+                document.getElementById('enc-colonia').setAttribute('required', 'true');
+            } else {
+                document.getElementById('enc-colonia').removeAttribute('required');
+            }
         }
 
         function calcularFinanzasEncargo() {
             const costo = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
             const venta = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
             const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
-            document.getElementById('enc-saldo').value = Math.max(0, venta - anticipo).toFixed(2);
-            document.getElementById('enc-ganancia').value = (venta - costo).toFixed(2);
+            
+            const saldo = Math.max(0, venta - anticipo);
+            const ganancia = venta - costo;
+
+            document.getElementById('enc-saldo').value = saldo.toFixed(2);
+            document.getElementById('enc-ganancia').value = ganancia.toFixed(2);
         }
 
-        // FIREBASE LISTENERS (TIEMPO REAL)
+        // FIREBASE LISTENERS EN TIEMPO REAL
         function escucharColecciones() {
-            db.collection('proveedores_lista').onSnapshot(snap => {
+            // Directorio de Proveedores
+            db.collection('proveedores').onSnapshot(snap => {
                 proveedoresDirectorio = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderDirectorioProveedores();
-            });
+            }, err => console.error("Error Proveedores:", err));
+
+            // Tickets de Proveedores
             db.collection('tickets_proveedores').onSnapshot(snap => {
                 ticketsProveedores = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderTicketsProveedores();
                 renderReportes();
-            });
+            }, err => console.error("Error Tickets:", err));
+
+            // Encargos
             db.collection('encargos_pedidos').onSnapshot(snap => {
                 encargosData = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderInventario();
                 renderEntregas();
                 renderReportes();
-            });
+            }, err => console.error("Error Encargos:", err));
         }
 
         // DIRECTORIO PROVEEDORES
@@ -823,11 +853,14 @@
             const nombre = document.getElementById('dir-prov-nombre').value.trim();
             const telefono = document.getElementById('dir-prov-tel').value.trim();
             if(!nombre) return;
+
             try {
-                await db.collection('proveedores_lista').add({ nombre, telefono, fecha: new Date().toISOString() });
+                await db.collection('proveedores').add({ nombre, telefono, fecha: new Date().toISOString() });
                 document.getElementById('form-nuevo-proveedor').reset();
-                showToast("Proveedor añadido al directorio", "success");
-            } catch (err) { showToast("Error al guardar", "error"); }
+                showToast("Proveedor guardado en el directorio.", "success");
+            } catch (err) { 
+                showToast("Error al guardar proveedor.", "error"); 
+            }
         }
 
         function renderDirectorioProveedores() {
@@ -836,88 +869,158 @@
             const selTickets = document.getElementById('prov-select-nombre');
             
             tbody.innerHTML = '';
+            
+            if (proveedoresDirectorio.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="empty-state">No hay proveedores registrados en el directorio.</td></tr>`;
+                selEncargos.innerHTML = '<option value="" disabled selected>No hay proveedores disponibles</option>';
+                selTickets.innerHTML = '<option value="" disabled selected>No hay proveedores disponibles</option>';
+                return;
+            }
+
             selEncargos.innerHTML = '<option value="" disabled selected>Selecciona un proveedor...</option>';
             selTickets.innerHTML = '<option value="" disabled selected>Selecciona proveedor...</option>';
 
             proveedoresDirectorio.forEach(p => {
-                tbody.innerHTML += `<tr><td><strong>${escapeHtml(p.nombre)}</strong></td><td>${escapeHtml(p.telefono)}</td>
-                <td><button class="btn btn-secondary btn-sm" onclick="db.collection('proveedores_lista').doc('${p.id}').delete()"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+                tbody.innerHTML += `
+                <tr>
+                    <td><strong>${escapeHtml(p.nombre)}</strong></td>
+                    <td>${escapeHtml(p.telefono || '-')}</td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="eliminarProveedorDirectorio('${p.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`;
                 
                 selEncargos.innerHTML += `<option value="${escapeHtml(p.nombre)}">${escapeHtml(p.nombre)}</option>`;
                 selTickets.innerHTML += `<option value="${escapeHtml(p.nombre)}">${escapeHtml(p.nombre)}</option>`;
             });
         }
 
+        async function eliminarProveedorDirectorio(id) {
+            if(confirm("¿Eliminar este proveedor del directorio?")) {
+                try {
+                    await db.collection('proveedores').doc(id).delete();
+                    showToast("Proveedor eliminado.", "success");
+                } catch(e) { showToast("Error al eliminar.", "error"); }
+            }
+        }
+
         // TICKETS COMPRA
         async function guardarTicketProveedor(e) {
             e.preventDefault();
             const prov = document.getElementById('prov-select-nombre').value;
-            const ticket = document.getElementById('prov-ticket').value;
+            const ticket = document.getElementById('prov-ticket').value.trim();
             const fecha = document.getElementById('prov-fecha').value;
-            const monto = parseFloat(document.getElementById('prov-monto').value);
-            const concepto = document.getElementById('prov-concepto').value;
-            if(!prov) { showToast("Selecciona un proveedor de la lista", "error"); return; }
+            const monto = parseFloat(document.getElementById('prov-monto').value) || 0;
+            const concepto = document.getElementById('prov-concepto').value.trim();
+
+            if(!prov) { showToast("Selecciona un proveedor del directorio.", "error"); return; }
             
-            await db.collection('tickets_proveedores').add({ proveedor: prov, ticket, fecha, costoCompra: monto, concepto });
-            document.getElementById('form-ticket-proveedor').reset();
-            showToast("Ticket guardado", "success");
+            try {
+                await db.collection('tickets_proveedores').add({ proveedor: prov, ticket, fecha, costoCompra: monto, concepto });
+                document.getElementById('form-ticket-proveedor').reset();
+                showToast("Ticket de compra registrado.", "success");
+            } catch(e) { showToast("Error al registrar ticket.", "error"); }
         }
 
         function renderTicketsProveedores() {
             const tbody = document.getElementById('tbody-tickets-proveedores');
-            tbody.innerHTML = ticketsProveedores.map(t => `<tr><td>${t.fecha}</td><td><strong>${escapeHtml(t.proveedor)}</strong></td><td>${escapeHtml(t.ticket)}</td><td>$${t.costoCompra.toFixed(2)}</td>
-            <td><button class="btn btn-secondary btn-sm" onclick="db.collection('tickets_proveedores').doc('${t.id}').delete()"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('');
-        }
-
-        // ENCARGOS GUARDA Y RENDER
-        async function guardarEncargo(e) {
-            e.preventDefault();
-            if(!selCategoria || !selTalla || !selColor) {
-                showToast("Por favor selecciona Categoría, Talla y Color de los botones rápidos.", "error");
+            if (ticketsProveedores.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No hay tickets de compras registrados.</td></tr>`;
                 return;
             }
-            
-            const detalleExtra = document.getElementById('enc-detalle-extra').value.trim();
-            let productoFormateado = `${selCategoria} | Talla: ${selTalla} | Color: ${selColor}`;
-            if(detalleExtra) productoFormateado += ` | Extra: ${detalleExtra}`;
 
-            const prov = document.getElementById('enc-proveedor').value;
-            
+            tbody.innerHTML = ticketsProveedores.map(t => `
+                <tr>
+                    <td>${t.fecha}</td>
+                    <td><strong>${escapeHtml(t.proveedor)}</strong></td>
+                    <td>${escapeHtml(t.ticket)}</td>
+                    <td style="font-weight:700;">$${(t.costoCompra || 0).toFixed(2)}</td>
+                    <td><button class="btn btn-secondary btn-sm" onclick="db.collection('tickets_proveedores').doc('${t.id}').delete()"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        // GUARDAR Y RENDER DE ENCARGOS
+        async function guardarEncargo(e) {
+            e.preventDefault();
+
+            const cat = document.getElementById('enc-categoria-val').value;
+            const talla = document.getElementById('enc-talla-val').value;
+            const color = document.getElementById('enc-color-val').value;
+            const cliente = document.getElementById('enc-cliente').value.trim();
+            const proveedor = document.getElementById('enc-proveedor').value;
+
+            if (!cliente) { showToast("Escribe el nombre del cliente.", "error"); return; }
+            if (!cat || !talla || !color) { showToast("Selecciona Producto, Talla y Color de los botones.", "error"); return; }
+            if (!proveedor) { showToast("Selecciona el proveedor a surtir.", "error"); return; }
+
+            const detalleExtra = document.getElementById('enc-detalle-extra').value.trim();
+            let productoConsolidado = `${cat} | Talla: ${talla} | Color: ${color}`;
+            if (detalleExtra) productoConsolidado += ` | Extra: ${detalleExtra}`;
+
+            const modalidad = document.getElementById('enc-modalidad').value;
+            const colonia = modalidad === 'domicilio' ? document.getElementById('enc-colonia').value.trim() : 'Sucursal';
+
+            const costoCompra = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
+            const precioVenta = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
+            const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
+            const saldoPendiente = Math.max(0, precioVenta - anticipo);
+            const gananciaNeta = precioVenta - costoCompra;
+
             const nuevoEncargo = {
                 fechaRegistro: document.getElementById('enc-fecha-registro').value,
-                cliente: document.getElementById('enc-cliente').value.trim(),
-                telefono: document.getElementById('enc-telefono').value.trim(),
-                productos: productoFormateado,
-                proveedor: prov,
-                modalidad: document.getElementById('enc-modalidad').value,
-                colonia: document.getElementById('enc-modalidad').value === 'domicilio' ? document.getElementById('enc-colonia').value.trim() : 'Sucursal',
-                direccionExacta: "", mapsLink: "", repartidor: "", horarioEntrega: "",
-                costoCompra: parseFloat(document.getElementById('enc-costo-compra').value)||0,
-                precioVenta: parseFloat(document.getElementById('enc-precio-venta').value)||0,
-                anticipo: parseFloat(document.getElementById('enc-anticipo').value)||0,
-                saldoPendiente: parseFloat(document.getElementById('enc-saldo').value)||0,
-                gananciaNeta: parseFloat(document.getElementById('enc-ganancia').value)||0,
+                cliente,
+                telefono: document.getElementById('enc-telefono').value.trim() || "",
+                productos: productoConsolidado,
+                proveedor,
+                modalidad,
+                colonia,
+                direccionExacta: "",
+                mapsLink: "",
+                repartidor: "",
+                horarioEntrega: "",
+                costoCompra,
+                precioVenta,
+                anticipo,
+                saldoPendiente,
+                gananciaNeta,
                 notas: document.getElementById('enc-notas').value.trim(),
-                estadoEntrega: 'pendiente'
+                estadoEntrega: 'pendiente',
+                politica: "No hay cambios ni devoluciones"
             };
-            
+
             try {
                 await db.collection('encargos_pedidos').add(nuevoEncargo);
+                
+                // Limpiar Formulario
                 document.getElementById('form-encargo').reset();
                 document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
-                selCategoria = ""; selTalla = ""; selColor = "";
+                document.getElementById('enc-categoria-val').value = "";
+                document.getElementById('enc-talla-val').value = "";
+                document.getElementById('enc-color-val').value = "";
+                
+                // Restaurar defaults
                 document.getElementById('enc-fecha-registro').value = new Date().toISOString().split('T')[0];
+                document.getElementById('enc-costo-compra').value = 0;
+                document.getElementById('enc-anticipo').value = 0;
                 document.getElementById('enc-saldo').value = "0.00";
                 document.getElementById('enc-ganancia').value = "0.00";
-                showToast("Encargo Registrado con Éxito", "success");
-            } catch(e) { showToast("Error al guardar", "error"); }
+                toggleDomicilioFields();
+
+                showToast("¡Encargo registrado exitosamente!", "success");
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                showToast("Error al guardar en Firestore.", "error");
+            }
         }
 
         function renderInventario() {
             const tbody = document.getElementById('tbody-inventario');
+            if (encargosData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No hay encargos registrados.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = encargosData.map(item => {
-                
-                let waButton = `<span class="badge badge-sin-telefono"><i class="fa-solid fa-phone-slash"></i></span>`;
+                let waButton = `<span class="badge badge-sin-telefono"><i class="fa-solid fa-phone-slash"></i> Sin tel</span>`;
                 if(item.telefono && item.telefono.trim() !== '') {
                     const cleanPhone = item.telefono.replace(/\D/g,'');
                     waButton = `<a href="https://wa.me/52${cleanPhone}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> ${item.telefono}</a>`;
@@ -933,14 +1036,14 @@
                     <td><strong>${escapeHtml(item.cliente)}</strong></td>
                     <td>${waButton}</td>
                     <td>${escapeHtml(item.productos)}</td>
-                    <td><span class="badge" style="background:#e0f7fa;color:#006064;">${escapeHtml(item.proveedor || '-')}</span></td>
+                    <td><span class="badge" style="background:#e0f7fa; color:#006064;">${escapeHtml(item.proveedor || '-')}</span></td>
                     <td>$${(item.precioVenta||0).toFixed(2)}</td>
-                    <td style="color:var(--danger-color);font-weight:700;">$${(item.saldoPendiente||0).toFixed(2)}</td>
+                    <td style="color:var(--danger-color); font-weight:700;">$${(item.saldoPendiente||0).toFixed(2)}</td>
                     <td><span class="badge ${item.modalidad==='domicilio'?'badge-domicilio':'badge-sucursal'}">${item.modalidad}</span></td>
                     <td>${badgeEstado}</td>
-                    <td><button class="btn btn-secondary btn-sm" onclick="db.collection('encargos_pedidos').doc('${item.id}').delete()"><i class="fa-solid fa-trash"></i></button></td>
-                </tr>
-            `}).join('');
+                    <td><button class="btn btn-secondary btn-sm" onclick="eliminarEncargo('${item.id}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>`;
+            }).join('');
         }
 
         function filtrarInventario() {
@@ -950,7 +1053,7 @@
             });
         }
 
-        // LOGÍSTICA & ENTREGAS (FILTROS Y TARJETAS RESTAURADOS)
+        // LOGÍSTICA & ENTREGAS (TARJETAS Y MÉTODOS)
         function renderEntregas() {
             const cont = document.getElementById('delivery-cards-container');
             let pend=0, ruta=0, ent=0, cobrar=0;
@@ -985,13 +1088,13 @@
             document.getElementById('stat-del-cobrar').innerText = `$${cobrar.toFixed(2)}`;
 
             if(filtered.length === 0) {
-                cont.innerHTML = '<p class="empty-state"><i class="fa-solid fa-truck-ramp-box"></i><br><br>No hay entregas pendientes en esta categoría.</p>';
+                cont.innerHTML = '<p class="empty-state"><i class="fa-solid fa-truck-ramp-box"></i><br><br>No hay entregas pendientes con el filtro seleccionado.</p>';
                 return;
             }
 
             cont.innerHTML = filtered.map(item => {
                 const phone = item.telefono ? item.telefono.replace(/\D/g,'') : null;
-                const hasPhone = phone && phone.length>=7;
+                const hasPhone = phone && phone.length >= 7;
                 const mapsUrl = item.mapsLink && item.mapsLink.trim() !== '' ? item.mapsLink : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.colonia + ' ' + (item.direccionExacta || ''))}`;
                 
                 let badgeEst = `<span class="badge badge-pendiente">Pendiente</span>`;
@@ -1010,10 +1113,10 @@
                     <div class="delivery-body">
                         <div class="address-box">
                             <strong><i class="fa-solid fa-map-pin"></i> ${escapeHtml(item.colonia)}</strong>
-                            <p style="font-size:0.85rem; margin-top:5px;">${escapeHtml(item.direccionExacta || 'Sin dirección exacta guardada.')}</p>
-                            ${item.horarioEntrega ? `<p style="font-size:0.8rem; color:var(--primary-vino); font-weight:600; margin-top:5px;"><i class="fa-solid fa-clock"></i> ${escapeHtml(item.horarioEntrega)}</p>` : ''}
-                            <div style="margin-top:10px; padding-top:10px; border-top:1px solid #ddd;">
-                                <strong style="color:var(--primary-vino); font-size:0.8rem;">PRODUCTO:</strong>
+                            <p style="font-size:0.85rem; margin-top:5px; color:#444;">${escapeHtml(item.direccionExacta || 'Sin dirección exacta registrada.')}</p>
+                            ${item.horarioEntrega ? `<p style="font-size:0.8rem; color:var(--primary-vino); font-weight:600; margin-top:5px;"><i class="fa-solid fa-clock"></i> Horario: ${escapeHtml(item.horarioEntrega)}</p>` : ''}
+                            <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;">
+                                <strong style="color:var(--primary-vino); font-size:0.8rem;">DETALLE DEL PEDIDO:</strong>
                                 <p style="font-size:0.85rem;">${escapeHtml(item.productos)}</p>
                             </div>
                         </div>
@@ -1021,7 +1124,7 @@
                             <h2 style="color:var(--danger-color); font-size:1.8rem; font-weight:700;">$${(item.saldoPendiente||0).toFixed(2)}</h2>
                             <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Saldo Pendiente</span>
                             <div style="margin-top:15px;">
-                                <span class="fin-pill paid">Anticipo dado: $${(item.anticipo||0).toFixed(2)}</span>
+                                <span class="fin-pill paid">Anticipo: $${(item.anticipo||0).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -1035,7 +1138,7 @@
                             </a>
                         </div>
                         <div class="driver-action-btns">
-                            ${hasPhone && item.estadoEntrega !== 'entregado' ? `<button class="btn btn-whatsapp btn-sm" onclick="window.open('https://wa.me/52${phone}?text=¡Hola! Tu pedido de SARAY HA va en camino. El saldo pendiente a liquidar es de $${(item.saldoPendiente||0).toFixed(2)}', '_blank')"><i class="fa-brands fa-whatsapp"></i> Avisar "En Camino"</button>` : ''}
+                            ${hasPhone && item.estadoEntrega !== 'entregado' ? `<button class="btn btn-whatsapp btn-sm" onclick="window.open('https://wa.me/52${phone}?text=¡Hola! Tu pedido de SARAY HA va en camino. El saldo pendiente es de $${(item.saldoPendiente||0).toFixed(2)}', '_blank')"><i class="fa-brands fa-whatsapp"></i> Avisar "En Camino"</button>` : ''}
                             ${item.estadoEntrega === 'pendiente' ? `<button class="btn btn-primary btn-sm" onclick="actualizarEstadoRuta('${item.id}', 'en_ruta')"><i class="fa-solid fa-truck-fast"></i> Marcar En Ruta</button>` : ''}
                             ${item.estadoEntrega !== 'entregado' ? `<button class="btn btn-primary btn-sm" style="background:var(--success-color);" onclick="prepararCobroPOS('${item.id}')"><i class="fa-solid fa-cash-register"></i> Cobrar y Entregar</button>` : ''}
                         </div>
@@ -1052,11 +1155,13 @@
         }
 
         async function actualizarEstadoRuta(id, estado) {
-            await db.collection('encargos_pedidos').doc(id).update({estadoEntrega: estado});
-            showToast("Estado de entrega actualizado", "success");
+            try {
+                await db.collection('encargos_pedidos').doc(id).update({estadoEntrega: estado});
+                showToast("Estado de ruta actualizado.", "success");
+            } catch(e) { showToast("Error al actualizar.", "error"); }
         }
 
-        // FUNCIONES MODAL EDITAR DIRECCIÓN LOGÍSTICA
+        // MODAL EDITAR DIRECCIÓN Y RUTA
         function openEditDeliveryModal(id) {
             const item = encargosData.find(e => e.id === id);
             if (!item) return;
@@ -1081,37 +1186,37 @@
                     horarioEntrega: document.getElementById('edit-del-horario').value.trim()
                 });
                 closeModal('modal-edit-delivery');
-                showToast("Datos de ruta actualizados.", "success");
+                showToast("Datos de ruta actualizados con éxito.", "success");
             } catch (err) { showToast("Error al guardar la ruta.", "error"); }
         }
 
-        // SISTEMA POS (COBRO EN PUERTA - CORREGIDO COMPLETAMENTE)
+        // TERMINAL DE COBRO POS (DESPACHO DE ENTREGAS)
         function prepararCobroPOS(id) {
             const item = encargosData.find(e => e.id === id);
             if(!item) return;
 
             const saldo = item.saldoPendiente || 0;
 
-            // Si no hay saldo por cobrar (Ya se pagó o costaba 0), entregar directo.
             if(saldo <= 0) {
+                // Si el saldo es $0, liquidar entrega directamente
                 db.collection('encargos_pedidos').doc(id).update({
-                    estadoEntrega: 'entregado'
-                }).then(() => showToast("Pedido entregado. Sin saldo pendiente.", "success"));
+                    estadoEntrega: 'entregado',
+                    fechaLiquidacion: new Date().toISOString()
+                }).then(() => showToast("Pedido entregado (Saldo $0).", "success"));
                 return;
             }
 
-            // Si hay saldo, abrir POS Modal
             document.getElementById('cobro-del-id').value = item.id;
             document.getElementById('cobro-modal-cliente').innerText = `Cliente: ${item.cliente}`;
             document.getElementById('cobro-modal-saldo-text').innerText = `$${saldo.toFixed(2)}`;
             document.getElementById('cobro-monto-exacto').value = saldo;
             
-            // Reset Calculadora Efectivo
+            // Reset de inputs en modal POS
             document.getElementById('cobro-efectivo-recibido').value = '';
             document.getElementById('cobro-cambio-mostrar').innerText = '$0.00';
             document.getElementById('cobro-cambio-mostrar').style.color = 'var(--text-muted)';
             
-            seleccionarMetodoPago('Efectivo'); // Default
+            seleccionarMetodoPago('Efectivo');
             document.getElementById('modal-cobro-entrega').classList.add('active');
         }
 
@@ -1123,7 +1228,7 @@
             const calc = document.getElementById('caja-calculadora-efectivo');
             if(metodo === 'Efectivo') {
                 calc.classList.add('active');
-                setTimeout(()=> document.getElementById('cobro-efectivo-recibido').focus(), 100);
+                setTimeout(()=> document.getElementById('cobro-efectivo-recibido').focus(), 150);
             } else {
                 calc.classList.remove('active');
             }
@@ -1140,7 +1245,7 @@
                 display.innerText = `$${cambio.toFixed(2)}`;
                 display.style.color = 'var(--success-color)';
             } else {
-                display.innerText = 'Falta dinero';
+                display.innerText = 'Monto insuficiente';
                 display.style.color = 'var(--danger-color)';
             }
         }
@@ -1155,54 +1260,75 @@
             const recibido = textRecibido ? parseFloat(textRecibido) : 0;
 
             if(metodo === 'Efectivo' && recibido < cobrar) {
-                showToast("El efectivo recibido debe ser mayor o igual al saldo a cobrar.", "error");
+                showToast("El monto recibido no alcanza a cubrir el saldo.", "error");
                 return;
             }
 
             const item = encargosData.find(x => x.id === id);
-            await db.collection('encargos_pedidos').doc(id).update({
-                anticipo: (item.anticipo || 0) + cobrar,
-                saldoPendiente: 0,
-                estadoEntrega: 'entregado',
-                metodoPagoLiquidacion: metodo
-            });
-            closeModal('modal-cobro-entrega');
-            showToast("Pago de Saldo registrado y pedido entregado con éxito.", "success");
+            try {
+                await db.collection('encargos_pedidos').doc(id).update({
+                    anticipo: (item.anticipo || 0) + cobrar,
+                    saldoPendiente: 0,
+                    estadoEntrega: 'entregado',
+                    metodoPagoLiquidacion: metodo,
+                    fechaLiquidacion: new Date().toISOString()
+                });
+                closeModal('modal-cobro-entrega');
+                showToast("Cobro completado y pedido entregado con éxito.", "success");
+            } catch(err) {
+                showToast("Error al procesar el cobro.", "error");
+            }
         }
 
-        // REPORTES
+        // REPORTES Y FINANZAS
         function renderReportes() {
-            let vt=0, ct=0, saldosTotales=0;
+            let vt = 0, ct = 0, saldosTotales = 0;
             encargosData.forEach(i => { 
-                vt+= (i.precioVenta||0); 
-                ct+= (i.costoCompra||0); 
-                saldosTotales += (i.saldoPendiente||0);
+                vt += (i.precioVenta || 0); 
+                ct += (i.costoCompra || 0); 
+                saldosTotales += (i.saldoPendiente || 0);
             });
             
-            let cprov=0;
-            ticketsProveedores.forEach(i => { cprov+= (i.costoCompra||0); });
+            let cprov = 0;
+            ticketsProveedores.forEach(i => { cprov += (i.costoCompra || 0); });
 
-            const gn = vt - (ct + cprov);
+            const costoTotalConsolidado = ct + cprov;
+            const gananciaNetaConsolidada = vt - costoTotalConsolidado;
             
             document.getElementById('rep-total-ventas').innerText = `$${vt.toFixed(2)}`;
-            document.getElementById('rep-total-costos').innerText = `$${(ct + cprov).toFixed(2)}`;
-            document.getElementById('rep-total-ganancia').innerText = `$${gn.toFixed(2)}`;
+            document.getElementById('rep-total-costos').innerText = `$${costoTotalConsolidado.toFixed(2)}`;
+            document.getElementById('rep-total-ganancia').innerText = `$${gananciaNetaConsolidada.toFixed(2)}`;
             document.getElementById('rep-total-saldos').innerText = `$${saldosTotales.toFixed(2)}`;
 
             document.getElementById('rep-sub-ventas').innerText = `$${vt.toFixed(2)}`;
             document.getElementById('rep-sub-costos-encargos').innerText = `$${ct.toFixed(2)}`;
             document.getElementById('rep-sub-compras-prov').innerText = `$${cprov.toFixed(2)}`;
-            document.getElementById('rep-sub-ganancia-neta').innerText = `$${gn.toFixed(2)}`;
+            document.getElementById('rep-sub-ganancia-neta').innerText = `$${gananciaNetaConsolidada.toFixed(2)}`;
         }
 
-        // UTILS GLOBALES
+        async function eliminarEncargo(id) {
+            if (confirm("¿Estás seguro de eliminar este encargo definitivamente?")) {
+                try {
+                    await db.collection('encargos_pedidos').doc(id).delete();
+                    showToast("Encargo eliminado.", "success");
+                } catch (e) {
+                    showToast("Error al eliminar.", "error");
+                }
+            }
+        }
+
+        // UTILS
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function escapeHtml(s) { return s? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"): ''; }
+        function escapeHtml(s) { return s ? s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;") : ''; }
+        
         function showToast(m, t='info') {
-            const cont = document.getElementById('toast-container'), to = document.createElement('div');
-            to.className = 'toast'; to.style.background = t==='error'?'#d32f2f':'#2e7d32';
-            to.innerHTML = `<i class="fa-solid ${t==='error'?'fa-circle-xmark':'fa-circle-check'}"></i> ${m}`;
-            cont.appendChild(to); setTimeout(()=>to.remove(), 3500);
+            const cont = document.getElementById('toast-container');
+            const to = document.createElement('div');
+            to.className = 'toast';
+            to.style.background = t === 'error' ? '#d32f2f' : '#2e7d32';
+            to.innerHTML = `<i class="fa-solid ${t === 'error' ? 'fa-circle-xmark' : 'fa-circle-check'}"></i> ${m}`;
+            cont.appendChild(to);
+            setTimeout(() => to.remove(), 3500);
         }
     </script>
 </body>
