@@ -1,1581 +1,1725 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SARAY HA — Encargos & Entregas Pro v5.0</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SARAY HA — Encargos & Entregas Pro v5.0</title>
 
-  <!-- Google Fonts & FontAwesome -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Web App & PWA Settings -->
+    <meta name="theme-color" content="#722f37">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SARAY HA Pro">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3081/3081559.png">
 
-  <!-- Firebase SDKs (v10.8.0 Compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <style>
-    :root {
-      --primary-vino: #722f37;
-      --primary-accent: #8b4255;
-      --primary-soft: #fbf2f4;
-      --bg-warm: #f8f5f6;
-      --gold-accent: #c59b27;
-      --gold-light: #fdf8eb;
-      --text-dark: #2d2426;
-      --text-muted: #7c6a6e;
-      --card-bg: #ffffff;
-      --card-shadow: 0 12px 32px rgba(114, 47, 55, 0.08);
-      --border-color: #ebdcdb;
-      --radius-lg: 20px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
-      --success-green: #2e7d32;
-      --warning-amber: #d97706;
-      --danger-red: #c62828;
-    }
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Montserrat', sans-serif;
-    }
+    <style>
+        :root {
+            --primary-vino: #722f37;
+            --primary-accent: #8b4255;
+            --primary-soft: #fbf2f4;
+            --secondary-gold: #c5a059;
+            --bg-warm: #f8f5f6;
+            --card-bg: #ffffff;
+            --text-main: #2b2b2b;
+            --text-muted: #6e6e6e;
+            --border-color: #eadfe2;
+            --success-color: #2e7d32;
+            --warning-color: #ed6c02;
+            --info-color: #0288d1;
+            --danger-color: #d32f2f;
+            --shadow-soft: 0 8px 24px rgba(114, 47, 55, 0.06);
+            --shadow-hover: 0 12px 32px rgba(114, 47, 55, 0.12);
+            --radius-main: 16px;
+            --radius-sm: 10px;
+        }
 
-    body {
-      background-color: var(--bg-warm);
-      color: var(--text-dark);
-      padding-bottom: 100px;
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    /* HEADER BOUTIQUE PRO */
-    .app-header {
-      background: linear-gradient(135deg, var(--primary-vino) 0%, #4a1c23 100%);
-      color: #ffffff;
-      padding: 28px 20px;
-      text-align: center;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
-      position: relative;
-    }
+        body {
+            background-color: var(--bg-warm);
+            color: var(--text-main);
+            padding-bottom: 90px;
+            min-height: 100vh;
+        }
 
-    .app-header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 2.1rem;
-      letter-spacing: 1.5px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+        /* App Bar Header */
+        header.app-header {
+            background: linear-gradient(135deg, var(--primary-vino) 0%, #4a1d23 100%);
+            color: #ffffff;
+            padding: 18px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .app-header p {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      font-weight: 300;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    /* NAVEGACIÓN FLOTANTE BOUTIQUE */
-    .nav-tabs-wrapper {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(248, 245, 246, 0.94);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(114, 47, 55, 0.08);
-    }
+        .brand-title i {
+            color: var(--secondary-gold);
+            font-size: 1.2rem;
+        }
 
-    .nav-tabs {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      max-width: 1100px;
-      margin: 0 auto;
-      scrollbar-width: none;
-    }
-    .nav-tabs::-webkit-scrollbar { display: none; }
+        .sync-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-    .tab-btn {
-      flex: 0 0 auto;
-      background: #ffffff;
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-      padding: 11px 22px;
-      border-radius: 50px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    }
+        .sync-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #4caf50;
+        }
 
-    .tab-btn i { font-size: 0.95rem; }
+        /* Floating Tab Navigation */
+        nav.nav-tabs-container {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 40px;
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(114, 47, 55, 0.18);
+            display: flex;
+            justify-content: space-between;
+            z-index: 999;
+            border: 1px solid var(--border-color);
+        }
 
-    .tab-btn.active {
-      background: var(--primary-vino);
-      color: #ffffff;
-      border-color: var(--primary-vino);
-      box-shadow: 0 4px 18px rgba(114, 47, 55, 0.35);
-    }
+        .nav-tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px 4px;
+            border-radius: 30px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+        }
 
-    /* CONTENEDOR PRINCIPAL */
-    .main-container {
-      max-width: 1100px;
-      margin: 26px auto;
-      padding: 0 16px;
-    }
+        .nav-tab-btn i {
+            font-size: 1.15rem;
+        }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.35s ease; }
+        .nav-tab-btn.active {
+            background: var(--primary-vino);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.3);
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        /* Container Main */
+        main.container {
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
 
-    /* TARJETAS & COMPONENTES BOUTIQUE PRO */
-    .boutique-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      padding: 28px;
-      margin-bottom: 26px;
-      box-shadow: var(--card-shadow);
-      border: 1px solid var(--border-color);
-      position: relative;
-    }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
 
-    .card-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.4rem;
-      color: var(--primary-vino);
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 2px solid var(--primary-soft);
-      padding-bottom: 12px;
-    }
+        .tab-content.active {
+            display: block;
+        }
 
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 18px;
-    }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
+        /* Typography & Layout Components */
+        .section-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
 
-    .form-group.full-width { grid-column: 1 / -1; }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--primary-vino);
+            font-weight: 700;
+        }
 
-    label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-    }
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-main);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      font-size: 0.95rem;
-      background: #faf8f8;
-      color: var(--text-dark);
-      transition: all 0.25s ease;
-    }
+        /* Form Controls */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
 
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary-vino);
-      background: #ffffff;
-      box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.12);
-    }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
 
-    /* BOTONES DE TALLA RÁPIDA */
-    .talla-pills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
 
-    .talla-pill {
-      padding: 6px 14px;
-      border: 1px solid var(--border-color);
-      background: #ffffff;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: var(--text-muted);
-    }
+        label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--primary-vino);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .talla-pill.active {
-      background: var(--primary-accent);
-      color: #ffffff;
-      border-color: var(--primary-accent);
-      box-shadow: 0 2px 8px rgba(139, 66, 85, 0.25);
-    }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #fff;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
-    /* BOTONES PRO */
-    .btn-boutique-primary {
-      background: linear-gradient(135deg, var(--primary-vino) 0%, var(--primary-accent) 100%);
-      color: #ffffff;
-      border: none;
-      padding: 12px 24px;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 0.92rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 14px rgba(114, 47, 55, 0.28);
-    }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-vino);
+            box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1);
+        }
 
-    .btn-boutique-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(114, 47, 55, 0.38);
-    }
+        /* Buttons */
+        .btn {
+            padding: 12px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
 
-    .btn-boutique-secondary {
-      background: var(--primary-soft);
-      color: var(--primary-vino);
-      border: 1px solid var(--border-color);
-      padding: 10px 18px;
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-vino) 0%, var(--primary-accent) 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(114, 47, 55, 0.25);
+        }
 
-    .btn-boutique-secondary:hover {
-      background: #f3e5e8;
-    }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(114, 47, 55, 0.35);
+        }
 
-    .btn-danger {
-      background: #fee2e2;
-      color: var(--danger-red);
-      border: 1px solid #fca5a5;
-    }
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--primary-vino);
+            border: 1.5px solid var(--primary-vino);
+        }
 
-    .btn-success {
-      background: #dcfce7;
-      color: var(--success-green);
-      border: 1px solid #86efac;
-    }
+        .btn-secondary:hover {
+            background: var(--primary-soft);
+        }
 
-    /* BADGES & ESTADOS */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 5px 12px;
-      border-radius: 50px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: #fff;
+        }
 
-    .badge-domicilio { background: #e0f2fe; color: #0369a1; }
-    .badge-tienda { background: #fef3c7; color: #b45309; }
-    .badge-sin-tel { background: #f3f4f6; color: #6b7280; font-weight: 600; }
-    .badge-entregado { background: #d1fae5; color: #047857; }
+        .btn-whatsapp:hover {
+            background-color: #1eb956;
+            color: #fff;
+        }
 
-    /* DRIVER LOGISTICS BOX EN ENTREGAS */
-    .driver-box {
-      background: var(--primary-soft);
-      border: 1px dashed var(--primary-accent);
-      border-radius: var(--radius-md);
-      padding: 18px;
-      margin-top: 14px;
-    }
+        .btn-sm {
+            padding: 7px 14px;
+            font-size: 0.78rem;
+            border-radius: 20px;
+        }
 
-    .driver-box-header {
-      font-weight: 700;
-      color: var(--primary-vino);
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        /* Policy Notice Banner */
+        .policy-banner {
+            background: linear-gradient(135deg, #722f37 0%, #521d24 100%);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(114, 47, 55, 0.15);
+        }
 
-    /* POS TERMINAL MODAL */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(45, 36, 38, 0.65);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 16px;
-    }
+        .policy-banner i {
+            font-size: 1.4rem;
+            color: var(--secondary-gold);
+        }
 
-    .modal-overlay.active { display: flex; }
+        .policy-banner p {
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
 
-    .pos-card {
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 24px 48px rgba(0,0,0,0.25);
-      overflow: hidden;
-      animation: modalUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+        /* LOGISTICS & DELIVERIES DASHBOARD STYLES */
+        .delivery-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
 
-    @keyframes modalUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
+        .delivery-stat-card {
+            background: #ffffff;
+            border-radius: var(--radius-main);
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-soft);
+        }
 
-    .pos-header {
-      background: linear-gradient(135deg, var(--primary-vino), var(--primary-accent));
-      color: #ffffff;
-      padding: 22px;
-      text-align: center;
-    }
+        .delivery-stat-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
 
-    .pos-header h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.45rem;
-    }
+        .icon-orange { background: #fff3e0; color: #ef6c00; }
+        .icon-blue { background: #e3f2fd; color: #1976d2; }
+        .icon-green { background: #e8f5e9; color: #2e7d32; }
+        .icon-vino { background: var(--primary-soft); color: var(--primary-vino); }
 
-    .pos-body {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        .delivery-stat-info span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
 
-    .pos-total-display {
-      background: var(--bg-warm);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      text-align: center;
-      border: 1px solid var(--border-color);
-    }
+        .delivery-stat-info h3 {
+            font-size: 1.35rem;
+            color: var(--text-main);
+            font-weight: 700;
+            margin-top: 2px;
+        }
 
-    .pos-total-display .amount {
-      font-size: 2.3rem;
-      font-weight: 800;
-      color: var(--primary-vino);
-    }
+        /* Filter Pills & Search */
+        .filter-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    .pos-methods-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-    }
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
 
-    .pos-pay-btn {
-      padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      background: #faf8f8;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s ease;
-      color: var(--text-dark);
-    }
+        .pill-btn {
+            border: 1px solid var(--border-color);
+            background: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
 
-    .pos-pay-btn.active {
-      background: var(--primary-vino);
-      color: #ffffff;
-      border-color: var(--primary-vino);
-      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.3);
-    }
+        .pill-btn.active {
+            background: var(--primary-vino);
+            color: #fff;
+            border-color: var(--primary-vino);
+        }
 
-    .pos-cambio-box {
-      padding: 12px;
-      border-radius: var(--radius-md);
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-align: center;
-    }
+        /* Delivery Order Card Design */
+        .delivery-card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
-    .pos-cambio-box.verde { background: #dcfce7; color: var(--success-green); }
-    .pos-cambio-box.neutral { background: #e0f2fe; color: #0369a1; }
+        .delivery-order-card {
+            background: #fff;
+            border-radius: var(--radius-main);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
 
-    .pos-warning-abono {
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      color: #92400e;
-      padding: 12px;
-      border-radius: var(--radius-md);
-      font-size: 0.82rem;
-      line-height: 1.4;
-    }
+        .delivery-order-card:hover {
+            box-shadow: var(--shadow-hover);
+        }
 
-    .pos-policy-note {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      text-align: center;
-      font-weight: 600;
-    }
+        .delivery-header {
+            background: var(--bg-warm);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-    /* SUMMARY CARDS EN RESUMEN */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
+        .client-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .summary-card {
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      padding: 18px;
-      border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    }
+        .client-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary-vino);
+        }
 
-    .summary-card label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
-    .summary-card .val { font-size: 1.55rem; font-weight: 800; color: var(--primary-vino); margin-top: 6px; }
+        .delivery-body {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
 
-    /* FLOATING ACTION BUTTONS */
-    .floating-buttons {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 900;
-    }
+        .address-box {
+            background: #fafafa;
+            border: 1px dashed var(--border-color);
+            padding: 14px;
+            border-radius: var(--radius-sm);
+        }
 
-    .btn-float {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      font-size: 1.4rem;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-      cursor: pointer;
-      border: none;
-      transition: transform 0.25s ease;
-    }
+        .address-box strong {
+            color: var(--primary-vino);
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 4px;
+        }
 
-    .btn-float:hover { transform: scale(1.1); }
-    .btn-float-wa { background: #25d366; }
-    .btn-float-reset { background: var(--danger-red); }
+        .address-box p {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
 
-    /* TOAST NOTIFICATIONS */
-    #toast-container {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+        .order-summary-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    .toast {
-      background: #ffffff;
-      color: var(--text-dark);
-      padding: 14px 20px;
-      border-radius: var(--radius-md);
-      border-left: 5px solid var(--primary-vino);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      font-size: 0.88rem;
-      font-weight: 600;
-      animation: fadeInRight 0.3s ease;
-    }
+        .order-item-chip {
+            font-size: 0.85rem;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
 
-    @keyframes fadeInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-  </style>
+        .financial-pills {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .fin-pill {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 12px;
+        }
+
+        .fin-pill.paid { background: #e8f5e9; color: #2e7d32; }
+        .fin-pill.pending { background: #ffebee; color: #c62828; }
+
+        .delivery-footer-actions {
+            background: #ffffff;
+            padding: 14px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .driver-action-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge-pendiente { background: #fff3e0; color: #ef6c00; }
+        .badge-ruta { background: #e3f2fd; color: #0288d1; }
+        .badge-entregado { background: #e8f5e9; color: #2e7d32; }
+        .badge-cancelado { background: #ffebee; color: #c62828; }
+        .badge-domicilio { background: #f3e5f5; color: #7b1fa2; }
+        .badge-sucursal { background: #e0f2f1; color: #00695c; }
+        .badge-sin-telefono { background: #f0f0f0; color: #757575; }
+
+        /* Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            background: #ffffff;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: var(--primary-soft);
+            color: var(--primary-vino);
+            padding: 14px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #fdfbfb; }
+
+        /* Custom Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: var(--radius-main);
+            width: 100%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            animation: modalSlideUp 0.25s ease;
+        }
+
+        @keyframes modalSlideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 18px 24px;
+            background: var(--primary-vino);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .modal-body { padding: 24px; }
+
+        .modal-footer {
+            padding: 16px 24px;
+            background: #fafafa;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border-color);
+            margin-bottom: 12px;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: #323232;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: toastIn 0.3s forwards;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 600px) {
+            .nav-tab-btn span { font-size: 0.65rem; }
+            .section-title { font-size: 1.3rem; }
+            .card { padding: 16px; }
+            .delivery-footer-actions { flex-direction: column; align-items: stretch; }
+            .driver-action-btns { justify-content: stretch; }
+            .driver-action-btns .btn { flex: 1; }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- HEADER BOUTIQUE PRO -->
-  <header class="app-header">
-    <h1>SARAY HA</h1>
-    <p>Encargos & Entregas Pro v5.0 — Boutique Operations</p>
-  </header>
-
-  <!-- NAVEGACIÓN FLOTANTE -->
-  <div class="nav-tabs-wrapper">
-    <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab('encargos')"><i class="fa-solid fa-bag-shopping"></i> Inventario Encargos</button>
-      <button class="tab-btn" onclick="switchTab('proveedores')"><i class="fa-solid fa-truck-field"></i> Proveedores</button>
-      <button class="tab-btn" onclick="switchTab('surtido')"><i class="fa-solid fa-boxes-packing"></i> Control Surtido</button>
-      <button class="tab-btn" onclick="switchTab('entregas')"><i class="fa-solid fa-route"></i> Entregas & Logística</button>
-      <button class="tab-btn" onclick="switchTab('tickets')"><i class="fa-solid fa-receipt"></i> Tickets Compra</button>
-      <button class="tab-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-line"></i> Resumen Financiero</button>
-    </div>
-  </div>
-
-  <main class="main-container">
-
-    <!-- PESTAÑA 1: ENCARGOS -->
-    <div id="tab-encargos" class="tab-content active">
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-plus-circle"></i> Registrar Nuevo Encargo</h2>
-        <!-- Formulario sin bloqueos de navegador (Teléfono Opcional) -->
-        <form id="form-encargo" onsubmit="guardarEncargo(event)" novalidate>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Cliente (Nombre Completo)</label>
-              <input type="text" id="enc-cliente" required placeholder="Ej. Ana García">
-            </div>
-            <div class="form-group">
-              <label>Teléfono (WhatsApp - Opcional)</label>
-              <!-- Campo opcional -->
-              <input type="text" id="enc-telefono" placeholder="Ej. 3312345678 (Sin espacios)">
-            </div>
-            <div class="form-group">
-              <label>Prenda / Producto</label>
-              <input type="text" id="enc-prenda" required placeholder="Ej. Vestido Gala Vino">
-            </div>
-            <div class="form-group">
-              <label>Color</label>
-              <input type="text" id="enc-color" placeholder="Ej. Rojo Quemado">
-            </div>
-            <div class="form-group">
-              <label>Talla</label>
-              <input type="text" id="enc-talla" placeholder="Selecciona o escribe">
-              <div class="talla-pills">
-                <span class="talla-pill" onclick="selectTalla('CH')">CH</span>
-                <span class="talla-pill" onclick="selectTalla('M')">M</span>
-                <span class="talla-pill" onclick="selectTalla('G')">G</span>
-                <span class="talla-pill" onclick="selectTalla('XL')">XL</span>
-                <span class="talla-pill" onclick="selectTalla('Unitalla')">Unitalla</span>
-                <span class="talla-pill" onclick="selectTalla('Curvy')">Curvy</span>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Proveedor</label>
-              <select id="enc-proveedor" required>
-                <option value="">Seleccione proveedor...</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Costo de Compra ($)</label>
-              <input type="number" step="0.01" id="enc-costo" required oninput="calcularSaldoEncargo()" placeholder="0.00">
-            </div>
-            <div class="form-group">
-              <label>Precio de Venta ($)</label>
-              <input type="number" step="0.01" id="enc-venta" required oninput="calcularSaldoEncargo()" placeholder="0.00">
-            </div>
-            <div class="form-group">
-              <label>Anticipo ($)</label>
-              <input type="number" step="0.01" id="enc-anticipo" value="0" oninput="calcularSaldoEncargo()" placeholder="0.00">
-            </div>
-            <div class="form-group">
-              <label>Saldo Pendiente ($)</label>
-              <input type="number" step="0.01" id="enc-saldo" readonly value="0.00" style="font-weight:700; color:var(--primary-vino);">
-            </div>
-            <div class="form-group">
-              <label>Tipo de Entrega</label>
-              <select id="enc-tipo-entrega" onchange="toggleColoniaField()">
-                <option value="Tienda">Pasa a Tienda</option>
-                <option value="Domicilio">A Domicilio</option>
-              </select>
-            </div>
-            <div class="form-group" id="group-colonia" style="display:none;">
-              <label>Colonia (Para entrega)</label>
-              <input type="text" id="enc-colonia" placeholder="Ej. Jardines del Valle">
-            </div>
-          </div>
-          <button type="submit" class="btn-boutique-primary" style="margin-top:22px; width:100%;">
-            <i class="fa-solid fa-save"></i> Registrar Encargo
-          </button>
-        </form>
-      </div>
-
-      <!-- LISTADO ENCARGOS -->
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-list-check"></i> Registro Activo de Encargos</h2>
-        <div id="lista-encargos-cards"></div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 2: PROVEEDORES -->
-    <div id="tab-proveedores" class="tab-content">
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-user-plus"></i> Registrar Proveedor</h2>
-        <form id="form-proveedor" onsubmit="guardarProveedor(event)">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Nombre del Proveedor</label>
-              <input type="text" id="prov-nombre" required placeholder="Ej. Proveedor Moda GDL">
-            </div>
-            <div class="form-group">
-              <label>Teléfono de Contacto</label>
-              <input type="text" id="prov-telefono" placeholder="Ej. 3312345678">
-            </div>
-            <div class="form-group full-width">
-              <label>Notas / Ubicación en Mercado</label>
-              <input type="text" id="prov-notas" placeholder="Ej. Pasillo 3, Local 45">
-            </div>
-          </div>
-          <button type="submit" class="btn-boutique-primary" style="margin-top:16px;">
-            <i class="fa-solid fa-truck"></i> Guardar Proveedor
-          </button>
-        </form>
-      </div>
-
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-building-user"></i> Lista de Proveedores</h2>
-        <div id="lista-proveedores-cards"></div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 3: SURTIDO -->
-    <div id="tab-surtido" class="tab-content">
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-boxes-packing"></i> Control de Surtido por Proveedor</h2>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:18px;">
-          Muestra la suma de efectivo requerida por proveedor. Los productos clasificados continúan visibles hasta presionar "Ocultar".
-        </p>
-        <div id="contenedor-surtido"></div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 4: ENTREGAS -->
-    <div id="tab-entregas" class="tab-content">
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-route"></i> Logística de Entregas & Cobros</h2>
-        <div id="contenedor-entregas"></div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 5: TICKETS -->
-    <div id="tab-tickets" class="tab-content">
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-receipt"></i> Registro de Tickets de Compra</h2>
-        <form id="form-ticket" onsubmit="guardarTicket(event)">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Proveedor</label>
-              <select id="ticket-proveedor" required></select>
-            </div>
-            <div class="form-group">
-              <label>Monto del Ticket ($)</label>
-              <input type="number" step="0.01" id="ticket-monto" required placeholder="0.00">
-            </div>
-            <div class="form-group full-width">
-              <label>Foto / Archivo del Ticket</label>
-              <input type="file" id="ticket-foto" accept="image/*" required>
-            </div>
-          </div>
-          <button type="submit" class="btn-boutique-primary" style="margin-top:16px;">
-            <i class="fa-solid fa-upload"></i> Subir Ticket
-          </button>
-        </form>
-      </div>
-
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-images"></i> Historial de Tickets</h2>
-        <div id="galeria-tickets" class="form-grid"></div>
-      </div>
-    </div>
-
-    <!-- PESTAÑA 6: RESUMEN -->
-    <div id="tab-resumen" class="tab-content">
-      <div class="boutique-card">
-        <h2 class="card-title"><i class="fa-solid fa-chart-pie"></i> Estado Financiero General</h2>
-        <div class="summary-grid">
-          <div class="summary-card">
-            <label>Costo de Compra</label>
-            <div class="val" id="res-costo-total">$0.00</div>
-          </div>
-          <div class="summary-card">
-            <label>Precio de Venta</label>
-            <div class="val" id="res-venta-total">$0.00</div>
-          </div>
-          <div class="summary-card">
-            <label>Anticipo</label>
-            <div class="val" id="res-anticipo-total">$0.00</div>
-          </div>
-          <div class="summary-card">
-            <label>Saldo Pendiente</label>
-            <div class="val" id="res-saldo-total">$0.00</div>
-          </div>
-          <div class="summary-card" style="grid-column: 1 / -1; background: var(--primary-soft); border-color: var(--primary-accent);">
-            <label style="color:var(--primary-vino); font-size:0.85rem;">Ganancia Neta</label>
-            <div class="val" id="res-ganancia-total" style="font-size:2.3rem; color:var(--primary-vino);">$0.00</div>
-          </div>
+    <!-- App Bar -->
+    <header class="app-header">
+        <div class="brand-title">
+            <i class="fa-solid fa-crown"></i> SARAY HA
         </div>
-      </div>
-    </div>
+        <div class="sync-badge">
+            <span class="sync-dot"></span>
+            <span>Firestore Conectado</span>
+        </div>
+    </header>
 
-  </main>
+    <!-- Floating Navigation Bar -->
+    <nav class="nav-tabs-container">
+        <button class="nav-tab-btn active" onclick="switchTab('encargos')">
+            <i class="fa-solid fa-calendar-plus"></i>
+            <span>Encargos</span>
+        </button>
+        <button class="nav-tab-btn" onclick="switchTab('inventario')">
+            <i class="fa-solid fa-boxes-stacked"></i>
+            <span>Inventario Encargos</span>
+        </button>
+        <button class="nav-tab-btn" onclick="switchTab('entregas')">
+            <i class="fa-solid fa-truck-fast"></i>
+            <span>Entregas y Logística</span>
+        </button>
+        <button class="nav-tab-btn" onclick="switchTab('proveedores')">
+            <i class="fa-solid fa-handshake"></i>
+            <span>Proveedores</span>
+        </button>
+        <button class="nav-tab-btn" onclick="switchTab('reportes')">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Reportes y Finanzas</span>
+        </button>
+    </nav>
 
-  <!-- MODAL CHECKOUT POS TERMINAL -->
-  <div id="modal-pos-checkout" class="modal-overlay">
-    <div class="pos-card">
-      <div class="pos-header">
-        <h3><i class="fa-solid fa-cash-register"></i> Terminal POS — Cobro</h3>
-        <p style="font-size:0.85rem; opacity:0.9; margin-top:4px;" id="pos-cliente-nombre">Cliente</p>
-      </div>
-      <div class="pos-body">
-        <div style="font-size:0.85rem; color:var(--text-muted);" id="pos-prenda-desc">Prenda</div>
+    <main class="container">
 
-        <div class="pos-total-display">
-          <label>Saldo a Cobrar</label>
-          <div class="amount" id="pos-saldo-pendiente">$0.00</div>
+        <!-- TAB 1: ENCARGOS (NUEVO PEDIDO) -->
+        <div id="tab-encargos" class="tab-content active">
+            <!-- Policy Banner -->
+            <div class="policy-banner">
+                <i class="fa-solid fa-shield-halved"></i>
+                <p>POLÍTICA DEL SISTEMA: "NO HAY CAMBIOS NI DEVOLUCIONES EN ENCARGOS Y VENTAS".</p>
+            </div>
+
+            <div class="section-header">
+                <h2 class="section-title">Registro de Nuevo Encargo</h2>
+            </div>
+
+            <div class="card">
+                <form id="form-encargo" novalidate onsubmit="guardarEncargo(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre del Cliente *</label>
+                            <input type="text" id="enc-cliente" placeholder="Ej. Ana Sofía Morales" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono (WhatsApp)</label>
+                            <input type="tel" id="enc-telefono" placeholder="Ej. 9991234567 (Opcional)">
+                        </div>
+                        <div class="form-group">
+                            <label>Modalidad de Entrega *</label>
+                            <select id="enc-modalidad" onchange="toggleDomicilioFields()" required>
+                                <option value="sucursal">Recoge en Sucursal</option>
+                                <option value="domicilio">Entrega a Domicilio</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="group-colonia" style="display: none;">
+                            <label>Colonia *</label>
+                            <input type="text" id="enc-colonia" placeholder="Ej. Colonia Altabrisa">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha Promesa de Entrega *</label>
+                            <input type="date" id="enc-fecha-entrega" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Detalle del Pedido / Productos *</label>
+                            <textarea id="enc-productos" rows="3" placeholder="Describe los artículos encargados, tallas, colores..." required></textarea>
+                        </div>
+
+                        <!-- Financieros (Títulos Oficiales Obligatorios) -->
+                        <div class="form-group">
+                            <label>Costo de Compra ($)</label>
+                            <input type="number" step="0.01" id="enc-costo-compra" placeholder="0.00" value="0" oninput="calcularFinanzasEncargo()">
+                        </div>
+                        <div class="form-group">
+                            <label>Precio de Venta ($) *</label>
+                            <input type="number" step="0.01" id="enc-precio-venta" placeholder="0.00" required oninput="calcularFinanzasEncargo()">
+                        </div>
+                        <div class="form-group">
+                            <label>Anticipo ($)</label>
+                            <input type="number" step="0.01" id="enc-anticipo" placeholder="0.00" value="0" oninput="calcularFinanzasEncargo()">
+                        </div>
+                        <div class="form-group">
+                            <label>Saldo Pendiente ($)</label>
+                            <input type="number" step="0.01" id="enc-saldo" placeholder="0.00" readonly style="background: #f4f4f4; font-weight:700; color:var(--danger-color);">
+                        </div>
+                        <div class="form-group">
+                            <label>Ganancia Neta ($)</label>
+                            <input type="number" step="0.01" id="enc-ganancia" placeholder="0.00" readonly style="background: #f4f4f4; font-weight:700; color:var(--success-color);">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Notas Adicionales</label>
+                            <input type="text" id="enc-notas" placeholder="Ej. Empacar para regalo, proveedor específico...">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px; text-align: right;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-floppy-disk"></i> Registrar Encargo
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
 
-        <div class="form-group">
-          <label>Monto Recibido ($)</label>
-          <input type="number" step="0.01" id="pos-monto-recibido" style="font-size:1.4rem; font-weight:700; text-align:center;" oninput="calcularCambioPos()">
-        </div>
-
-        <div class="form-group">
-          <label>Método de Pago</label>
-          <div class="pos-methods-grid">
-            <button type="button" class="pos-pay-btn active" data-method="Efectivo" onclick="setMetodoPagoPos('Efectivo')">💵 Efectivo</button>
-            <button type="button" class="pos-pay-btn" data-method="Transferencia" onclick="setMetodoPagoPos('Transferencia')">📱 Transf.</button>
-            <button type="button" class="pos-pay-btn" data-method="Mixto" onclick="setMetodoPagoPos('Mixto')">🔀 Mixto</button>
-          </div>
-        </div>
-
-        <div id="pos-resultado-cambio"></div>
-        <div id="pos-aviso-abono" style="display:none;" class="pos-warning-abono"></div>
-
-        <div class="pos-policy-note">
-          📌 <strong>Política SARAY HA:</strong> No hay cambios ni devoluciones.
-        </div>
-
-        <div style="display:flex; gap:10px; margin-top:8px;">
-          <button type="button" class="btn-boutique-secondary" style="flex:1;" onclick="cerrarModalPos()">Cancelar</button>
-          <button type="button" id="btn-confirmar-pos" class="btn-boutique-primary" style="flex:2;" onclick="procesarPagoPos()">
-            <i class="fa-solid fa-check-circle"></i> Confirmar Pago
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL WHATSAPP -->
-  <div id="modal-whatsapp" class="modal-overlay">
-    <div class="pos-card">
-      <div class="pos-header">
-        <h3><i class="fa-brands fa-whatsapp"></i> Mensaje de WhatsApp</h3>
-      </div>
-      <div class="pos-body">
-        <div class="form-group">
-          <label>Plantilla de Mensaje</label>
-          <select id="wa-plantilla-select" onchange="cambiarPlantillaWA()">
-            <option value="confirmacion">1. Confirmación de Encargo</option>
-            <option value="surtido">2. Encargo Listo para Entrega/Recoger</option>
-            <option value="nohubo">3. Producto Agotado (No Hubo)</option>
-            <option value="gracias">4. Agradecimiento de Compra</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mensaje Personalizado</label>
-          <textarea id="wa-texto-mensaje" rows="6"></textarea>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button type="button" class="btn-boutique-secondary" style="flex:1;" onclick="cerrarModalWA()">Cancelar</button>
-          <button type="button" class="btn-boutique-primary" style="flex:2; background:#25d366;" onclick="enviarWhatsAppModal()">
-            <i class="fa-brands fa-whatsapp"></i> Abrir WhatsApp
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FLOATING BUTTONS -->
-  <div class="floating-buttons">
-    <button class="btn-float btn-float-wa" title="WhatsApp Rápido" onclick="abrirWAEstadoGeneral()">
-      <i class="fa-brands fa-whatsapp"></i>
-    </button>
-    <button class="btn-float btn-float-reset" title="Reset de Emergencia" onclick="confirmarResetEmergencia()">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-    </button>
-  </div>
-
-  <!-- TOAST NOTIFICATIONS CONTAINER -->
-  <div id="toast-container"></div>
-
-  <!-- JAVASCRIPT LOGIC -->
-  <script>
-    // Configuración Firebase SARAY HA
-    const firebaseConfig = {
-      apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
-      authDomain: "saray-ha-pos.firebaseapp.com",
-      projectId: "saray-ha-pos",
-      storageBucket: "saray-ha-pos.appspot.com",
-      messagingSenderId: "910404250860",
-      appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // Estado global
-    let listaEncargos = [];
-    let listaProveedores = [];
-    let listaTickets = [];
-
-    let orderPosActual = null;
-    let posMetodoSeleccionado = 'Efectivo';
-    let waItemActual = null;
-
-    document.addEventListener('DOMContentLoaded', () => {
-      iniciarEscuchadoresFirebase();
-    });
-
-    // Pestañas
-    window.switchTab = function(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-
-      const targetTab = document.getElementById(`tab-${tabName}`);
-      if (targetTab) targetTab.classList.add('active');
-
-      const btnActive = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
-      if (btnActive) btnActive.classList.add('active');
-    };
-
-    // Firebase Listener
-    function iniciarEscuchadoresFirebase() {
-      db.collection('encargos_pedidos').onSnapshot(snapshot => {
-        listaEncargos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderEncargos();
-        renderSurtido();
-        renderEntregas();
-        renderResumen();
-      }, err => console.error("Error cargando encargos:", err));
-
-      db.collection('proveedores').onSnapshot(snapshot => {
-        listaProveedores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProveedores();
-        poblarSelectoresProveedores();
-      }, err => console.error("Error cargando proveedores:", err));
-
-      db.collection('tickets_proveedores').onSnapshot(snapshot => {
-        listaTickets = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderTickets();
-      }, err => console.error("Error cargando tickets:", err));
-    }
-
-    // Encargos Logic
-    window.selectTalla = function(talla) {
-      document.getElementById('enc-talla').value = talla;
-      document.querySelectorAll('.talla-pill').forEach(pill => {
-        pill.classList.toggle('active', pill.innerText === talla);
-      });
-    };
-
-    window.toggleColoniaField = function() {
-      const tipo = document.getElementById('enc-tipo-entrega').value;
-      const groupCol = document.getElementById('group-colonia');
-      if (groupCol) {
-        groupCol.style.display = (tipo === 'Domicilio') ? 'flex' : 'none';
-      }
-    };
-
-    window.calcularSaldoEncargo = function() {
-      const venta = parseFloat(document.getElementById('enc-venta').value) || 0;
-      const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
-      const saldo = Math.max(0, venta - anticipo);
-      document.getElementById('enc-saldo').value = saldo.toFixed(2);
-    };
-
-    // Guardar Encargo con teléfono completamente opcional
-    window.guardarEncargo = async function(e) {
-      e.preventDefault();
-      try {
-        const telInput = document.getElementById('enc-telefono');
-        const telefonoVal = telInput ? telInput.value.trim() : '';
-
-        const nuevo = {
-          cliente: document.getElementById('enc-cliente').value.trim(),
-          telefono: telefonoVal,
-          prenda: document.getElementById('enc-prenda').value.trim(),
-          color: document.getElementById('enc-color').value.trim(),
-          talla: document.getElementById('enc-talla').value.trim() || 'Única',
-          proveedor: document.getElementById('enc-proveedor').value,
-          costoCompra: parseFloat(document.getElementById('enc-costo').value) || 0,
-          precioVenta: parseFloat(document.getElementById('enc-venta').value) || 0,
-          anticipo: parseFloat(document.getElementById('enc-anticipo').value) || 0,
-          saldoPendiente: parseFloat(document.getElementById('enc-saldo').value) || 0,
-          tipoEntrega: document.getElementById('enc-tipo-entrega').value,
-          colonia: document.getElementById('enc-colonia')?.value.trim() || '',
-          direccionEntrega: '',
-          mapsUrl: '',
-          estadoSurtido: 'Pendiente',
-          estadoEntrega: 'Pendiente',
-          ocultoSurtido: false,
-          fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        await db.collection('encargos_pedidos').add(nuevo);
-        document.getElementById('form-encargo').reset();
-        document.getElementById('enc-saldo').value = "0.00";
-        toggleColoniaField();
-        mostrarNotificacion("✨ Encargo registrado exitosamente");
-      } catch (err) {
-        alert("Error al guardar encargo: " + err.message);
-      }
-    };
-
-    function renderEncargos() {
-      const container = document.getElementById('lista-encargos-cards');
-      if (!container) return;
-
-      if (listaEncargos.length === 0) {
-        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay encargos registrados.</p>`;
-        return;
-      }
-
-      container.innerHTML = listaEncargos.map(item => {
-        const tieneTel = item.telefono && item.telefono.trim().length > 0;
-        return `
-          <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:18px; margin-bottom:14px; background:#ffffff; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-              <div>
-                <strong style="font-size:1.1rem; color:var(--primary-vino); font-family:'Playfair Display', serif;">${item.cliente}</strong>
-                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
-                  ${tieneTel ? `<i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> ${item.telefono}` : '<span class="badge badge-sin-tel"><i class="fa-solid fa-phone-slash"></i> Sin teléfono</span>'}
+        <!-- TAB 2: INVENTARIO ENCARGOS -->
+        <div id="tab-inventario" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Inventario de Encargos</h2>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="search-inventario" placeholder="Buscar cliente o producto..." onkeyup="filtrarInventario()" style="max-width: 250px;">
                 </div>
-              </div>
-              <span class="badge ${item.tipoEntrega === 'Domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
-                ${item.tipoEntrega === 'Domicilio' ? '🚚 Domicilio' : '🏪 Tienda'}
-              </span>
             </div>
-            <div style="margin-top:10px; font-size:0.92rem;">
-              <strong>${item.prenda}</strong> (${item.color || 'Sin color'}) — Talla: <strong>${item.talla}</strong>
+
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Contacto</th>
+                                <th>Productos</th>
+                                <th>Venta</th>
+                                <th>Anticipo</th>
+                                <th>Saldo</th>
+                                <th>Entrega</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-inventario">
+                            <!-- Carga Dinámica -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div style="margin-top:6px; font-size:0.85rem; color:var(--text-muted);">
-              Proveedor: <strong>${item.proveedor}</strong> | Costo de Compra: $${(item.costoCompra||0).toFixed(2)} | Precio de Venta: $${(item.precioVenta||0).toFixed(2)}
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px dashed var(--border-color);">
-              <div>
-                <span style="font-size:0.82rem; color:var(--text-muted);">Anticipo: $${(item.anticipo||0).toFixed(2)}</span> |
-                <strong style="color:var(--primary-vino);">Saldo Pendiente: $${(item.saldoPendiente||0).toFixed(2)}</strong>
-              </div>
-              <div style="display:flex; gap:6px;">
-                ${tieneTel ? `<button onclick="abrirWhatsAppModal('${item.id}', 'confirmacion')" class="btn-boutique-secondary" style="padding:6px 12px; font-size:0.78rem;"><i class="fa-brands fa-whatsapp"></i> Chat</button>` : ''}
-                <button onclick="eliminarEncargo('${item.id}')" class="btn-boutique-secondary btn-danger" style="padding:6px 10px; font-size:0.78rem;"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    window.eliminarEncargo = async function(id) {
-      if (confirm("¿Está seguro de eliminar este encargo?")) {
-        await db.collection('encargos_pedidos').doc(id).delete();
-        mostrarNotificacion("🗑️ Encargo eliminado");
-      }
-    };
-
-    // Proveedores Logic
-    window.guardarProveedor = async function(e) {
-      e.preventDefault();
-      try {
-        const nuevo = {
-          nombre: document.getElementById('prov-nombre').value.trim(),
-          telefono: document.getElementById('prov-telefono').value.trim(),
-          notas: document.getElementById('prov-notas').value.trim(),
-          fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        await db.collection('proveedores').add(nuevo);
-        document.getElementById('form-proveedor').reset();
-        mostrarNotificacion("🏭 Proveedor registrado");
-      } catch (err) {
-        alert("Error al guardar proveedor: " + err.message);
-      }
-    };
-
-    function renderProveedores() {
-      const container = document.getElementById('lista-proveedores-cards');
-      if (!container) return;
-
-      if (listaProveedores.length === 0) {
-        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay proveedores registrados.</p>`;
-        return;
-      }
-
-      container.innerHTML = listaProveedores.map(prov => `
-        <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; background:#ffffff; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <strong style="color:var(--primary-vino); font-size:1rem;">${prov.nombre}</strong>
-            <div style="font-size:0.82rem; color:var(--text-muted);">${prov.telefono || 'Sin teléfono'} — ${prov.notas || 'Sin notas'}</div>
-          </div>
-          <button onclick="eliminarProveedor('${prov.id}')" class="btn-boutique-secondary btn-danger" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
         </div>
-      `).join('');
-    }
 
-    window.eliminarProveedor = async function(id) {
-      if (confirm("¿Eliminar este proveedor?")) {
-        await db.collection('proveedores').doc(id).delete();
-        mostrarNotificacion("🗑️ Proveedor eliminado");
-      }
-    };
-
-    function poblarSelectoresProveedores() {
-      const selects = [document.getElementById('enc-proveedor'), document.getElementById('ticket-proveedor')];
-      selects.forEach(sel => {
-        if (!sel) return;
-        const valActual = sel.value;
-        sel.innerHTML = `<option value="">Seleccione proveedor...</option>` +
-          listaProveedores.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('');
-        sel.value = valActual;
-      });
-    }
-
-    // Surtido Logic
-    function renderSurtido() {
-      const container = document.getElementById('contenedor-surtido');
-      if (!container) return;
-
-      const itemsVisibles = listaEncargos.filter(i => !i.ocultoSurtido);
-      if (itemsVisibles.length === 0) {
-        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay encargos pendientes por surtir.</p>`;
-        return;
-      }
-
-      const porProveedor = {};
-      itemsVisibles.forEach(item => {
-        const prov = item.proveedor || 'Sin Proveedor';
-        if (!porProveedor[prov]) porProveedor[prov] = [];
-        porProveedor[prov].push(item);
-      });
-
-      let html = '';
-      for (const prov in porProveedor) {
-        const grupo = porProveedor[prov];
-        const totalEfectivoProv = grupo.reduce((sum, i) => sum + (parseFloat(i.costoCompra) || 0), 0);
-
-        html += `
-          <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:20px; overflow:hidden;">
-            <div style="background:var(--primary-soft); padding:12px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:var(--primary-vino); font-family:'Playfair Display', serif; font-size:1.1rem;"><i class="fa-solid fa-store"></i> ${prov}</strong>
-              <span style="font-weight:700; color:var(--primary-vino); background:#ffffff; padding:4px 12px; border-radius:20px; font-size:0.85rem; border:1px solid var(--border-color);">
-                Total Efectivo: $${totalEfectivoProv.toFixed(2)}
-              </span>
+        <!-- TAB 3: ENTREGAS Y LOGÍSTICA (RENOVADA) -->
+        <div id="tab-entregas" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Panel de Entregas y Logística</h2>
             </div>
-            <div style="padding:12px;">
-        `;
 
-        grupo.forEach(item => {
-          html += `
-            <div style="padding:10px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-              <div>
-                <strong>${item.prenda}</strong> (${item.color || ''}) — Talla: ${item.talla} | Cliente: ${item.cliente}
-                <div style="font-size:0.8rem; color:var(--text-muted);">Costo de Compra: $${(item.costoCompra||0).toFixed(2)}</div>
-              </div>
-              <div style="display:flex; gap:6px; align-items:center;">
-                <button onclick="cambiarEstadoSurtido('${item.id}', 'Surtí')" class="btn-boutique-secondary ${item.estadoSurtido === 'Surtí' ? 'btn-success' : ''}" style="padding:6px 10px; font-size:0.75rem;">
-                  <i class="fa-solid fa-check"></i> Surtí
-                </button>
-                <button onclick="cambiarEstadoSurtido('${item.id}', 'No Hubo')" class="btn-boutique-secondary ${item.estadoSurtido === 'No Hubo' ? 'btn-danger' : ''}" style="padding:6px 10px; font-size:0.75rem;">
-                  <i class="fa-solid fa-xmark"></i> No Hubo
-                </button>
-                <button onclick="ocultarDeSurtido('${item.id}')" class="btn-boutique-secondary" style="padding:6px 10px; font-size:0.75rem;" title="Ocultar de surtido">
-                  <i class="fa-solid fa-eye-slash"></i> Ocultar
-                </button>
-              </div>
+            <!-- Dashboard Métricas de Ruta -->
+            <div class="delivery-stats-grid">
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-orange"><i class="fa-solid fa-clock"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Pendientes</span>
+                        <h3 id="stat-del-pendientes">0</h3>
+                    </div>
+                </div>
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-blue"><i class="fa-solid fa-truck-ram"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>En Ruta</span>
+                        <h3 id="stat-del-ruta">0</h3>
+                    </div>
+                </div>
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-green"><i class="fa-solid fa-house-circle-check"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Entregados</span>
+                        <h3 id="stat-del-entregados">0</h3>
+                    </div>
+                </div>
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-vino"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Por Cobrar en Ruta</span>
+                        <h3 id="stat-del-cobrar">$0.00</h3>
+                    </div>
+                </div>
             </div>
-          `;
+
+            <!-- Filtros de Logística -->
+            <div class="filter-toolbar">
+                <div class="filter-pills">
+                    <button class="pill-btn active" onclick="filtrarEntregas('todos', this)">Todos</button>
+                    <button class="pill-btn" onclick="filtrarEntregas('pendiente', this)">Pendientes</button>
+                    <button class="pill-btn" onclick="filtrarEntregas('en_ruta', this)">En Ruta</button>
+                    <button class="pill-btn" onclick="filtrarEntregas('entregado', this)">Entregados</button>
+                    <button class="pill-btn" onclick="filtrarEntregas('domicilio', this)">Solo Domicilio</button>
+                    <button class="pill-btn" onclick="filtrarEntregas('sucursal', this)">En Sucursal</button>
+                </div>
+                <input type="text" id="search-entregas" placeholder="Buscar colonia, cliente..." onkeyup="renderEntregas()" style="width: 220px;">
+            </div>
+
+            <!-- Lista Dinámica de Fichas de Ruta -->
+            <div id="delivery-cards-container" class="delivery-card-list">
+                <!-- Carga Dinámica desde JS -->
+            </div>
+        </div>
+
+        <!-- TAB 4: PROVEEDORES Y COMPRAS -->
+        <div id="tab-proveedores" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Proveedores y Registro de Compras</h2>
+            </div>
+
+            <div class="card">
+                <h3 style="font-family:'Playfair Display'; margin-bottom: 16px; color: var(--primary-vino);">Registrar Ticket de Compra</h3>
+                <form id="form-proveedor" onsubmit="guardarTicketProveedor(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre del Proveedor *</label>
+                            <input type="text" id="prov-nombre" placeholder="Ej. Distribuidora Moda S.A." required>
+                        </div>
+                        <div class="form-group">
+                            <label>N° Ticket / Factura *</label>
+                            <input type="text" id="prov-ticket" placeholder="Ej. F-98234" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Compra *</label>
+                            <input type="date" id="prov-fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Costo de Compra Total ($) *</label>
+                            <input type="number" step="0.01" id="prov-monto" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Concepto / Detalle de la Compra</label>
+                            <input type="text" id="prov-concepto" placeholder="Ej. Lote 50 vestidos de seda verano">
+                        </div>
+                    </div>
+                    <div style="margin-top: 18px; text-align: right;">
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-receipt"></i> Guardar Compra</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 style="font-family:'Playfair Display'; margin-bottom: 16px; color: var(--primary-vino);">Historial de Compras a Proveedores</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Proveedor</th>
+                                <th>N° Ticket</th>
+                                <th>Concepto</th>
+                                <th>Costo de Compra</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-proveedores">
+                            <!-- Dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: REPORTES Y FINANZAS -->
+        <div id="tab-reportes" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">Reportes y Finanzas</h2>
+            </div>
+
+            <div class="delivery-stats-grid">
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-vino"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Precio de Venta Total</span>
+                        <h3 id="rep-total-ventas">$0.00</h3>
+                    </div>
+                </div>
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-orange"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Costo de Compra Total</span>
+                        <h3 id="rep-total-costos">$0.00</h3>
+                    </div>
+                </div>
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-green"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Ganancia Neta Total</span>
+                        <h3 id="rep-total-ganancia">$0.00</h3>
+                    </div>
+                </div>
+                <div class="delivery-stat-card">
+                    <div class="delivery-stat-icon icon-blue"><i class="fa-solid fa-vault"></i></div>
+                    <div class="delivery-stat-info">
+                        <span>Saldos Pendientes</span>
+                        <h3 id="rep-total-saldos">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="font-family:'Playfair Display'; margin-bottom: 16px; color: var(--primary-vino);">Resumen General de Operaciones</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">Consolidado contable en tiempo real sincronizado con Firestore.</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Métrica</th>
+                                <th>Monto Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>(+) Total Precio de Venta Encargos</strong></td>
+                                <td id="rep-sub-ventas">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>(-) Total Costo de Compra Encargos</strong></td>
+                                <td id="rep-sub-costos-encargos">$0.00</td>
+                            </tr>
+                            <tr>
+                                <td><strong>(-) Total Compras a Proveedores (Tickets Directos)</strong></td>
+                                <td id="rep-sub-compras-prov">$0.00</td>
+                            </tr>
+                            <tr style="background: var(--primary-soft);">
+                                <td><strong style="color:var(--primary-vino);">(=) Ganancia Neta Consolidada</strong></td>
+                                <td><strong style="color:var(--success-color); font-size:1.1rem;" id="rep-sub-ganancia-neta">$0.00</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL 1: EDITAR DETALLES DE DIRECCIÓN Y RUTA (LOGÍSTICA) -->
+    <div id="modal-edit-delivery" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-route"></i> Dirección y Ruta de Reparto</h3>
+                <button class="modal-close" onclick="closeModal('modal-edit-delivery')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-delivery" onsubmit="guardarEdicionEntrega(event)">
+                    <input type="hidden" id="edit-del-id">
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label>Colonia</label>
+                        <input type="text" id="edit-del-colonia" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label>Dirección Exacta y Referencias (Sótano, Color de fachada...)</label>
+                        <textarea id="edit-del-direccion" rows="3" placeholder="Calle 45 #123 x 20 y 22, fachada blanca con portón café..."></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label>Link de Google Maps / Waze</label>
+                        <input type="url" id="edit-del-maps" placeholder="https://maps.google.com/?q=...">
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Repartidor Asignado</label>
+                            <input type="text" id="edit-del-repartidor" placeholder="Ej. Carlos Chofer">
+                        </div>
+                        <div class="form-group">
+                            <label>Horario Promesa</label>
+                            <input type="text" id="edit-del-horario" placeholder="Ej. 2:00 PM - 4:00 PM">
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: COBRO DE SALDO EN PUERTA (DELIVERY SETTLEMENT) -->
+    <div id="modal-cobro-entrega" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-hand-holding-dollar"></i> Cobro de Saldo al Entregar</h3>
+                <button class="modal-close" onclick="closeModal('modal-cobro-entrega')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: var(--primary-soft); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 16px;">
+                    <p style="font-size: 0.85rem; color: var(--primary-vino); font-weight:700;">REGISTRO DE LIQUIDACIÓN</p>
+                    <p id="cobro-modal-cliente" style="font-size: 1rem; font-weight:600; margin-top:4px;">Cliente: -</p>
+                    <p id="cobro-modal-saldo" style="font-size: 1.2rem; font-weight:700; color:var(--danger-color); margin-top:4px;">Saldo a Cobrar: $0.00</p>
+                </div>
+                <form id="form-cobro-entrega" onsubmit="confirmarCobroEntrega(event)">
+                    <input type="hidden" id="cobro-del-id">
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label>Monto a Cobrar ($)</label>
+                        <input type="number" step="0.01" id="cobro-monto" required readonly style="font-weight:700; background:#f5f5f5;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 14px;">
+                        <label>Método de Pago Recibido *</label>
+                        <select id="cobro-metodo" required>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia Bancaria</option>
+                        </select>
+                    </div>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Registrar Pago y Entregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- Application Script -->
+    <script>
+        // CONFIGURACIÓN FIREBASE FIRESTORE
+        const firebaseConfig = {
+            apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
+            authDomain: "saray-ha-pos.firebaseapp.com",
+            projectId: "saray-ha-pos",
+            storageBucket: "saray-ha-pos.appspot.com",
+            messagingSenderId: "910404250860",
+            appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // Estado Global
+        let encargosData = [];
+        let proveedoresData = [];
+        let filtroLogisticaActual = 'todos';
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('enc-fecha-entrega').value = today;
+            document.getElementById('prov-fecha').value = today;
+
+            escucharColecciones();
         });
 
-        html += `</div></div>`;
-      }
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab-btn').forEach(el => el.classList.remove('active'));
 
-      container.innerHTML = html;
-    }
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Buscar boton correspondiente
+            const activeBtn = Array.from(document.querySelectorAll('.nav-tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabName));
+            if(activeBtn) activeBtn.classList.add('active');
 
-    window.cambiarEstadoSurtido = async function(id, nuevoEstado) {
-      await db.collection('encargos_pedidos').doc(id).update({ estadoSurtido: nuevoEstado });
-      mostrarNotificacion(`Estado de surtido actualizado: ${nuevoEstado}`);
-    };
+            if (tabName === 'entregas') renderEntregas();
+            if (tabName === 'reportes') renderReportes();
+        }
 
-    window.ocultarDeSurtido = async function(id) {
-      await db.collection('encargos_pedidos').doc(id).update({ ocultoSurtido: true });
-      mostrarNotificacion("👁️ Artículo ocultado de la lista de surtido");
-    };
+        // Toggle Campos de Domicilio
+        function toggleDomicilioFields() {
+            const mod = document.getElementById('enc-modalidad').value;
+            const groupCol = document.getElementById('group-colonia');
+            if (mod === 'domicilio') {
+                groupCol.style.display = 'flex';
+                document.getElementById('enc-colonia').setAttribute('required', 'true');
+            } else {
+                groupCol.style.display = 'none';
+                document.getElementById('enc-colonia').removeAttribute('required');
+            }
+        }
 
-    // Entregas & Logística Logic
-    function renderEntregas() {
-      const container = document.getElementById('contenedor-entregas');
-      if (!container) return;
+        // Cálculos de Formulario Encargo
+        function calcularFinanzasEncargo() {
+            const costo = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
+            const venta = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
+            const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
 
-      if (listaEncargos.length === 0) {
-        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay registros de entrega.</p>`;
-        return;
-      }
+            const saldo = Math.max(0, venta - anticipo);
+            const ganancia = venta - costo;
 
-      container.innerHTML = listaEncargos.map(item => {
-        const tieneTel = item.telefono && item.telefono.trim().length > 0;
-        const mapsBtnHtml = item.mapsUrl
-          ? `<a href="${item.mapsUrl}" target="_blank" class="btn-boutique-secondary" style="padding:6px 12px; font-size:0.8rem; background:#e0f2fe; color:#0369a1; border-color:#bae6fd;"><i class="fa-solid fa-map-location-dot"></i> Abrir en Maps</a>`
-          : '';
+            document.getElementById('enc-saldo').value = saldo.toFixed(2);
+            document.getElementById('enc-ganancia').value = ganancia.toFixed(2);
+        }
 
-        return `
-          <div style="border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:16px; background:#ffffff; box-shadow:var(--card-shadow);">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
-              <div>
-                <strong style="font-size:1.1rem; color:var(--primary-vino); font-family:'Playfair Display', serif;">${item.cliente}</strong>
-                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
-                  ${tieneTel ? `<i class="fa-brands fa-whatsapp" style="color:#25d366;"></i> ${item.telefono}` : '<span class="badge badge-sin-tel"><i class="fa-solid fa-phone-slash"></i> Sin teléfono</span>'}
-                </div>
-              </div>
-              <span class="badge ${item.tipoEntrega === 'Domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
-                ${item.tipoEntrega === 'Domicilio' ? '🚚 A Domicilio' : '🏪 Pasa a Tienda'}
-              </span>
-            </div>
+        // Firestore Realtime Listeners
+        function escucharColecciones() {
+            db.collection('encargos_pedidos').onSnapshot(snapshot => {
+                encargosData = [];
+                snapshot.forEach(doc => {
+                    encargosData.push({ id: doc.id, ...doc.data() });
+                });
+                renderInventario();
+                renderEntregas();
+                renderReportes();
+            }, err => console.error("Error Encargos:", err));
 
-            <div style="margin-top:10px; font-size:0.9rem; background:#faf8f8; padding:10px; border-radius:var(--radius-md);">
-              <strong>${item.prenda}</strong> (${item.color || 'Sin color'}) — Talla: <strong>${item.talla}</strong>
-              <div style="margin-top:4px; font-size:0.85rem; color:var(--text-muted);">
-                Saldo Pendiente: <strong style="color:var(--primary-vino); font-size:1rem;">$${(item.saldoPendiente || 0).toFixed(2)}</strong>
-              </div>
-            </div>
+            db.collection('tickets_proveedores').onSnapshot(snapshot => {
+                proveedoresData = [];
+                snapshot.forEach(doc => {
+                    proveedoresData.push({ id: doc.id, ...doc.data() });
+                });
+                renderProveedores();
+                renderReportes();
+            }, err => console.error("Error Proveedores:", err));
+        }
 
-            <!-- DRIVER LOGISTICS WIDGET -->
-            <div class="driver-box">
-              <div class="driver-box-header">
-                <i class="fa-solid fa-truck-ramp-box"></i> Datos de Dirección & Logística para Repartidor
-              </div>
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Colonia</label>
-                  <input type="text" id="col-${item.id}" value="${item.colonia || ''}" placeholder="Ej. Centro">
-                </div>
-                <div class="form-group">
-                  <label>Dirección Completa (Calle, #, Ref.)</label>
-                  <input type="text" id="dir-${item.id}" value="${item.direccionEntrega || ''}" placeholder="Ej. Hidalgo #123 entre Juárez y Pino">
-                </div>
-                <div class="form-group full-width">
-                  <label>Link de Google Maps / Waze</label>
-                  <input type="url" id="maps-${item.id}" value="${item.mapsUrl || ''}" placeholder="https://maps.google.com/?q=...">
-                </div>
-              </div>
+        // TAB 1: Guardar Encargo
+        async function guardarEncargo(e) {
+            e.preventDefault();
+            
+            const cliente = document.getElementById('enc-cliente').value.trim();
+            const telefono = document.getElementById('enc-telefono').value.trim(); // OPCIONAL
+            const modalidad = document.getElementById('enc-modalidad').value;
+            const colonia = modalidad === 'domicilio' ? document.getElementById('enc-colonia').value.trim() : 'N/A (Sucursal)';
+            const fechaEntrega = document.getElementById('enc-fecha-entrega').value;
+            const productos = document.getElementById('enc-productos').value.trim();
+            
+            const costoCompra = parseFloat(document.getElementById('enc-costo-compra').value) || 0;
+            const precioVenta = parseFloat(document.getElementById('enc-precio-venta').value) || 0;
+            const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
+            const saldoPendiente = Math.max(0, precioVenta - anticipo);
+            const gananciaNeta = precioVenta - costoCompra;
+            const notas = document.getElementById('enc-notas').value.trim();
 
-              <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-                <button type="button" onclick="guardarDatosEntrega('${item.id}')" class="btn-boutique-secondary">
-                  <i class="fa-solid fa-floppy-disk"></i> Guardar Datos de Entrega
-                </button>
-                ${mapsBtnHtml}
-              </div>
-            </div>
+            if(!cliente || !precioVenta || !fechaEntrega || !productos) {
+                showToast("Por favor completa todos los campos requeridos.", "error");
+                return;
+            }
 
-            <!-- CONTROLES DE COBRO Y ESTADO -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:10px;">
-              <div>
-                <label style="font-size:0.75rem;">Estado de Entrega:</label>
-                <select onchange="actualizarEstadoEntregaDirecto('${item.id}', this.value)" style="width:auto; padding:6px 10px; font-size:0.85rem; margin-left:6px;">
-                  <option value="Pendiente" ${item.estadoEntrega === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
-                  <option value="En Camino" ${item.estadoEntrega === 'En Camino' ? 'selected' : ''}>🛵 En Camino</option>
-                  <option value="Entregado" ${item.estadoEntrega === 'Entregado' ? 'selected' : ''}>✅ Entregado</option>
-                </select>
-              </div>
+            const nuevoEncargo = {
+                cliente,
+                telefono: telefono || "",
+                modalidad,
+                colonia,
+                direccionExacta: "",
+                mapsLink: "",
+                repartidor: "",
+                horarioEntrega: "",
+                fechaRegistro: new Date().toISOString(),
+                fechaEntrega,
+                productos,
+                costoCompra,
+                precioVenta,
+                anticipo,
+                saldoPendiente,
+                gananciaNeta,
+                notas,
+                estadoEntrega: 'pendiente', // pendiente, en_ruta, entregado, cancelado
+                politica: "No hay cambios ni devoluciones"
+            };
 
-              <div>
-                ${(item.saldoPendiente || 0) > 0 
-                  ? `<button type="button" onclick="abrirPosModal('${item.id}')" class="btn-boutique-primary">
-                      <i class="fa-solid fa-cash-register"></i> Cobrar Entrega ($${(item.saldoPendiente || 0).toFixed(2)})
-                     </button>`
-                  : `<span class="badge badge-entregado" style="font-size:0.85rem; padding:8px 14px;"><i class="fa-solid fa-circle-check"></i> LIQUIDADO</span>`
+            try {
+                await db.collection('encargos_pedidos').add(nuevoEncargo);
+                showToast("¡Encargo registrado exitosamente!", "success");
+                document.getElementById('form-encargo').reset();
+                document.getElementById('enc-costo-compra').value = 0;
+                document.getElementById('enc-anticipo').value = 0;
+                document.getElementById('enc-saldo').value = "0.00";
+                document.getElementById('enc-ganancia').value = "0.00";
+                toggleDomicilioFields();
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                showToast("Error al registrar en Firestore", "error");
+            }
+        }
+
+        // TAB 2: Render Inventario
+        function renderInventario() {
+            const tbody = document.getElementById('tbody-inventario');
+            tbody.innerHTML = '';
+
+            if (encargosData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="empty-state"><i class="fa-solid fa-folder-open"></i><br>No hay encargos registrados.</td></tr>`;
+                return;
+            }
+
+            encargosData.forEach(item => {
+                const tr = document.createElement('tr');
+                
+                // Generar botón WA solo si existe teléfono
+                let waButton = `<span class="badge badge-sin-telefono"><i class="fa-solid fa-phone-slash"></i> Sin tel</span>`;
+                if(item.telefono && item.telefono.trim() !== '') {
+                    const cleanPhone = item.telefono.replace(/\D/g,'');
+                    waButton = `<a href="https://wa.me/52${cleanPhone}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> ${item.telefono}</a>`;
                 }
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
 
-    window.guardarDatosEntrega = async function(id) {
-      const dirEl = document.getElementById(`dir-${id}`);
-      const mapsEl = document.getElementById(`maps-${id}`);
-      const colEl = document.getElementById(`col-${id}`);
+                const badgeEstado = getBadgeEstado(item.estadoEntrega);
 
-      if (!dirEl && !mapsEl && !colEl) {
-        alert("Error: No se encontraron los campos en pantalla.");
-        return;
-      }
-
-      const direccionEntrega = dirEl ? dirEl.value.trim() : '';
-      const mapsUrl = mapsEl ? mapsEl.value.trim() : '';
-      const colonia = colEl ? colEl.value.trim() : '';
-
-      try {
-        await db.collection('encargos_pedidos').doc(id).update({
-          direccionEntrega: direccionEntrega,
-          mapsUrl: mapsUrl,
-          colonia: colonia,
-          fechaActualizacionLogistica: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        const local = listaEncargos.find(e => e.id === id);
-        if (local) {
-          local.direccionEntrega = direccionEntrega;
-          local.mapsUrl = mapsUrl;
-          local.colonia = colonia;
+                tr.innerHTML = `
+                    <td>${item.fechaEntrega || '-'}</td>
+                    <td><strong>${escapeHtml(item.cliente)}</strong></td>
+                    <td>${waButton}</td>
+                    <td>${escapeHtml(item.productos)}</td>
+                    <td>$${(item.precioVenta || 0).toFixed(2)}</td>
+                    <td>$${(item.anticipo || 0).toFixed(2)}</td>
+                    <td style="color:var(--danger-color); font-weight:700;">$${(item.saldoPendiente || 0).toFixed(2)}</td>
+                    <td><span class="badge ${item.modalidad === 'domicilio' ? 'badge-domicilio' : 'badge-sucursal'}">${item.modalidad}</span></td>
+                    <td>${badgeEstado}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="eliminarEncargo('${item.id}')" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
-        mostrarNotificacion("📍 Datos de logística y dirección guardados correctamente");
-      } catch (err) {
-        console.error("Error guardando datos de entrega:", err);
-        alert("Error al guardar datos de entrega: " + err.message);
-      }
-    };
-
-    window.actualizarEstadoEntregaDirecto = async function(id, estado) {
-      await db.collection('encargos_pedidos').doc(id).update({ estadoEntrega: estado });
-      mostrarNotificacion(`Estado de entrega: ${estado}`);
-    };
-
-    // POS Checkout Terminal
-    window.abrirPosModal = function(id) {
-      const item = listaEncargos.find(e => e.id === id);
-      if (!item) {
-        alert("No se encontró la información del encargo.");
-        return;
-      }
-
-      orderPosActual = item;
-
-      const clienteEl = document.getElementById('pos-cliente-nombre');
-      const descEl = document.getElementById('pos-prenda-desc');
-      const saldoEl = document.getElementById('pos-saldo-pendiente');
-      const inputRecibido = document.getElementById('pos-monto-recibido');
-
-      if (clienteEl) clienteEl.innerText = item.cliente || 'Cliente';
-      if (descEl) descEl.innerText = `${item.prenda || 'Prenda'} - ${item.color || ''} (Talla: ${item.talla || 'Única'})`;
-
-      const saldoPendiente = parseFloat(item.saldoPendiente || 0);
-      if (saldoEl) saldoEl.innerText = `$${saldoPendiente.toFixed(2)}`;
-      if (inputRecibido) inputRecibido.value = saldoPendiente.toFixed(2);
-
-      setMetodoPagoPos('Efectivo');
-      calcularCambioPos();
-
-      const modal = document.getElementById('modal-pos-checkout');
-      if (modal) modal.classList.add('active');
-    };
-
-    window.cerrarModalPos = function() {
-      const modal = document.getElementById('modal-pos-checkout');
-      if (modal) modal.classList.remove('active');
-      orderPosActual = null;
-    };
-
-    window.setMetodoPagoPos = function(metodo) {
-      posMetodoSeleccionado = metodo;
-      document.querySelectorAll('.pos-pay-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-method') === metodo);
-      });
-    };
-
-    window.calcularCambioPos = function() {
-      if (!orderPosActual) return;
-      const saldoPendiente = parseFloat(orderPosActual.saldoPendiente || 0);
-      const montoInput = document.getElementById('pos-monto-recibido');
-      const montoRecibido = parseFloat(montoInput ? montoInput.value : 0) || 0;
-
-      const elemCambio = document.getElementById('pos-resultado-cambio');
-      const elemAvisoAbono = document.getElementById('pos-aviso-abono');
-
-      if (montoRecibido >= saldoPendiente) {
-        const cambio = montoRecibido - saldoPendiente;
-        if (elemCambio) {
-          elemCambio.innerHTML = `<div class="pos-cambio-box verde"><i class="fa-solid fa-money-bill-wave"></i> Cambio a entregar: <strong>$${cambio.toFixed(2)}</strong></div>`;
-        }
-        if (elemAvisoAbono) elemAvisoAbono.style.display = 'none';
-      } else {
-        const restante = saldoPendiente - montoRecibido;
-        if (elemCambio) {
-          elemCambio.innerHTML = `<div class="pos-cambio-box neutral"><i class="fa-solid fa-clock"></i> Saldo que restará: <strong>$${restante.toFixed(2)}</strong></div>`;
-        }
-        if (elemAvisoAbono) {
-          elemAvisoAbono.style.display = 'block';
-          elemAvisoAbono.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>Abono Parcial:</strong> Se registrará un abono de $${montoRecibido.toFixed(2)}. El encargo continuará pendiente con un saldo de $${restante.toFixed(2)}.`;
-        }
-      }
-    };
-
-    window.procesarPagoPos = async function() {
-      if (!orderPosActual) {
-        alert("No hay encargo seleccionado.");
-        return;
-      }
-
-      const id = orderPosActual.id;
-      const saldoPendiente = parseFloat(orderPosActual.saldoPendiente || 0);
-      const montoInput = document.getElementById('pos-monto-recibido');
-      const montoRecibido = parseFloat(montoInput ? montoInput.value : 0) || 0;
-
-      if (montoRecibido <= 0) {
-        alert("Por favor ingrese un monto pagado válido.");
-        return;
-      }
-
-      const btnSubmit = document.getElementById('btn-confirmar-pos');
-      if (btnSubmit) {
-        btnSubmit.disabled = true;
-        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
-      }
-
-      try {
-        let nuevoSaldo = 0;
-        let nuevoEstadoEntrega = 'Entregado';
-        const anticipoActual = parseFloat(orderPosActual.anticipo || 0);
-        let nuevoAnticipo = anticipoActual;
-
-        if (montoRecibido >= saldoPendiente) {
-          nuevoSaldo = 0;
-          nuevoEstadoEntrega = 'Entregado';
-          nuevoAnticipo = anticipoActual + saldoPendiente;
-        } else {
-          nuevoSaldo = saldoPendiente - montoRecibido;
-          nuevoEstadoEntrega = orderPosActual.estadoEntrega === 'Entregado' ? 'Entregado' : 'Pendiente';
-          nuevoAnticipo = anticipoActual + montoRecibido;
+        function filtrarInventario() {
+            const query = document.getElementById('search-inventario').value.toLowerCase();
+            const rows = document.querySelectorAll('#tbody-inventario tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
         }
 
-        await db.collection('encargos_pedidos').doc(id).update({
-          saldoPendiente: nuevoSaldo,
-          anticipo: nuevoAnticipo,
-          estadoEntrega: nuevoEstadoEntrega,
-          metodoPagoPos: posMetodoSeleccionado,
-          ultimoMontoCobrado: montoRecibido,
-          fechaCobroPos: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        // TAB 3: ENTREGAS Y LOGÍSTICA (NUEVO RENDER MEJORADO)
+        function renderEntregas() {
+            const container = document.getElementById('delivery-cards-container');
+            container.innerHTML = '';
 
-        await db.collection('ventas').add({
-          encargoId: id,
-          cliente: orderPosActual.cliente || 'Cliente',
-          prenda: orderPosActual.prenda || 'Prenda',
-          monto: Math.min(montoRecibido, saldoPendiente),
-          metodoPago: posMetodoSeleccionado,
-          concepto: nuevoSaldo === 0 ? "Liquidación Completa Encargo" : "Abono Parcial Encargo",
-          fecha: firebase.firestore.FieldValue.serverTimestamp()
-        });
+            // Calcular Estadísticas de Logística
+            let countPendientes = 0;
+            let countRuta = 0;
+            let countEntregados = 0;
+            let totalCobrarRuta = 0;
 
-        mostrarNotificacion(`✅ Cobro de $${montoRecibido.toFixed(2)} registrado (${posMetodoSeleccionado})`);
-        cerrarModalPos();
-      } catch (err) {
-        console.error("Error al procesar pago POS:", err);
-        alert("Error al procesar el pago: " + err.message);
-      } finally {
-        if (btnSubmit) {
-          btnSubmit.disabled = false;
-          btnSubmit.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirmar Pago';
+            const searchQuery = (document.getElementById('search-entregas')?.value || '').toLowerCase();
+
+            // Filtrado de Datos
+            const filtered = encargosData.filter(item => {
+                // Filtro por Estado / Tipo
+                if (filtroLogisticaActual === 'pendiente' && item.estadoEntrega !== 'pendiente') return false;
+                if (filtroLogisticaActual === 'en_ruta' && item.estadoEntrega !== 'en_ruta') return false;
+                if (filtroLogisticaActual === 'entregado' && item.estadoEntrega !== 'entregado') return false;
+                if (filtroLogisticaActual === 'domicilio' && item.modalidad !== 'domicilio') return false;
+                if (filtroLogisticaActual === 'sucursal' && item.modalidad !== 'sucursal') return false;
+
+                // Filtro por búsqueda
+                if (searchQuery) {
+                    const matchName = item.cliente?.toLowerCase().includes(searchQuery);
+                    const matchColonia = item.colonia?.toLowerCase().includes(searchQuery);
+                    const matchProd = item.productos?.toLowerCase().includes(searchQuery);
+                    return matchName || matchColonia || matchProd;
+                }
+                return true;
+            });
+
+            // Conteo Global (sin filtro de búsqueda para los KPIs)
+            encargosData.forEach(item => {
+                if (item.estadoEntrega === 'pendiente') countPendientes++;
+                if (item.estadoEntrega === 'en_ruta') countRuta++;
+                if (item.estadoEntrega === 'entregado') countEntregados++;
+                if (item.estadoEntrega !== 'entregado' && item.modalidad === 'domicilio') {
+                    totalCobrarRuta += (item.saldoPendiente || 0);
+                }
+            });
+
+            // Actualizar Tarjetas KPI
+            document.getElementById('stat-del-pendientes').innerText = countPendientes;
+            document.getElementById('stat-del-ruta').innerText = countRuta;
+            document.getElementById('stat-del-entregados').innerText = countEntregados;
+            document.getElementById('stat-del-cobrar').innerText = `$${totalCobrarRuta.toFixed(2)}`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state card">
+                        <i class="fa-solid fa-truck-ramp-box"></i>
+                        <p>No hay entregas pendientes o con el filtro seleccionado.</p>
+                    </div>`;
+                return;
+            }
+
+            // Generar Tarjetas de Despacho
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'delivery-order-card';
+
+                // WA Direct Actions
+                const cleanPhone = item.telefono ? item.telefono.replace(/\D/g,'') : null;
+                const hasPhone = cleanPhone && cleanPhone.length >= 7;
+
+                // Prevenir links vacíos de mapas
+                const mapsUrl = item.mapsLink && item.mapsLink.trim() !== '' 
+                    ? item.mapsLink 
+                    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.colonia + ' ' + (item.direccionExacta || ''))}`;
+
+                const badgeMod = item.modalidad === 'domicilio' ? 'badge-domicilio' : 'badge-sucursal';
+                const badgeEst = getBadgeEstado(item.estadoEntrega);
+
+                card.innerHTML = `
+                    <div class="delivery-header">
+                        <div class="client-meta">
+                            <span class="client-name"><i class="fa-solid fa-user-tag"></i> ${escapeHtml(item.cliente)}</span>
+                            <span class="badge ${badgeMod}">${item.modalidad === 'domicilio' ? 'Domicilio' : 'Sucursal'}</span>
+                        </div>
+                        <div>${badgeEst}</div>
+                    </div>
+
+                    <div class="delivery-body">
+                        <!-- Ubicación & Dirección -->
+                        <div class="address-box">
+                            <strong><i class="fa-solid fa-location-dot"></i> Ubicación / Colonia:</strong>
+                            <p><strong>${escapeHtml(item.colonia || 'Sucursal')}</strong></p>
+                            <p style="margin-top:4px; font-size:0.85rem; color:var(--text-muted);">
+                                ${item.direccionExacta ? escapeHtml(item.direccionExacta) : '<em>Sin dirección exacta registrada por el chofer.</em>'}
+                            </p>
+                            ${item.horarioEntrega ? `<p style="margin-top:4px; font-size:0.8rem; color:var(--primary-vino); font-weight:600;"><i class="fa-solid fa-clock"></i> Horario: ${escapeHtml(item.horarioEntrega)}</p>` : ''}
+                            ${item.repartidor ? `<p style="font-size:0.8rem; color:var(--text-muted);"><i class="fa-solid fa-id-badge"></i> Chofer: ${escapeHtml(item.repartidor)}</p>` : ''}
+                        </div>
+
+                        <!-- Resumen Pedido & Saldo -->
+                        <div class="order-summary-box">
+                            <strong style="font-size:0.85rem; color:var(--primary-vino);"><i class="fa-solid fa-box"></i> Pedido:</strong>
+                            <p style="font-size:0.9rem;">${escapeHtml(item.productos)}</p>
+
+                            <div class="financial-pills">
+                                <span class="fin-pill paid">Anticipo: $${(item.anticipo || 0).toFixed(2)}</span>
+                                <span class="fin-pill ${item.saldoPendiente > 0 ? 'pending' : 'paid'}">
+                                    Saldo: $${(item.saldoPendiente || 0).toFixed(2)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-footer-actions">
+                        <!-- Botones de Gestión de Ruta -->
+                        <div class="driver-action-btns">
+                            <button class="btn btn-secondary btn-sm" onclick="openEditDeliveryModal('${item.id}')">
+                                <i class="fa-solid fa-pen-to-square"></i> Editar Dirección/Ruta
+                            </button>
+                            <a href="${mapsUrl}" target="_blank" class="btn btn-secondary btn-sm" style="color:#0288d1; border-color:#0288d1;">
+                                <i class="fa-solid fa-map-location-dot"></i> GPS Mapa
+                            </a>
+                        </div>
+
+                        <!-- Botones de Cambio de Estado y WA -->
+                        <div class="driver-action-btns">
+                            ${hasPhone ? `
+                                <button class="btn btn-whatsapp btn-sm" onclick="enviarAvisoWA('${item.id}', 'en_camino')">
+                                    <i class="fa-brands fa-whatsapp"></i> Avisar "En Camino"
+                                </button>
+                            ` : ''}
+
+                            ${item.estadoEntrega !== 'en_ruta' && item.estadoEntrega !== 'entregado' ? `
+                                <button class="btn btn-primary btn-sm" onclick="actualizarEstadoRuta('${item.id}', 'en_ruta')">
+                                    <i class="fa-solid fa-truck-fast"></i> Marcar En Ruta
+                                </button>
+                            ` : ''}
+
+                            ${item.estadoEntrega !== 'entregado' ? `
+                                <button class="btn btn-primary btn-sm" style="background:var(--success-color);" onclick="prepararEntrega('${item.id}')">
+                                    <i class="fa-solid fa-circle-check"></i> Marcar Entregado
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
         }
-      }
-    };
 
-    // Tickets Logic
-    window.guardarTicket = async function(e) {
-      e.preventDefault();
-      const proveedor = document.getElementById('ticket-proveedor').value;
-      const monto = parseFloat(document.getElementById('ticket-monto').value) || 0;
-      const fileInput = document.getElementById('ticket-foto');
-
-      if (!fileInput.files || fileInput.files.length === 0) {
-        alert("Por favor seleccione la foto del ticket.");
-        return;
-      }
-
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-
-      reader.onload = async function(evt) {
-        const fotoBase64 = evt.target.result;
-        try {
-          await db.collection('tickets_proveedores').add({
-            proveedor: proveedor,
-            monto: monto,
-            fotoUrl: fotoBase64,
-            fecha: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          document.getElementById('form-ticket').reset();
-          mostrarNotificacion("🧾 Ticket guardado exitosamente");
-        } catch (err) {
-          alert("Error al guardar ticket: " + err.message);
+        function filtrarEntregas(filtro, btnEl) {
+            filtroLogisticaActual = filtro;
+            document.querySelectorAll('.filter-pills .pill-btn').forEach(b => b.classList.remove('active'));
+            if(btnEl) btnEl.classList.add('active');
+            renderEntregas();
         }
-      };
 
-      reader.readAsDataURL(file);
-    };
+        // Modal Dirección / Ruta
+        function openEditDeliveryModal(id) {
+            const item = encargosData.find(e => e.id === id);
+            if (!item) return;
 
-    function renderTickets() {
-      const galeria = document.getElementById('galeria-tickets');
-      if (!galeria) return;
+            document.getElementById('edit-del-id').value = item.id;
+            document.getElementById('edit-del-colonia').value = item.colonia || '';
+            document.getElementById('edit-del-direccion').value = item.direccionExacta || '';
+            document.getElementById('edit-del-maps').value = item.mapsLink || '';
+            document.getElementById('edit-del-repartidor').value = item.repartidor || '';
+            document.getElementById('edit-del-horario').value = item.horarioEntrega || '';
 
-      if (listaTickets.length === 0) {
-        galeria.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No hay tickets de compra registrados.</p>`;
-        return;
-      }
-
-      galeria.innerHTML = listaTickets.map(t => `
-        <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px; background:#ffffff;">
-          <img src="${t.fotoUrl}" style="width:100%; height:160px; object-fit:cover; border-radius:var(--radius-sm); cursor:pointer;" onclick="window.open('${t.fotoUrl}', '_blank')">
-          <div style="margin-top:8px;">
-            <strong style="color:var(--primary-vino);">${t.proveedor}</strong>
-            <div style="font-weight:700; color:var(--text-dark);">$${(t.monto||0).toFixed(2)}</div>
-          </div>
-          <button onclick="eliminarTicket('${t.id}')" class="btn-boutique-secondary btn-danger" style="width:100%; margin-top:8px; padding:4px 8px; font-size:0.75rem;"><i class="fa-solid fa-trash"></i> Eliminar Ticket</button>
-        </div>
-      `).join('');
-    }
-
-    window.eliminarTicket = async function(id) {
-      if (confirm("¿Eliminar este ticket?")) {
-        await db.collection('tickets_proveedores').doc(id).delete();
-        mostrarNotificacion("🗑️ Ticket eliminado");
-      }
-    };
-
-    // Resumen Financiero Logic
-    function renderResumen() {
-      let totalCosto = 0;
-      let totalVenta = 0;
-      let totalAnticipo = 0;
-      let totalSaldo = 0;
-
-      listaEncargos.forEach(item => {
-        totalCosto += parseFloat(item.costoCompra || 0);
-        totalVenta += parseFloat(item.precioVenta || 0);
-        totalAnticipo += parseFloat(item.anticipo || 0);
-        totalSaldo += parseFloat(item.saldoPendiente || 0);
-      });
-
-      const gananciaNeta = totalVenta - totalCosto;
-
-      document.getElementById('res-costo-total').innerText = `$${totalCosto.toFixed(2)}`;
-      document.getElementById('res-venta-total').innerText = `$${totalVenta.toFixed(2)}`;
-      document.getElementById('res-anticipo-total').innerText = `$${totalAnticipo.toFixed(2)}`;
-      document.getElementById('res-saldo-total').innerText = `$${totalSaldo.toFixed(2)}`;
-      document.getElementById('res-ganancia-total').innerText = `$${gananciaNeta.toFixed(2)}`;
-    }
-
-    // Modal de WhatsApp
-    window.abrirWhatsAppModal = function(id, tipoPlantilla) {
-      const item = listaEncargos.find(e => e.id === id);
-      if (!item) return;
-
-      if (!item.telefono || !item.telefono.trim()) {
-        alert("Este cliente no cuenta con número de teléfono registrado.");
-        return;
-      }
-
-      waItemActual = item;
-      document.getElementById('wa-plantilla-select').value = tipoPlantilla;
-      cambiarPlantillaWA();
-      const modal = document.getElementById('modal-whatsapp');
-      if (modal) modal.classList.add('active');
-    };
-
-    window.cerrarModalWA = function() {
-      const modal = document.getElementById('modal-whatsapp');
-      if (modal) modal.classList.remove('active');
-      waItemActual = null;
-    };
-
-    window.cambiarPlantillaWA = function() {
-      if (!waItemActual) return;
-
-      const tipo = document.getElementById('wa-plantilla-select').value;
-      const c = waItemActual;
-      let texto = '';
-
-      if (tipo === 'confirmacion') {
-        texto = `¡Hola ${c.cliente}! ✨ Confirmamos tu encargo en SARAY HA de: ${c.prenda} (Talla: ${c.talla}). Saldo pendiente: $${(c.saldoPendiente||0).toFixed(2)}. ¡Gracias por tu compra! 👗`;
-      } else if (tipo === 'surtido') {
-        texto = `¡Hola ${c.cliente}! 🛍️ Tu encargo ${c.prenda} (Talla: ${c.talla}) ya está surtido y listo para ${c.tipoEntrega === 'Domicilio' ? 'envío a domicilio' : 'recoger en tienda'}. Saldo pendiente: $${(c.saldoPendiente||0).toFixed(2)}.`;
-      } else if (tipo === 'nohubo') {
-        texto = `Hola ${c.cliente}. Te informamos que por el momento el producto ${c.prenda} está agotado con proveedor. Nos pondremos en contacto contigo para tu reembolso o cambio de prenda. ✨`;
-      } else if (tipo === 'gracias') {
-        texto = `¡Muchas gracias por tu compra en SARAY HA, ${c.cliente}! 💖 Esperamos que disfrutes tu ${c.prenda}. Recordatorio: No hay cambios ni devoluciones. ¡Hasta pronto!`;
-      }
-
-      document.getElementById('wa-texto-mensaje').value = texto;
-    };
-
-    window.enviarWhatsAppModal = function() {
-      if (!waItemActual || !waItemActual.telefono) return;
-      const tel = waItemActual.telefono.replace(/\D/g, '');
-      if (!tel) {
-        alert("El número de teléfono no es válido.");
-        return;
-      }
-      const texto = encodeURIComponent(document.getElementById('wa-texto-mensaje').value);
-      window.open(`https://wa.me/52${tel}?text=${texto}`, '_blank');
-      cerrarModalWA();
-    };
-
-    window.abrirWAEstadoGeneral = function() {
-      const itemConTel = listaEncargos.find(e => e.telefono && e.telefono.trim().length > 0);
-      if (!itemConTel) {
-        alert("No hay encargos con número de teléfono registrado.");
-        return;
-      }
-      abrirWhatsAppModal(itemConTel.id, 'confirmacion');
-    };
-
-    // Emergency Reset
-    window.confirmarResetEmergencia = async function() {
-      const pass = prompt("🚨 REINICIO DE EMERGENCIA BBDD SARAY HA 🚨\nEscribe 'ELIMINAR' para borrar todos los encargos:");
-      if (pass === 'ELIMINAR') {
-        try {
-          const snapshot = await db.collection('encargos_pedidos').get();
-          const batch = db.batch();
-          snapshot.docs.forEach(doc => batch.delete(doc.ref));
-          await batch.commit();
-          mostrarNotificacion("🔥 Base de datos de encargos reiniciada");
-        } catch (err) {
-          alert("Error en reset: " + err.message);
+            document.getElementById('modal-edit-delivery').classList.add('active');
         }
-      }
-    };
 
-    // Utilidad Notificaciones Toast
-    function mostrarNotificacion(msj) {
-      const container = document.getElementById('toast-container');
-      if (!container) return;
-      const toast = document.createElement('div');
-      toast.className = 'toast';
-      toast.innerText = msj;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3500);
-    }
-  </script>
+        async function guardarEdicionEntrega(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-del-id').value;
+            const colonia = document.getElementById('edit-del-colonia').value.trim();
+            const direccionExacta = document.getElementById('edit-del-direccion').value.trim();
+            const mapsLink = document.getElementById('edit-del-maps').value.trim();
+            const repartidor = document.getElementById('edit-del-repartidor').value.trim();
+            const horarioEntrega = document.getElementById('edit-del-horario').value.trim();
+
+            try {
+                await db.collection('encargos_pedidos').doc(id).update({
+                    colonia,
+                    direccionExacta,
+                    mapsLink,
+                    repartidor,
+                    horarioEntrega
+                });
+                closeModal('modal-edit-delivery');
+                showToast("Datos de entrega y ruta actualizados.", "success");
+            } catch (err) {
+                console.error("Error al actualizar:", err);
+                showToast("No se pudo actualizar la ruta.", "error");
+            }
+        }
+
+        // Cambio de Estado & Cobro en Puerta
+        async function actualizarEstadoRuta(id, nuevoEstado) {
+            try {
+                await db.collection('encargos_pedidos').doc(id).update({ estadoEntrega: nuevoEstado });
+                showToast(`Estado cambiado a ${nuevoEstado.replace('_', ' ')}`, "success");
+            } catch (err) {
+                showToast("Error al cambiar estado", "error");
+            }
+        }
+
+        function prepararEntrega(id) {
+            const item = encargosData.find(e => e.id === id);
+            if (!item) return;
+
+            if (item.saldoPendiente > 0) {
+                // Requiere cobro de saldo antes de cerrar
+                document.getElementById('cobro-del-id').value = item.id;
+                document.getElementById('cobro-modal-cliente').innerText = `Cliente: ${item.cliente}`;
+                document.getElementById('cobro-modal-saldo').innerText = `Saldo a Cobrar: $${item.saldoPendiente.toFixed(2)}`;
+                document.getElementById('cobro-monto').value = item.saldoPendiente.toFixed(2);
+                document.getElementById('modal-cobro-entrega').classList.add('active');
+            } else {
+                // Entregar directamente
+                actualizarEstadoRuta(id, 'entregado');
+            }
+        }
+
+        async function confirmarCobroEntrega(e) {
+            e.preventDefault();
+            const id = document.getElementById('cobro-del-id').value;
+            const item = encargosData.find(e => e.id === id);
+            if(!item) return;
+
+            const montoCobrado = parseFloat(document.getElementById('cobro-monto').value) || 0;
+            const nuevoAnticipo = (item.anticipo || 0) + montoCobrado;
+            const nuevoSaldo = 0;
+
+            try {
+                await db.collection('encargos_pedidos').doc(id).update({
+                    anticipo: nuevoAnticipo,
+                    saldoPendiente: nuevoSaldo,
+                    estadoEntrega: 'entregado',
+                    fechaLiquidacion: new Date().toISOString()
+                });
+                closeModal('modal-cobro-entrega');
+                showToast("Cobro registrado y entrega completada con éxito.", "success");
+            } catch (err) {
+                showToast("Error al registrar el cobro", "error");
+            }
+        }
+
+        // WhatsApp Direct Notice
+        function enviarAvisoWA(id, tipo) {
+            const item = encargosData.find(e => e.id === id);
+            if(!item || !item.telefono) return;
+
+            const cleanPhone = item.telefono.replace(/\D/g,'');
+            let mensaje = "";
+
+            if (tipo === 'en_camino') {
+                mensaje = `¡Hola ${item.cliente}! 🚚 Tu pedido de *SARAY HA* va en camino a tu domicilio. Saldo pendiente a liquidar: *$${(item.saldoPendiente || 0).toFixed(2)}*. ¡Nos vemos pronto!`;
+            }
+
+            const url = `https://wa.me/52${cleanPhone}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
+        // TAB 4: Guardar Ticket Proveedor
+        async function guardarTicketProveedor(e) {
+            e.preventDefault();
+            const nombre = document.getElementById('prov-nombre').value.trim();
+            const ticket = document.getElementById('prov-ticket').value.trim();
+            const fecha = document.getElementById('prov-fecha').value;
+            const monto = parseFloat(document.getElementById('prov-monto').value) || 0;
+            const concepto = document.getElementById('prov-concepto').value.trim();
+
+            if (!nombre || !ticket || !fecha || !monto) {
+                showToast("Por favor completa los campos del proveedor.", "error");
+                return;
+            }
+
+            try {
+                await db.collection('tickets_proveedores').add({
+                    proveedor: nombre,
+                    ticket,
+                    fecha,
+                    costoCompra: monto, // Título oficial Costo de Compra
+                    concepto,
+                    fechaRegistro: new Date().toISOString()
+                });
+                showToast("Compra a proveedor guardada.", "success");
+                document.getElementById('form-proveedor').reset();
+            } catch (err) {
+                showToast("Error al guardar ticket.", "error");
+            }
+        }
+
+        function renderProveedores() {
+            const tbody = document.getElementById('tbody-proveedores');
+            tbody.innerHTML = '';
+
+            if (proveedoresData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fa-solid fa-receipt"></i><br>No hay compras a proveedores registradas.</td></tr>`;
+                return;
+            }
+
+            proveedoresData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.fecha}</td>
+                    <td><strong>${escapeHtml(item.proveedor)}</strong></td>
+                    <td>${escapeHtml(item.ticket)}</td>
+                    <td>${escapeHtml(item.concepto || '-')}</td>
+                    <td style="font-weight:700;">$${(item.costoCompra || 0).toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="eliminarProveedor('${item.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // TAB 5: Reportes y Finanzas (Nombres Oficiales Estrictos)
+        function renderReportes() {
+            let totalVentasEncargos = 0;
+            let totalCostosEncargos = 0;
+            let totalSaldosPendientes = 0;
+
+            encargosData.forEach(item => {
+                totalVentasEncargos += (item.precioVenta || 0);
+                totalCostosEncargos += (item.costoCompra || 0);
+                totalSaldosPendientes += (item.saldoPendiente || 0);
+            });
+
+            let totalComprasProveedores = 0;
+            proveedoresData.forEach(item => {
+                totalComprasProveedores += (item.costoCompra || 0);
+            });
+
+            const costoTotalAcumulado = totalCostosEncargos + totalComprasProveedores;
+            const gananciaNetaConsolidada = totalVentasEncargos - costoTotalAcumulado;
+
+            // Render KPI Cards
+            document.getElementById('rep-total-ventas').innerText = `$${totalVentasEncargos.toFixed(2)}`;
+            document.getElementById('rep-total-costos').innerText = `$${costoTotalAcumulado.toFixed(2)}`;
+            document.getElementById('rep-total-ganancia').innerText = `$${gananciaNetaConsolidada.toFixed(2)}`;
+            document.getElementById('rep-total-saldos').innerText = `$${totalSaldosPendientes.toFixed(2)}`;
+
+            // Render Table Breakdown
+            document.getElementById('rep-sub-ventas').innerText = `$${totalVentasEncargos.toFixed(2)}`;
+            document.getElementById('rep-sub-costos-encargos').innerText = `$${totalCostosEncargos.toFixed(2)}`;
+            document.getElementById('rep-sub-compras-prov').innerText = `$${totalComprasProveedores.toFixed(2)}`;
+            document.getElementById('rep-sub-ganancia-neta').innerText = `$${gananciaNetaConsolidada.toFixed(2)}`;
+        }
+
+        // Eliminar Registros
+        async function eliminarEncargo(id) {
+            if (confirm("¿Estás seguro de eliminar este encargo?")) {
+                try {
+                    await db.collection('encargos_pedidos').doc(id).delete();
+                    showToast("Encargo eliminado.", "success");
+                } catch (e) {
+                    showToast("Error al eliminar", "error");
+                }
+            }
+        }
+
+        async function eliminarProveedor(id) {
+            if (confirm("¿Estás seguro de eliminar este registro de compra?")) {
+                try {
+                    await db.collection('tickets_proveedores').doc(id).delete();
+                    showToast("Registro de proveedor eliminado.", "success");
+                } catch (e) {
+                    showToast("Error al eliminar", "error");
+                }
+            }
+        }
+
+        // Helpers & Utils
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function getBadgeEstado(estado) {
+            switch(estado) {
+                case 'en_ruta': return `<span class="badge badge-ruta"><i class="fa-solid fa-truck"></i> En Ruta</span>`;
+                case 'entregado': return `<span class="badge badge-entregado"><i class="fa-solid fa-check"></i> Entregado</span>`;
+                case 'cancelado': return `<span class="badge badge-cancelado"><i class="fa-solid fa-xmark"></i> Cancelado</span>`;
+                default: return `<span class="badge badge-pendiente"><i class="fa-solid fa-clock"></i> Pendiente</span>`;
+            }
+        }
+
+        function escapeHtml(str) {
+            if(!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            if (type === 'error') toast.style.background = '#d32f2f';
+            if (type === 'success') toast.style.background = '#2e7d32';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${message}`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
 </body>
 </html>
