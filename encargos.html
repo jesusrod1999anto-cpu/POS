@@ -188,15 +188,22 @@
         input:focus, select:focus, textarea:focus { border-color: var(--primary-vino); box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.1); }
         input[readonly] { background: #f5f5f5; color: #555; font-weight: 600; }
 
-        /* Quick Selection Pills */
-        .quick-select-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
-        .quick-btn {
-            padding: 9px 18px; border: 1.5px solid var(--border-color); border-radius: 20px;
+        /* Quick Suggestion Pills */
+        .quick-suggestions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+        .sugg-pill {
+            padding: 5px 12px; border: 1px solid var(--border-color); border-radius: 15px;
+            background: #fff; color: var(--text-muted); font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .sugg-pill:hover { border-color: var(--primary-vino); color: var(--primary-vino); background: var(--primary-soft); }
+
+        .quick-btn-talla {
+            padding: 8px 16px; border: 1.5px solid var(--border-color); border-radius: 20px;
             background: #fff; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
             cursor: pointer; transition: all 0.2s ease;
         }
-        .quick-btn:hover { border-color: var(--primary-vino); color: var(--primary-vino); }
-        .quick-btn.active { background: var(--primary-vino); color: #fff; border-color: var(--primary-vino); box-shadow: 0 4px 10px rgba(114,47,55,0.2); }
+        .quick-btn-talla:hover { border-color: var(--primary-vino); color: var(--primary-vino); }
+        .quick-btn-talla.active { background: var(--primary-vino); color: #fff; border-color: var(--primary-vino); }
 
         /* Buttons */
         .btn {
@@ -331,10 +338,7 @@
 
             <div class="card">
                 <form id="form-encargo" novalidate onsubmit="guardarEncargo(event)">
-                    <!-- Hidden inputs para almacenar selecciones de pills -->
-                    <input type="hidden" id="enc-categoria-val" value="">
                     <input type="hidden" id="enc-talla-val" value="">
-                    <input type="hidden" id="enc-color-val" value="">
 
                     <div class="form-grid">
                         <div class="form-group">
@@ -350,42 +354,45 @@
                             <input type="tel" id="enc-telefono" placeholder="Ej. 9991234567 (Opcional)">
                         </div>
                         
-                        <!-- Píldoras de Selección Rápida de Producto -->
-                        <div class="form-group full-width" style="margin-top: 6px;">
-                            <label>Categoría del Producto *</label>
-                            <div class="quick-select-group" id="group-categoria">
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Vestido', this)">Vestido</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Blusa', this)">Blusa</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Conjunto', this)">Conjunto</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Pantalón', this)">Pantalón</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Falda', this)">Falda</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Accesorio', this)">Accesorio</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('categoria', 'Otro', this)">Otro</button>
+                        <!-- NOMBRE DEL PRODUCTO (TEXTO MANUAL + SUGERENCIAS) -->
+                        <div class="form-group full-width">
+                            <label>Nombre del Producto / Artículo *</label>
+                            <input type="text" id="enc-producto-nombre" placeholder="Escribe el producto (Ej. Vestido de Seda Satinado)..." required>
+                            <div class="quick-suggestions">
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Vestido')">+ Vestido</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Blusa')">+ Blusa</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Conjunto')">+ Conjunto</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Pantalón')">+ Pantalón</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Falda')">+ Falda</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-producto-nombre', 'Accesorio')">+ Accesorio</span>
                             </div>
                         </div>
 
+                        <!-- TALLA (BOTONES) -->
                         <div class="form-group full-width">
                             <label>Talla *</label>
-                            <div class="quick-select-group" id="group-talla">
-                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'XS', this)">XS</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'S', this)">S</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'M', this)">M</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'L', this)">L</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'XL', this)">XL</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('talla', 'Unitalla', this)">Unitalla</button>
+                            <div class="quick-suggestions" id="group-talla">
+                                <button type="button" class="quick-btn-talla" onclick="selectTalla('XS', this)">XS</button>
+                                <button type="button" class="quick-btn-talla" onclick="selectTalla('S', this)">S</button>
+                                <button type="button" class="quick-btn-talla" onclick="selectTalla('M', this)">M</button>
+                                <button type="button" class="quick-btn-talla" onclick="selectTalla('L', this)">L</button>
+                                <button type="button" class="quick-btn-talla" onclick="selectTalla('XL', this)">XL</button>
+                                <button type="button" class="quick-btn-talla" onclick="selectTalla('Unitalla', this)">Unitalla</button>
                             </div>
                         </div>
 
+                        <!-- COLOR (TEXTO MANUAL + SUGERENCIAS) -->
                         <div class="form-group full-width">
                             <label>Color *</label>
-                            <div class="quick-select-group" id="group-color">
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Blanco', this)">Blanco</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Negro', this)">Negro</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Rojo / Vino', this)">Rojo / Vino</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Rosa', this)">Rosa</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Azul', this)">Azul</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Beige', this)">Beige</button>
-                                <button type="button" class="quick-btn" onclick="selectPill('color', 'Estampado', this)">Estampado</button>
+                            <input type="text" id="enc-color-nombre" placeholder="Escribe el color (Ej. Palo de Rosa, Verde Esmeralda)..." required>
+                            <div class="quick-suggestions">
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Blanco')">Blanco</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Negro')">Negro</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Rojo / Vino')">Rojo / Vino</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Rosa')">Rosa</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Azul')">Azul</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Beige')">Beige</span>
+                                <span class="sugg-pill" onclick="sugerirTexto('enc-color-nombre', 'Estampado')">Estampado</span>
                             </div>
                         </div>
                         
@@ -789,15 +796,21 @@
             if (tabName === 'reportes') renderReportes();
         }
 
-        // LÓGICA DE QUICK SELECTS (PILLS) EN ENCARGOS
-        function selectPill(tipo, valor, btnElement) {
-            const container = btnElement.parentElement;
-            container.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active');
+        // FUNCIONES DE TEXTO RÁPIDO & SUGERENCIAS
+        function sugerirTexto(inputId, texto) {
+            const input = document.getElementById(inputId);
+            if (input.value.trim() === '') {
+                input.value = texto;
+            } else {
+                input.value = input.value.trim() + ' ' + texto;
+            }
+            input.focus();
+        }
 
-            if (tipo === 'categoria') document.getElementById('enc-categoria-val').value = valor;
-            if (tipo === 'talla') document.getElementById('enc-talla-val').value = valor;
-            if (tipo === 'color') document.getElementById('enc-color-val').value = valor;
+        function selectTalla(valor, btnElement) {
+            document.querySelectorAll('#group-talla .quick-btn-talla').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            document.getElementById('enc-talla-val').value = valor;
         }
 
         function toggleDomicilioFields() {
@@ -942,18 +955,20 @@
         async function guardarEncargo(e) {
             e.preventDefault();
 
-            const cat = document.getElementById('enc-categoria-val').value;
+            const productoNombre = document.getElementById('enc-producto-nombre').value.trim();
             const talla = document.getElementById('enc-talla-val').value;
-            const color = document.getElementById('enc-color-val').value;
+            const colorNombre = document.getElementById('enc-color-nombre').value.trim();
             const cliente = document.getElementById('enc-cliente').value.trim();
             const proveedor = document.getElementById('enc-proveedor').value;
 
             if (!cliente) { showToast("Escribe el nombre del cliente.", "error"); return; }
-            if (!cat || !talla || !color) { showToast("Selecciona Producto, Talla y Color de los botones.", "error"); return; }
+            if (!productoNombre) { showToast("Escribe el nombre del producto.", "error"); return; }
+            if (!talla) { showToast("Selecciona la talla.", "error"); return; }
+            if (!colorNombre) { showToast("Escribe el color.", "error"); return; }
             if (!proveedor) { showToast("Selecciona el proveedor a surtir.", "error"); return; }
 
             const detalleExtra = document.getElementById('enc-detalle-extra').value.trim();
-            let productoConsolidado = `${cat} | Talla: ${talla} | Color: ${color}`;
+            let productoConsolidado = `${productoNombre} | Talla: ${talla} | Color: ${colorNombre}`;
             if (detalleExtra) productoConsolidado += ` | Extra: ${detalleExtra}`;
 
             const modalidad = document.getElementById('enc-modalidad').value;
@@ -992,10 +1007,8 @@
                 
                 // Limpiar Formulario
                 document.getElementById('form-encargo').reset();
-                document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById('enc-categoria-val').value = "";
+                document.querySelectorAll('#group-talla .quick-btn-talla').forEach(b => b.classList.remove('active'));
                 document.getElementById('enc-talla-val').value = "";
-                document.getElementById('enc-color-val').value = "";
                 
                 // Restaurar defaults
                 document.getElementById('enc-fecha-registro').value = new Date().toISOString().split('T')[0];
@@ -1198,7 +1211,6 @@
             const saldo = item.saldoPendiente || 0;
 
             if(saldo <= 0) {
-                // Si el saldo es $0, liquidar entrega directamente
                 db.collection('encargos_pedidos').doc(id).update({
                     estadoEntrega: 'entregado',
                     fechaLiquidacion: new Date().toISOString()
@@ -1211,7 +1223,6 @@
             document.getElementById('cobro-modal-saldo-text').innerText = `$${saldo.toFixed(2)}`;
             document.getElementById('cobro-monto-exacto').value = saldo;
             
-            // Reset de inputs en modal POS
             document.getElementById('cobro-efectivo-recibido').value = '';
             document.getElementById('cobro-cambio-mostrar').innerText = '$0.00';
             document.getElementById('cobro-cambio-mostrar').style.color = 'var(--text-muted)';
