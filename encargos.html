@@ -540,7 +540,8 @@
             </div>
             <div class="form-group">
               <label>Teléfono (WhatsApp)</label>
-              <input type="tel" id="enc-telefono" required placeholder="10 dígitos">
+              <!-- CAMBIO: Campo de teléfono OPCIONAL -->
+              <input type="tel" id="enc-telefono" placeholder="10 dígitos (Opcional)">
             </div>
             <div class="form-group">
               <label>Prenda / Producto</label>
@@ -906,7 +907,7 @@
       try {
         const nuevo = {
           cliente: document.getElementById('enc-cliente').value.trim(),
-          telefono: document.getElementById('enc-telefono').value.trim(),
+          telefono: document.getElementById('enc-telefono').value.trim(), // Teléfono Opcional
           prenda: document.getElementById('enc-prenda').value.trim(),
           color: document.getElementById('enc-color').value.trim(),
           talla: document.getElementById('enc-talla').value.trim() || 'Única',
@@ -949,7 +950,9 @@
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
               <strong style="font-size:1.05rem; color:var(--primary-vino);">${item.cliente}</strong>
-              <div style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-brands fa-whatsapp"></i> ${item.telefono}</div>
+              <div style="font-size:0.85rem; color:var(--text-muted);">
+                ${item.telefono ? `<i class="fa-brands fa-whatsapp"></i> ${item.telefono}` : '<i class="fa-solid fa-phone-slash"></i> Sin teléfono'}
+              </div>
             </div>
             <span class="badge ${item.tipoEntrega === 'Domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
               ${item.tipoEntrega === 'Domicilio' ? '🚚 Domicilio' : '🏪 Tienda'}
@@ -967,7 +970,7 @@
               <strong style="color:var(--primary-vino);">Saldo: $${(item.saldoPendiente||0).toFixed(2)}</strong>
             </div>
             <div style="display:flex; gap:6px;">
-              <button onclick="abrirWhatsAppModal('${item.id}', 'confirmacion')" class="btn-boutique-secondary" style="padding:6px 10px; font-size:0.75rem;"><i class="fa-brands fa-whatsapp"></i> Chat</button>
+              ${item.telefono ? `<button onclick="abrirWhatsAppModal('${item.id}', 'confirmacion')" class="btn-boutique-secondary" style="padding:6px 10px; font-size:0.75rem;"><i class="fa-brands fa-whatsapp"></i> Chat</button>` : ''}
               <button onclick="eliminarEncargo('${item.id}')" class="btn-boutique-secondary btn-danger" style="padding:6px 10px; font-size:0.75rem;"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
@@ -1049,7 +1052,6 @@
         return;
       }
 
-      // Agrupar por proveedor
       const porProveedor = {};
       itemsVisibles.forEach(item => {
         const prov = item.proveedor || 'Sin Proveedor';
@@ -1111,7 +1113,7 @@
       mostrarNotificacion("👁️ Artículo ocultado de la lista de surtido");
     };
 
-    // PESTAÑA 4: ENTREGAS & LOGÍSTICA (CORREGIDA)
+    // Pestaña 4: Entregas Logic
     function renderEntregas() {
       const container = document.getElementById('contenedor-entregas');
       if (!container) return;
@@ -1132,7 +1134,7 @@
               <div>
                 <strong style="font-size:1.1rem; color:var(--primary-vino); font-family:'Playfair Display', serif;">${item.cliente}</strong>
                 <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
-                  <i class="fa-brands fa-whatsapp"></i> ${item.telefono}
+                  ${item.telefono ? `<i class="fa-brands fa-whatsapp"></i> ${item.telefono}` : '<i class="fa-solid fa-phone-slash"></i> Sin teléfono'}
                 </div>
               </div>
               <span class="badge ${item.tipoEntrega === 'Domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
@@ -1200,9 +1202,7 @@
       }).join('');
     }
 
-    // FUNCIÓN GUARDAR DATOS DE ENTREGA (CORREGIDA)
     window.guardarDatosEntrega = async function(id) {
-      console.log("guardarDatosEntrega llamado para id:", id);
       const dirEl = document.getElementById(`dir-${id}`);
       const mapsEl = document.getElementById(`maps-${id}`);
       const colEl = document.getElementById(`col-${id}`);
@@ -1224,7 +1224,6 @@
           fechaActualizacionLogistica: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Actualizar array local en memoria
         const local = listaEncargos.find(e => e.id === id);
         if (local) {
           local.direccionEntrega = direccionEntrega;
@@ -1244,9 +1243,8 @@
       mostrarNotificacion(`Estado de entrega: ${estado}`);
     };
 
-    // FUNCIÓN ABRIR POS MODAL (CORREGIDA)
+    // POS Modal Logic
     window.abrirPosModal = function(id) {
-      console.log("abrirPosModal llamado para id:", id);
       const item = listaEncargos.find(e => e.id === id);
       if (!item) {
         alert("No se encontró la información del encargo.");
@@ -1314,7 +1312,6 @@
       }
     };
 
-    // FUNCIÓN PROCESAR PAGO POS (CORREGIDA)
     window.procesarPagoPos = async function() {
       if (!orderPosActual) {
         alert("No hay encargo seleccionado.");
@@ -1362,7 +1359,6 @@
           fechaCobroPos: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        // Registrar venta en historial
         await db.collection('ventas').add({
           encargoId: id,
           cliente: orderPosActual.cliente || 'Cliente',
@@ -1471,10 +1467,15 @@
       document.getElementById('res-ganancia-total').innerText = `$${gananciaNeta.toFixed(2)}`;
     }
 
-    // Modal de WhatsApp
+    // Modal de WhatsApp (Manejo de teléfono opcional)
     window.abrirWhatsAppModal = function(id, tipoPlantilla) {
       const item = listaEncargos.find(e => e.id === id);
       if (!item) return;
+
+      if (!item.telefono || !item.telefono.trim()) {
+        alert("Este cliente no tiene registrado número de teléfono.");
+        return;
+      }
 
       waItemActual = item;
       document.getElementById('wa-plantilla-select').value = tipoPlantilla;
@@ -1511,18 +1512,29 @@
 
     window.enviarWhatsAppModal = function() {
       if (!waItemActual) return;
+      if (!waItemActual.telefono || !waItemActual.telefono.trim()) {
+        alert("Este cliente no cuenta con número de teléfono registrado.");
+        return;
+      }
+
       const tel = waItemActual.telefono.replace(/\D/g, '');
+      if (!tel) {
+        alert("El número de teléfono registrado no es válido.");
+        return;
+      }
+
       const texto = encodeURIComponent(document.getElementById('wa-texto-mensaje').value);
       window.open(`https://wa.me/52${tel}?text=${texto}`, '_blank');
       cerrarModalWA();
     };
 
     window.abrirWAEstadoGeneral = function() {
-      if (listaEncargos.length === 0) {
-        alert("No hay encargos para contactar.");
+      const itemConTel = listaEncargos.find(e => e.telefono && e.telefono.trim());
+      if (!itemConTel) {
+        alert("No hay encargos registrados con número de teléfono.");
         return;
       }
-      abrirWhatsAppModal(listaEncargos[0].id, 'confirmacion');
+      abrirWhatsAppModal(itemConTel.id, 'confirmacion');
     };
 
     // Emergency Reset
