@@ -4,19 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SARAY HA — Encargos & Entregas Pro v5.0</title>
-  
-  <!-- PWA Meta Tags -->
-  <meta name="theme-color" content="#722f37">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
+
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Firebase SDKs (v10.8.0) -->
+
+  <!-- Firebase SDKs (v10.8.0 Compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -25,30 +20,20 @@
       --primary-vino: #722f37;
       --primary-accent: #8b4255;
       --primary-soft: #fbf2f4;
-      --pink-glow: #f4e8eb;
       --bg-warm: #f8f5f6;
-      --card-white: #ffffff;
-      
-      --text-dark: #221d1e;
-      --text-muted: #7a6e71;
-      --border-soft: #ebdcd0;
-      --border-vino: #e8d0d4;
-
-      --success-green: #15803d;
-      --success-bg: #f0fdf4;
-      --warning-gold: #b45309;
-      --warning-bg: #fffbeb;
-      --danger-red: #b91c1c;
-      --danger-bg: #fef2f2;
-      --info-blue: #1d4ed8;
-      --info-bg: #eff6ff;
-
-      --radius-card: 16px;
-      --radius-pill: 30px;
-      --radius-input: 10px;
-
-      --shadow-chic: 0 10px 30px -5px rgba(114, 47, 55, 0.08);
-      --shadow-hover: 0 16px 35px -4px rgba(114, 47, 55, 0.15);
+      --gold-accent: #c59b27;
+      --gold-light: #fdf8eb;
+      --text-dark: #2d2426;
+      --text-muted: #7c6a6e;
+      --card-bg: #ffffff;
+      --card-shadow: 0 10px 30px rgba(114, 47, 55, 0.07);
+      --border-color: #ebdcdb;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --success-green: #2e7d32;
+      --warning-amber: #d97706;
+      --danger-red: #c62828;
     }
 
     * {
@@ -56,143 +41,112 @@
       margin: 0;
       padding: 0;
       font-family: 'Montserrat', sans-serif;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg-warm);
       color: var(--text-dark);
-      padding-bottom: 80px;
+      padding-bottom: 90px;
+      min-height: 100vh;
     }
 
-    /* HEADER */
-    header {
-      background: linear-gradient(135deg, var(--primary-vino) 0%, var(--primary-accent) 100%);
+    /* HEADER BOUTIQUE */
+    .app-header {
+      background: linear-gradient(135deg, var(--primary-vino) 0%, #4a1c23 100%);
       color: #ffffff;
-      padding: 18px 24px;
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .app-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .app-header p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      font-weight: 300;
+      letter-spacing: 0.5px;
+    }
+
+    /* NAVEGACIÓN DE PÍLDORAS FLOTANTES */
+    .nav-tabs-wrapper {
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 20px rgba(114, 47, 55, 0.25);
+      background: rgba(248, 245, 246, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(114, 47, 55, 0.08);
+    }
+
+    .nav-tabs {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .brand-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-    }
-
-    .brand-subtitle {
-      font-size: 0.72rem;
-      opacity: 0.9;
-      font-weight: 400;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
-    .status-badge {
-      font-size: 0.72rem;
-      padding: 6px 14px;
-      border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
       gap: 8px;
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: #22c55e;
-      box-shadow: 0 0 10px #22c55e;
-    }
-
-    /* TABS */
-    nav.nav-tabs {
-      background: var(--card-white);
-      display: flex;
-      padding: 8px 12px;
-      margin: 12px 16px 0 16px;
-      border-radius: var(--radius-pill);
-      box-shadow: var(--shadow-chic);
-      position: sticky;
-      top: 72px;
-      z-index: 90;
       overflow-x: auto;
+      max-width: 1100px;
+      margin: 0 auto;
       scrollbar-width: none;
-      gap: 6px;
-      border: 1px solid var(--border-vino);
     }
+    .nav-tabs::-webkit-scrollbar { display: none; }
 
-    nav.nav-tabs::-webkit-scrollbar { display: none; }
-
-    .nav-tab {
-      flex: 1;
-      min-width: 105px;
-      padding: 10px 14px;
-      border: none;
-      background: transparent;
+    .tab-btn {
+      flex: 0 0 auto;
+      background: #ffffff;
       color: var(--text-muted);
-      font-size: 0.8rem;
+      border: 1px solid var(--border-color);
+      padding: 10px 18px;
+      border-radius: 50px;
+      font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      white-space: nowrap;
-      border-radius: var(--radius-pill);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
 
-    .nav-tab.active {
+    .tab-btn i { font-size: 0.95rem; }
+
+    .tab-btn.active {
+      background: var(--primary-vino);
       color: #ffffff;
-      background: linear-gradient(135deg, var(--primary-vino), var(--primary-accent));
-      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.3);
+      border-color: var(--primary-vino);
+      box-shadow: 0 4px 14px rgba(114, 47, 55, 0.3);
     }
 
-    /* CONTAINER & CARDS */
-    .container {
-      max-width: 940px;
+    /* CONTENEDOR PRINCIPAL */
+    .main-container {
+      max-width: 1100px;
       margin: 20px auto;
       padding: 0 16px;
     }
 
     .tab-content { display: none; }
-    .tab-content.active { display: block; animation: tabSlide 0.35s ease-out; }
+    .tab-content.active { display: block; }
 
-    @keyframes tabSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .card {
-      background: var(--card-white);
-      border-radius: var(--radius-card);
+    /* TARJETAS & BOTONES BOUTIQUE PRO */
+    .boutique-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
       padding: 24px;
-      margin-bottom: 22px;
-      border: 1px solid var(--border-vino);
-      box-shadow: var(--shadow-chic);
+      margin-bottom: 24px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border-color);
     }
 
     .card-title {
       font-family: 'Playfair Display', serif;
       font-size: 1.3rem;
       color: var(--primary-vino);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -200,7 +154,6 @@
       padding-bottom: 10px;
     }
 
-    /* FORM STYLING */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -216,658 +169,650 @@
     .form-group.full-width { grid-column: 1 / -1; }
 
     label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--primary-vino);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.6px;
+      letter-spacing: 0.5px;
     }
 
     input, select, textarea {
-      padding: 12px 16px;
-      border: 1px solid var(--border-vino);
-      border-radius: var(--radius-input);
-      font-size: 0.92rem;
-      background-color: #fdfbfb;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      background: #faf8f8;
       color: var(--text-dark);
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
     }
 
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary-vino);
-      background-color: #ffffff;
-      box-shadow: 0 0 0 4px rgba(114, 47, 55, 0.1);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(114, 47, 55, 0.12);
     }
 
-    /* TALLA CHIPS */
-    .size-selector {
+    /* BOTONES DE TALLA RÁPIDA */
+    .talla-pills {
       display: flex;
+      gap: 6px;
       flex-wrap: wrap;
-      gap: 8px;
       margin-top: 4px;
     }
 
-    .size-btn {
-      padding: 9px 18px;
-      border: 1px solid var(--border-vino);
-      background-color: #ffffff;
-      border-radius: var(--radius-pill);
-      font-size: 0.82rem;
+    .talla-pill {
+      padding: 6px 14px;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      border-radius: 20px;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      color: var(--text-dark);
       transition: all 0.2s ease;
     }
 
-    .size-btn.active, .size-btn:hover {
-      background-color: var(--primary-vino);
+    .talla-pill.active {
+      background: var(--primary-accent);
       color: #ffffff;
-      border-color: var(--primary-vino);
+      border-color: var(--primary-accent);
     }
 
-    /* BUTTONS */
-    .btn {
-      padding: 12px 22px;
+    /* BOTONES PRO */
+    .btn-boutique-primary {
+      background: linear-gradient(135deg, var(--primary-vino) 0%, var(--primary-accent) 100%);
+      color: #ffffff;
       border: none;
-      border-radius: var(--radius-pill);
-      font-size: 0.88rem;
+      padding: 12px 22px;
+      border-radius: var(--radius-md);
       font-weight: 600;
+      font-size: 0.95rem;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       transition: all 0.25s ease;
-      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.25);
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary-vino), var(--primary-accent));
-      color: white;
-      box-shadow: 0 4px 12px rgba(114, 47, 55, 0.2);
-    }
-    .btn-primary:hover { opacity: 0.95; transform: translateY(-1px); }
-    .btn-secondary { background-color: #f1f5f9; color: var(--text-dark); }
-    .btn-secondary:hover { background-color: #e2e8f0; }
-    .btn-success { background-color: var(--success-green); color: white; }
-    .btn-warning { background-color: var(--warning-gold); color: white; }
-    .btn-danger { background-color: var(--danger-red); color: white; }
-    .btn-outline { background: transparent; border: 1.5px solid var(--primary-vino); color: var(--primary-vino); }
-    .btn-sm { padding: 8px 14px; font-size: 0.8rem; border-radius: 8px; }
-    .btn-block { width: 100%; }
-
-    /* ITEM CARDS */
-    .item-card {
-      background: var(--card-white);
-      border-radius: var(--radius-card);
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border-vino);
-      box-shadow: var(--shadow-chic);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .btn-boutique-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(114, 47, 55, 0.35);
     }
 
-    .item-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 1px solid var(--pink-glow);
-      padding-bottom: 10px;
-    }
-
-    .item-title { font-weight: 700; font-size: 1.05rem; color: var(--primary-vino); }
-    .item-subtitle { font-size: 0.83rem; color: var(--text-muted); margin-top: 3px; }
-
-    .badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 5px 12px;
-      border-radius: var(--radius-pill);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .badge-pending { background-color: var(--warning-bg); color: var(--warning-gold); }
-    .badge-success { background-color: var(--success-bg); color: var(--success-green); }
-    .badge-danger { background-color: var(--danger-bg); color: var(--danger-red); }
-    .badge-info { background-color: var(--info-bg); color: var(--info-blue); }
-
-    .item-body {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-      font-size: 0.86rem;
-    }
-
-    .info-row { display: flex; flex-direction: column; }
-    .info-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
-    .info-val { font-weight: 600; color: var(--text-dark); }
-
-    .item-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      border-top: 1px solid var(--pink-glow);
-      padding-top: 12px;
-    }
-
-    /* REPARTIDOR LOGISTICS BOX IN ENTREGAS */
-    .driver-logistics-box {
-      background-color: var(--primary-soft);
-      border: 1px dashed var(--primary-accent);
-      border-radius: 12px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 6px;
-    }
-
-    .driver-header {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--primary-vino);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 1px solid var(--border-vino);
-      padding-bottom: 8px;
-    }
-
-    .driver-inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .driver-inputs input {
-      background-color: #fff;
-      border-color: #d1d5db;
-      padding: 10px 12px;
-    }
-
-    /* SURTIDO LIST */
-    .supplier-group { margin-bottom: 22px; }
-    .supplier-header {
+    .btn-boutique-secondary {
       background: var(--primary-soft);
-      padding: 14px 18px;
-      border-radius: 12px 12px 0 0;
-      font-weight: 700;
       color: var(--primary-vino);
-      display: flex;
-      justify-content: space-between;
+      border: 1px solid var(--border-color);
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
-      border: 1px solid var(--border-vino);
-      border-bottom: none;
-    }
-    .supplier-items {
-      border: 1px solid var(--border-vino);
-      border-radius: 0 0 12px 12px;
-      background: #ffffff;
-      padding: 14px;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
     }
 
-    /* DASHBOARD */
-    .dash-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+    .btn-boutique-secondary:hover {
+      background: #f3e5e8;
     }
-    .dash-card {
-      background: white;
-      padding: 20px;
-      border-radius: var(--radius-card);
-      border: 1px solid var(--border-vino);
-      box-shadow: var(--shadow-chic);
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--danger-red);
+      border: 1px solid #fca5a5;
+    }
+
+    .btn-success {
+      background: #dcfce7;
+      color: var(--success-green);
+      border: 1px solid #86efac;
+    }
+
+    /* BADGES & ESTADOS */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-domicilio { background: #e0f2fe; color: #0369a1; }
+    .badge-tienda { background: #fef3c7; color: #b45309; }
+    .badge-pendiente { background: #fef3c7; color: #92400e; }
+    .badge-surtido { background: #dcfce7; color: #15803d; }
+    .badge-nohubo { background: #fee2e2; color: #b91c1c; }
+    .badge-entregado { background: #d1fae5; color: #047857; }
+
+    /* DRIVER LOGISTICS BOX EN ENTREGAS */
+    .driver-box {
+      background: var(--primary-soft);
+      border: 1px dashed var(--primary-accent);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .driver-box-header {
+      font-weight: 700;
+      color: var(--primary-vino);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-bottom: 10px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 6px;
     }
-    .dash-card .title { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
-    .dash-card .amount { font-size: 1.45rem; font-weight: 700; color: var(--primary-vino); }
 
-    /* CHECKOUT MODAL (POS STYLE) */
-    .modal-backdrop {
+    /* POS MODAL */
+    .modal-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(34, 29, 30, 0.6);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(45, 36, 38, 0.65);
       backdrop-filter: blur(6px);
       display: none;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       z-index: 1000;
       padding: 16px;
     }
-    .modal-backdrop.active { display: flex; }
-    
-    .modal-card {
-      background: white;
-      border-radius: var(--radius-card);
+
+    .modal-overlay.active { display: flex; }
+
+    .pos-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 480px;
       width: 100%;
-      max-width: 460px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 26px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      overflow: hidden;
+      animation: modalUp 0.3s ease;
     }
 
-    .modal-header {
+    @keyframes modalUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .pos-header {
+      background: linear-gradient(135deg, var(--primary-vino), var(--primary-accent));
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .pos-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+    }
+
+    .pos-body {
+      padding: 24px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 18px;
+      flex-direction: column;
+      gap: 16px;
     }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--primary-vino); }
-    .close-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
 
-    /* POS UI Elements */
     .pos-total-display {
-      background: var(--primary-soft);
-      border: 2px solid var(--primary-vino);
-      border-radius: 12px;
+      background: var(--bg-warm);
+      border-radius: var(--radius-md);
       padding: 16px;
       text-align: center;
-      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
     }
-    .pos-total-display .lbl { font-size: 0.8rem; font-weight: 700; color: var(--primary-accent); text-transform: uppercase; }
-    .pos-total-display .amt { font-size: 2.2rem; font-weight: 800; color: var(--primary-vino); margin-top: 4px; }
 
-    .pay-method-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+    .pos-total-display .amount {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--primary-vino);
     }
-    .pay-method-btn {
-      flex: 1;
-      padding: 12px 0;
-      text-align: center;
-      border: 1px solid var(--border-vino);
-      border-radius: 10px;
-      font-size: 0.85rem;
+
+    .pos-methods-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .pos-pay-btn {
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: #faf8f8;
       font-weight: 700;
-      color: var(--text-muted);
-      background: #fdfbfb;
+      font-size: 0.85rem;
       cursor: pointer;
+      text-align: center;
       transition: all 0.2s ease;
     }
-    .pay-method-btn.active {
+
+    .pos-pay-btn.active {
       background: var(--primary-vino);
-      color: white;
+      color: #ffffff;
       border-color: var(--primary-vino);
-      box-shadow: 0 4px 10px rgba(114, 47, 55, 0.2);
+      box-shadow: 0 4px 10px rgba(114, 47, 55, 0.25);
     }
 
-    .pos-input-group {
+    .pos-cambio-box {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .pos-cambio-box.verde { background: #dcfce7; color: var(--success-green); }
+    .pos-cambio-box.neutral { background: #e0f2fe; color: #0369a1; }
+
+    .pos-warning-abono {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.8rem;
+    }
+
+    .pos-policy-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* SUMMARY CARDS IN RESUMEN */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .summary-card label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+    .summary-card .val { font-size: 1.5rem; font-weight: 800; color: var(--primary-vino); margin-top: 6px; }
+
+    /* FLOATING BUTTONS */
+    .floating-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 900;
+    }
+
+    .btn-float {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      background: #f1f5f9;
-      padding: 12px 16px;
-      border-radius: 10px;
-      margin-bottom: 12px;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 1.4rem;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s ease;
     }
-    .pos-input-group label { margin: 0; font-size: 0.85rem; color: var(--text-dark); }
-    .pos-input-group input { 
-      text-align: right; 
-      font-size: 1.2rem; 
-      font-weight: 700; 
-      width: 140px; 
-      padding: 8px; 
-      border: none; 
-      background: white; 
-      border-radius: 6px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    
-    .pos-change-display {
+
+    .btn-float:hover { transform: scale(1.1); }
+    .btn-float-wa { background: #25d366; }
+    .btn-float-reset { background: var(--danger-red); }
+
+    /* NOTIFICACIONES TOAST */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      background: var(--success-bg);
-      border-radius: 10px;
-      border: 1px dashed var(--success-green);
-      margin-bottom: 20px;
+      flex-direction: column;
+      gap: 10px;
     }
-    .pos-change-display label { margin: 0; color: var(--success-green); font-size: 0.9rem; }
-    .pos-change-display .amt { font-size: 1.4rem; font-weight: 800; color: var(--success-green); }
 
-    .policy-tag { font-size: 0.76rem; color: var(--text-muted); text-align: center; margin-top: 12px; font-style: italic; }
+    .toast {
+      background: #ffffff;
+      color: var(--text-dark);
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      border-left: 5px solid var(--primary-vino);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      font-size: 0.85rem;
+      font-weight: 600;
+      animation: fadeInRight 0.3s ease;
+    }
 
+    @keyframes fadeInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
-  <header>
-    <div class="brand-group">
-      <div class="brand-title">SARAY HA</div>
-      <div class="brand-subtitle">Encargos & Entregas Pro v5.0</div>
-    </div>
-    <div class="status-badge" id="net-status">
-      <div class="status-dot"></div>
-      <span id="net-text">Conectado</span>
-    </div>
+  <header class="app-header">
+    <h1>SARAY HA</h1>
+    <p>Encargos & Entregas Pro v5.0 — Boutique Operations</p>
   </header>
 
-  <!-- NAVIGATION TABS -->
-  <nav class="nav-tabs">
-    <button class="nav-tab active" data-tab="encargos"><i class="fa-solid fa-pen-to-square"></i> Encargos</button>
-    <button class="nav-tab" data-tab="proveedores"><i class="fa-solid fa-truck-field"></i> Proveedores</button>
-    <button class="nav-tab" data-tab="surtido"><i class="fa-solid fa-cart-flatbed"></i> Surtido</button>
-    <button class="nav-tab" data-tab="entregas"><i class="fa-solid fa-box-open"></i> Entregas</button>
-    <button class="nav-tab" data-tab="tickets"><i class="fa-solid fa-receipt"></i> Tickets Prov.</button>
-    <button class="nav-tab" data-tab="resumen"><i class="fa-solid fa-chart-pie"></i> Resumen</button>
-  </nav>
+  <!-- NAVEGACIÓN DE PÍLDORAS -->
+  <div class="nav-tabs-wrapper">
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('encargos')"><i class="fa-solid fa-bag-shopping"></i> Encargos</button>
+      <button class="tab-btn" onclick="switchTab('proveedores')"><i class="fa-solid fa-truck-field"></i> Proveedores</button>
+      <button class="tab-btn" onclick="switchTab('surtido')"><i class="fa-solid fa-boxes-packing"></i> Surtido</button>
+      <button class="tab-btn" onclick="switchTab('entregas')"><i class="fa-solid fa-route"></i> Entregas</button>
+      <button class="tab-btn" onclick="switchTab('tickets')"><i class="fa-solid fa-receipt"></i> Tickets</button>
+      <button class="tab-btn" onclick="switchTab('resumen')"><i class="fa-solid fa-chart-line"></i> Resumen</button>
+    </div>
+  </div>
 
-  <!-- MAIN CONTAINER -->
-  <div class="container">
+  <main class="main-container">
 
-    <!-- TAB 1: ENCARGOS -->
+    <!-- PESTAÑA 1: ENCARGOS -->
     <div id="tab-encargos" class="tab-content active">
-      <div class="card">
-        <h2 class="card-title"><i class="fa-solid fa-circle-plus"></i> Registrar Nuevo Encargo</h2>
-        <form id="form-encargo">
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-plus-circle"></i> Nuevo Encargo</h2>
+        <form id="form-encargo" onsubmit="guardarEncargo(event)">
           <div class="form-grid">
-            
             <div class="form-group">
-              <label>Nombre del Cliente *</label>
-              <input type="text" id="enc-cliente" placeholder="Ej. María López" required>
+              <label>Cliente (Nombre Completo)</label>
+              <input type="text" id="enc-cliente" required placeholder="Ej. Ana García">
             </div>
-            
             <div class="form-group">
               <label>Teléfono (WhatsApp)</label>
-              <input type="tel" id="enc-telefono" placeholder="Ej. 9511234567">
+              <input type="tel" id="enc-telefono" required placeholder="10 dígitos">
             </div>
-
             <div class="form-group">
-              <label>Prenda / Producto *</label>
-              <input type="text" id="enc-prenda" placeholder="Ej. Vestido Gala Satinado" required>
+              <label>Prenda / Producto</label>
+              <input type="text" id="enc-prenda" required placeholder="Ej. Vestido Gala Vino">
             </div>
-
             <div class="form-group">
               <label>Color</label>
-              <input type="text" id="enc-color" placeholder="Ej. Vino / Palo de Rosa">
+              <input type="text" id="enc-color" placeholder="Ej. Rojo Quemado">
             </div>
-
-            <div class="form-group full-width">
-              <label>Talla *</label>
-              <div class="size-selector" id="talla-selector">
-                <button type="button" class="size-btn" data-size="CH">CH</button>
-                <button type="button" class="size-btn" data-size="M">M</button>
-                <button type="button" class="size-btn" data-size="G">G</button>
-                <button type="button" class="size-btn" data-size="XL">XL</button>
-                <button type="button" class="size-btn" data-size="Unitalla">Unitalla</button>
-                <button type="button" class="size-btn" data-size="Curvy">Curvy</button>
-              </div>
-              <input type="hidden" id="enc-talla" required>
-            </div>
-
             <div class="form-group">
-              <label>Proveedor *</label>
+              <label>Talla</label>
+              <input type="text" id="enc-talla" placeholder="Selecciona o escribe">
+              <div class="talla-pills">
+                <span class="talla-pill" onclick="selectTalla('CH')">CH</span>
+                <span class="talla-pill" onclick="selectTalla('M')">M</span>
+                <span class="talla-pill" onclick="selectTalla('G')">G</span>
+                <span class="talla-pill" onclick="selectTalla('XL')">XL</span>
+                <span class="talla-pill" onclick="selectTalla('Unitalla')">Unitalla</span>
+                <span class="talla-pill" onclick="selectTalla('Curvy')">Curvy</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Proveedor</label>
               <select id="enc-proveedor" required>
-                <option value="">Seleccione Proveedor...</option>
+                <option value="">Seleccione proveedor...</option>
               </select>
             </div>
-
             <div class="form-group">
               <label>Costo de Compra ($)</label>
-              <input type="number" step="0.5" id="enc-costo" placeholder="0.00" min="0" required>
+              <input type="number" step="0.01" id="enc-costo" required oninput="calcularSaldoEncargo()" placeholder="0.00">
             </div>
-
             <div class="form-group">
               <label>Precio de Venta ($)</label>
-              <input type="number" step="0.5" id="enc-precio" placeholder="0.00" min="0" required>
+              <input type="number" step="0.01" id="enc-venta" required oninput="calcularSaldoEncargo()" placeholder="0.00">
             </div>
-
             <div class="form-group">
               <label>Anticipo ($)</label>
-              <input type="number" step="0.5" id="enc-anticipo" placeholder="0.00" min="0" value="0">
+              <input type="number" step="0.01" id="enc-anticipo" value="0" oninput="calcularSaldoEncargo()" placeholder="0.00">
             </div>
-
             <div class="form-group">
               <label>Saldo Pendiente ($)</label>
-              <input type="number" id="enc-saldo" placeholder="0.00" readonly style="background-color: var(--primary-soft); font-weight:700;">
+              <input type="number" step="0.01" id="enc-saldo" readonly value="0.00" style="font-weight:700; color:var(--primary-vino);">
             </div>
-
-            <div class="form-group full-width">
-              <label>Tipo de Entrega *</label>
-              <select id="enc-tipo-entrega" onchange="toggleDeliverySection()" required>
-                <option value="Sucursal">Entrega en Tienda / Sucursal</option>
-                <option value="A Domicilio">A Domicilio (Local)</option>
-                <option value="Envío">Envío Paquetería</option>
+            <div class="form-group">
+              <label>Tipo de Entrega</label>
+              <select id="enc-tipo-entrega" onchange="toggleColoniaField()">
+                <option value="Tienda">Pasa a Tienda</option>
+                <option value="Domicilio">A Domicilio</option>
               </select>
             </div>
-
-            <!-- SIMPLIFIED DOMICILIO BOX -->
-            <div id="delivery-details-box" class="form-group full-width" style="display: none; background: #fffdfd; border: 1px dashed var(--primary-accent); padding: 14px; border-radius: 10px;">
-              <label><i class="fa-solid fa-map-pin"></i> Colonia / Sector del Cliente *</label>
-              <input type="text" id="enc-colonia" placeholder="Ej. Col. Reforma">
-              <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">
-                *La dirección exacta y ubicación de Maps serán llenadas por el repartidor en la sección de Entregas.
-              </small>
+            <div class="form-group" id="group-colonia" style="display:none;">
+              <label>Colonia (Para entrega)</label>
+              <input type="text" id="enc-colonia" placeholder="Ej. Jardines del Valle">
             </div>
-
-            <div class="form-group full-width">
-              <label>Foto de la Prenda (Opcional)</label>
-              <input type="file" id="enc-foto" accept="image/*" onchange="handleImageUpload(event)">
-              <input type="hidden" id="enc-foto-base64">
-              <div id="photo-preview-container" style="margin-top: 6px; display: none;">
-                <img id="img-preview" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #ccc;" src="" alt="Previsualización">
-              </div>
-            </div>
-
-            <div class="form-group full-width">
-              <label>Notas del Encargo</label>
-              <textarea id="enc-notas" rows="2" placeholder="Especificaciones, modistas, etc."></textarea>
-            </div>
-
           </div>
-
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 20px; font-size: 1rem; padding: 14px;">
-            <i class="fa-solid fa-floppy-disk"></i> Registrar Encargo
+          <button type="submit" class="btn-boutique-primary" style="margin-top:20px; width:100%;">
+            <i class="fa-solid fa-save"></i> Registrar Encargo
           </button>
         </form>
       </div>
 
-      <div class="card">
-        <h2 class="card-title"><i class="fa-solid fa-list-check"></i> Últimos Registros</h2>
-        <div id="lista-encargos">
-          <p style="text-align:center; color: var(--text-muted); padding: 20px;">Cargando encargos...</p>
-        </div>
+      <!-- LISTADO ENCARGOS -->
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-list-check"></i> Registro de Encargos</h2>
+        <div id="lista-encargos-cards"></div>
       </div>
     </div>
 
-    <!-- TAB 2: PROVEEDORES -->
+    <!-- PESTAÑA 2: PROVEEDORES -->
     <div id="tab-proveedores" class="tab-content">
-      <div class="card">
-        <h2 class="card-title"><i class="fa-solid fa-truck-field"></i> Directorio de Proveedores</h2>
-        <form id="form-proveedor" style="margin-bottom: 24px;">
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-user-plus"></i> Registrar Proveedor</h2>
+        <form id="form-proveedor" onsubmit="guardarProveedor(event)">
           <div class="form-grid">
             <div class="form-group">
-              <label>Nombre del Proveedor *</label>
-              <input type="text" id="prov-nombre" required>
+              <label>Nombre del Proveedor</label>
+              <input type="text" id="prov-nombre" required placeholder="Ej. Proveedor Moda GDL">
             </div>
             <div class="form-group">
-              <label>Pasillo / Local</label>
-              <input type="text" id="prov-ubicacion">
-            </div>
-            <div class="form-group">
-              <label>Teléfono</label>
-              <input type="tel" id="prov-telefono">
+              <label>Teléfono de Contacto</label>
+              <input type="tel" id="prov-telefono" placeholder="3312345678">
             </div>
             <div class="form-group full-width">
-              <label>Notas</label>
-              <input type="text" id="prov-notas">
+              <label>Notas / Ubicación en Mercado</label>
+              <input type="text" id="prov-notas" placeholder="Ej. Pasillo 3, Local 45">
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;"><i class="fa-solid fa-plus"></i> Guardar Proveedor</button>
+          <button type="submit" class="btn-boutique-primary" style="margin-top:16px;">
+            <i class="fa-solid fa-truck"></i> Guardar Proveedor
+          </button>
         </form>
-        <div id="lista-proveedores"></div>
+      </div>
+
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-building-user"></i> Lista de Proveedores</h2>
+        <div id="lista-proveedores-cards"></div>
       </div>
     </div>
 
-    <!-- TAB 3: SURTIDO -->
+    <!-- PESTAÑA 3: SURTIDO -->
     <div id="tab-surtido" class="tab-content">
-      <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-          <h2 class="card-title" style="margin:0;"><i class="fa-solid fa-cart-flatbed"></i> Lista de Compras</h2>
-          <div id="surtido-total-cash" class="badge badge-info" style="font-size: 0.9rem;">Efectivo Requerido: $0.00</div>
-        </div>
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-boxes-packing"></i> Control de Surtido por Proveedor</h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px;">
+          Calcula el efectivo necesario para compras. Los artículos marcados permanecen aquí hasta hacer clic en "Ocultar".
+        </p>
+        <div id="contenedor-surtido"></div>
       </div>
-      <div id="lista-surtido-agrupada"></div>
     </div>
 
-    <!-- TAB 4: ENTREGAS & REPARTIDOR -->
+    <!-- PESTAÑA 4: ENTREGAS -->
     <div id="tab-entregas" class="tab-content">
-      <div class="card">
-        <h2 class="card-title"><i class="fa-solid fa-motorcycle"></i> Panel de Logística y Entregas</h2>
-        <div style="margin-bottom: 16px;">
-          <select id="filtro-entregas" onchange="renderEntregas()" style="width: 100%;">
-            <option value="todos">Mostrar Todas las Entregas Pendientes</option>
-            <option value="A Domicilio">Rutas de Repartidor (A Domicilio)</option>
-            <option value="Sucursal">Entregas en Sucursal</option>
-          </select>
-        </div>
-        <div id="lista-entregas"></div>
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-route"></i> Logística de Entregas & Cobros</h2>
+        <div id="contenedor-entregas"></div>
       </div>
     </div>
 
-    <!-- TAB 5: TICKETS -->
+    <!-- PESTAÑA 5: TICKETS -->
     <div id="tab-tickets" class="tab-content">
-      <div class="card">
-        <h2 class="card-title"><i class="fa-solid fa-receipt"></i> Captura de Tickets</h2>
-        <form id="form-ticket">
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-receipt"></i> Registro de Tickets de Compra</h2>
+        <form id="form-ticket" onsubmit="guardarTicket(event)">
           <div class="form-grid">
             <div class="form-group">
-              <label>Proveedor *</label>
+              <label>Proveedor</label>
               <select id="ticket-proveedor" required></select>
             </div>
             <div class="form-group">
-              <label>Fecha *</label>
-              <input type="date" id="ticket-fecha" required>
-            </div>
-            <div class="form-group">
-              <label>Monto Total ($) *</label>
-              <input type="number" step="0.5" id="ticket-monto" required>
+              <label>Monto del Ticket ($)</label>
+              <input type="number" step="0.01" id="ticket-monto" required placeholder="0.00">
             </div>
             <div class="form-group full-width">
-              <label>Foto del Ticket *</label>
-              <input type="file" id="ticket-foto" accept="image/*" onchange="handleTicketImageUpload(event)" required>
-              <input type="hidden" id="ticket-foto-base64">
-              <div id="ticket-photo-preview-container" style="margin-top: 6px; display: none;">
-                <img id="ticket-img-preview" style="width:100px; height:auto; border-radius:8px; border:1px solid #ccc;" src="">
-              </div>
-            </div>
-            <div class="form-group full-width">
-              <label>Notas</label>
-              <input type="text" id="ticket-notas">
+              <label>Foto / Archivo del Ticket</label>
+              <input type="file" id="ticket-foto" accept="image/*" required>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;">Registrar Ticket</button>
+          <button type="submit" class="btn-boutique-primary" style="margin-top:16px;">
+            <i class="fa-solid fa-upload"></i> Subir Ticket
+          </button>
         </form>
       </div>
-      <div class="card">
-        <div id="lista-tickets"></div>
+
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-images"></i> Historial de Tickets</h2>
+        <div id="galeria-tickets" class="form-grid"></div>
       </div>
     </div>
 
-    <!-- TAB 6: RESUMEN FINANCIERO -->
+    <!-- PESTAÑA 6: RESUMEN -->
     <div id="tab-resumen" class="tab-content">
-      <h2 class="card-title" style="margin-bottom: 16px;"><i class="fa-solid fa-chart-line"></i> Finanzas del Ciclo</h2>
-      
-      <div class="dash-grid">
-        <div class="dash-card"><span class="title">Costo Compra</span><span class="amount" id="dash-costo-total">$0.00</span></div>
-        <div class="dash-card"><span class="title">Precio Venta</span><span class="amount" id="dash-venta-total">$0.00</span></div>
-        <div class="dash-card"><span class="title">Anticipos</span><span class="amount" id="dash-anticipo-total">$0.00</span></div>
-        <div class="dash-card"><span class="title">Saldos Pendientes</span><span class="amount" id="dash-saldo-total" style="color:var(--warning-gold);">$0.00</span></div>
-        <div class="dash-card" style="border-left: 4px solid var(--success-green);"><span class="title">Ganancia Neta</span><span class="amount" id="dash-ganancia-neta" style="color:var(--success-green);">$0.00</span></div>
-      </div>
-
-      <div class="card" style="border-color: var(--danger-bg); background: #fffafa;">
-        <h2 class="card-title" style="color: var(--danger-red);"><i class="fa-solid fa-skull-crossbones"></i> Peligro: Reiniciar Ciclo</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Elimina absolutamente todos los datos para iniciar una nueva semana.</p>
-        <button type="button" class="btn btn-danger" onclick="confirmResetDatabase()">Restablecer Base de Datos</button>
+      <div class="boutique-card">
+        <h2 class="card-title"><i class="fa-solid fa-chart-pie"></i> Estado Financiero General</h2>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <label>Costo de Compra</label>
+            <div class="val" id="res-costo-total">$0.00</div>
+          </div>
+          <div class="summary-card">
+            <label>Precio de Venta</label>
+            <div class="val" id="res-venta-total">$0.00</div>
+          </div>
+          <div class="summary-card">
+            <label>Anticipo</label>
+            <div class="val" id="res-anticipo-total">$0.00</div>
+          </div>
+          <div class="summary-card">
+            <label>Saldo Pendiente</label>
+            <div class="val" id="res-saldo-total">$0.00</div>
+          </div>
+          <div class="summary-card" style="grid-column: 1 / -1; background: var(--primary-soft); border-color: var(--primary-accent);">
+            <label style="color:var(--primary-vino); font-size:0.85rem;">Ganancia Neta</label>
+            <div class="val" id="res-ganancia-total" style="font-size:2.2rem; color:var(--primary-vino);">$0.00</div>
+          </div>
+        </div>
       </div>
     </div>
 
-  </div>
+  </main>
 
-  <!-- MODAL POS CHECKOUT BOUTIQUE -->
-  <div class="modal-backdrop" id="modal-checkout">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 class="modal-title"><i class="fa-solid fa-cash-register"></i> Cobro de Entrega</h3>
-        <button class="close-btn" onclick="closeModal('modal-checkout')">&times;</button>
+  <!-- MODAL CHECKOUT POS TERMINAL -->
+  <div id="modal-pos-checkout" class="modal-overlay">
+    <div class="pos-card">
+      <div class="pos-header">
+        <h3><i class="fa-solid fa-cash-register"></i> Terminal POS — Cobro</h3>
+        <p style="font-size:0.8rem; opacity:0.9;" id="pos-cliente-nombre">Cliente</p>
       </div>
-      
-      <form id="form-checkout" onsubmit="executeCheckout(event)">
-        <input type="hidden" id="pay-encargo-id">
-        <input type="hidden" id="pay-selected-method" value="Efectivo">
-        
-        <div style="text-align: center; font-weight: 600; color: var(--text-muted); margin-bottom: 16px;" id="pay-cliente-name">
-          Cliente (Prenda)
-        </div>
+      <div class="pos-body">
+        <div style="font-size:0.85rem; color:var(--text-muted);" id="pos-prenda-desc">Prenda</div>
 
         <div class="pos-total-display">
-          <div class="lbl">Saldo Pendiente a Cobrar</div>
-          <div class="amt" id="pay-saldo-display">$0.00</div>
+          <label>Saldo a Cobrar</label>
+          <div class="amount" id="pos-saldo-pendiente">$0.00</div>
         </div>
 
-        <label style="margin-bottom: 8px; display: block;">Método de Pago</label>
-        <div class="pay-method-row" id="pay-method-row">
-          <div class="pay-method-btn active" onclick="selectPayMethod('Efectivo')"><i class="fa-solid fa-coins"></i><br>Efectivo</div>
-          <div class="pay-method-btn" onclick="selectPayMethod('Transferencia')"><i class="fa-solid fa-mobile-screen"></i><br>Transf.</div>
-          <div class="pay-method-btn" onclick="selectPayMethod('Mixto')"><i class="fa-solid fa-money-bill-transfer"></i><br>Mixto</div>
+        <div class="form-group">
+          <label>Monto Recibido ($)</label>
+          <input type="number" step="0.01" id="pos-monto-recibido" style="font-size:1.4rem; font-weight:700; text-align:center;" oninput="calcularCambioPos()">
         </div>
 
-        <div class="pos-input-group">
-          <label>Monto Recibido del Cliente:</label>
-          <input type="number" step="0.5" id="pay-recibido" placeholder="0.00" required oninput="calculateChange()">
+        <div class="form-group">
+          <label>Método de Pago</label>
+          <div class="pos-methods-grid">
+            <button type="button" class="pos-pay-btn active" data-method="Efectivo" onclick="setMetodoPagoPos('Efectivo')">💵 Efectivo</button>
+            <button type="button" class="pos-pay-btn" data-method="Transferencia" onclick="setMetodoPagoPos('Transferencia')">📱 Transf.</button>
+            <button type="button" class="pos-pay-btn" data-method="Mixto" onclick="setMetodoPagoPos('Mixto')">🔀 Mixto</button>
+          </div>
         </div>
 
-        <div class="pos-change-display">
-          <label>Cambio a Entregar:</label>
-          <div class="amt" id="pay-cambio-display">$0.00</div>
+        <div id="pos-resultado-cambio"></div>
+        <div id="pos-aviso-abono" style="display:none;" class="pos-warning-abono"></div>
+
+        <div class="pos-policy-note">
+          📌 <strong>Política SARAY HA:</strong> No hay cambios ni devoluciones.
         </div>
 
-        <div style="font-size: 0.8rem; background: var(--warning-bg); color: var(--warning-gold); padding: 10px; border-radius: 8px; margin-bottom: 16px; display: none;" id="aviso-abono">
-          <i class="fa-solid fa-circle-info"></i> El monto es menor al saldo. Se registrará como un <strong>Abono Parcial</strong>.
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button type="button" class="btn-boutique-secondary" style="flex:1;" onclick="cerrarModalPos()">Cancelar</button>
+          <button type="button" id="btn-confirmar-pos" class="btn-boutique-primary" style="flex:2;" onclick="procesarPagoPos()">
+            <i class="fa-solid fa-check-circle"></i> Confirmar Pago
+          </button>
         </div>
-
-        <button type="submit" class="btn btn-success btn-block" style="padding: 16px; font-size: 1.1rem; border-radius: 12px;">
-          <i class="fa-solid fa-check-double"></i> Confirmar y Entregar
-        </button>
-
-        <p class="policy-tag">Políticas SARAY HA: No hay cambios ni devoluciones.</p>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL WSP -->
-  <div class="modal-backdrop" id="modal-whatsapp">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 class="modal-title"><i class="fa-brands fa-whatsapp"></i> Notificar Cliente</h3>
-        <button class="close-btn" onclick="closeModal('modal-whatsapp')">&times;</button>
-      </div>
-      <input type="hidden" id="ws-encargo-id">
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <button class="btn btn-outline btn-block" onclick="sendWSPTemplate('confirmacion')">1. Confirmación de Encargo</button>
-        <button class="btn btn-outline btn-block" onclick="sendWSPTemplate('listo')">2. Prenda Lista para Entrega</button>
-        <button class="btn btn-outline btn-block" onclick="sendWSPTemplate('agotado')">3. Prenda Agotada (Aviso)</button>
-        <button class="btn btn-outline btn-block" onclick="sendWSPTemplate('gracias')">4. Agradecimiento</button>
       </div>
     </div>
   </div>
 
-  <!-- SCRIPT LOGIC -->
+  <!-- MODAL WHATSAPP -->
+  <div id="modal-whatsapp" class="modal-overlay">
+    <div class="pos-card">
+      <div class="pos-header">
+        <h3><i class="fa-brands fa-whatsapp"></i> Mensaje de WhatsApp</h3>
+      </div>
+      <div class="pos-body">
+        <div class="form-group">
+          <label>Plantilla de Mensaje</label>
+          <select id="wa-plantilla-select" onchange="cambiarPlantillaWA()">
+            <option value="confirmacion">1. Confirmación de Encargo</option>
+            <option value="surtido">2. Encargo Listo para Entrega/Recoger</option>
+            <option value="nohubo">3. Producto Agotado (No Hubo)</option>
+            <option value="gracias">4. Agradecimiento de Compra</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mensaje Personalizado</label>
+          <textarea id="wa-texto-mensaje" rows="6"></textarea>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-boutique-secondary" style="flex:1;" onclick="cerrarModalWA()">Cancelar</button>
+          <button type="button" class="btn-boutique-primary" style="flex:2; background:#25d366;" onclick="enviarWhatsAppModal()">
+            <i class="fa-brands fa-whatsapp"></i> Abrir WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING BUTTONS -->
+  <div class="floating-buttons">
+    <button class="btn-float btn-float-wa" title="WhatsApp Rápido" onclick="abrirWAEstadoGeneral()">
+      <i class="fa-brands fa-whatsapp"></i>
+    </button>
+    <button class="btn-float btn-float-reset" title="Reset de Emergencia" onclick="confirmarResetEmergencia()">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </button>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS CONTAINER -->
+  <div id="toast-container"></div>
+
+  <!-- JAVASCRIPT LOGIC -->
   <script>
-    // FIREBASE
+    // Configuración Firebase SARAY HA
     const firebaseConfig = {
       apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
       authDomain: "saray-ha-pos.firebaseapp.com",
@@ -877,488 +822,734 @@
       appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
     };
 
-    let db;
-    let isOnline = false;
-
-    try {
-      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      isOnline = true;
-    } catch (e) {
-      console.warn("Offline mode.", e);
-      isOnline = false;
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
     }
+    const db = firebase.firestore();
 
-    let localEncargos = JSON.parse(localStorage.getItem('saray_encargos')) || [];
-    let localProveedores = JSON.parse(localStorage.getItem('saray_proveedores')) || [
-      { id: 'prov_1', nombre: 'Creaciones Moda MX', ubicacion: 'Pasillo 1 Local 12', telefono: '5511223344' }
-    ];
-    let localTickets = JSON.parse(localStorage.getItem('saray_tickets')) || [];
+    // Estado global de la aplicación
+    let listaEncargos = [];
+    let listaProveedores = [];
+    let listaTickets = [];
 
+    let orderPosActual = null;
+    let posMetodoSeleccionado = 'Efectivo';
+    let waItemActual = null;
+
+    // Inicialización al cargar DOM
     document.addEventListener('DOMContentLoaded', () => {
-      updateStatusBadge();
-      initNavigation();
-      initTallaSelector();
-      initFormCalculations();
-      loadProveedoresDropdown();
-      renderEncargos();
-      renderProveedores();
-      renderSurtido();
-      renderEntregas();
-      renderTickets();
-      renderResumen();
-      if(document.getElementById('ticket-fecha')) document.getElementById('ticket-fecha').value = new Date().toISOString().split('T')[0];
+      iniciarEscuchadoresFirebase();
     });
 
-    function updateStatusBadge() {
-      const badge = document.getElementById('net-status');
-      const text = document.getElementById('net-text');
-      if (isOnline) { text.innerText = "Conectado"; badge.style.background = "rgba(34, 197, 94, 0.2)"; } 
-      else { text.innerText = "Offline"; badge.style.background = "rgba(245, 158, 11, 0.2)"; }
+    // Cambiar Pestañas
+    window.switchTab = function(tabName) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+      const targetTab = document.getElementById(`tab-${tabName}`);
+      if (targetTab) targetTab.classList.add('active');
+
+      const btnActive = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
+      if (btnActive) btnActive.classList.add('active');
+    };
+
+    // Escuchadores Firestore en Tiempo Real
+    function iniciarEscuchadoresFirebase() {
+      db.collection('encargos_pedidos').onSnapshot(snapshot => {
+        listaEncargos = [];
+        snapshot.forEach(doc => listaEncargos.push({ id: doc.id, ...doc.data() }));
+        renderEncargos();
+        renderSurtido();
+        renderEntregas();
+        renderResumen();
+      }, err => console.error("Error encargos:", err));
+
+      db.collection('proveedores').onSnapshot(snapshot => {
+        listaProveedores = [];
+        snapshot.forEach(doc => listaProveedores.push({ id: doc.id, ...doc.data() }));
+        renderProveedores();
+        poblarSelectoresProveedores();
+      }, err => console.error("Error proveedores:", err));
+
+      db.collection('tickets_proveedores').onSnapshot(snapshot => {
+        listaTickets = [];
+        snapshot.forEach(doc => listaTickets.push({ id: doc.id, ...doc.data() }));
+        renderTickets();
+      }, err => console.error("Error tickets:", err));
     }
 
-    function initNavigation() {
-      const tabs = document.querySelectorAll('.nav-tab');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          tabs.forEach(t => t.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-          tab.classList.add('active');
-          document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-          if (tab.dataset.tab === 'surtido') renderSurtido();
-          if (tab.dataset.tab === 'entregas') renderEntregas();
-          if (tab.dataset.tab === 'resumen') renderResumen();
-        });
+    // Pestaña 1: Encargos Logic
+    window.selectTalla = function(talla) {
+      document.getElementById('enc-talla').value = talla;
+      document.querySelectorAll('.talla-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.innerText === talla);
       });
-    }
+    };
 
-    function initTallaSelector() {
-      const btns = document.querySelectorAll('#talla-selector .size-btn');
-      const input = document.getElementById('enc-talla');
-      btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          btns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          input.value = btn.dataset.size;
-        });
-      });
-    }
-
-    function toggleDeliverySection() {
+    window.toggleColoniaField = function() {
       const tipo = document.getElementById('enc-tipo-entrega').value;
-      const box = document.getElementById('delivery-details-box');
-      box.style.display = (tipo === 'A Domicilio' || tipo === 'Envío') ? 'block' : 'none';
-    }
-
-    function initFormCalculations() {
-      const p = document.getElementById('enc-precio');
-      const a = document.getElementById('enc-anticipo');
-      const s = document.getElementById('enc-saldo');
-      const calc = () => s.value = Math.max(0, (parseFloat(p.value)||0) - (parseFloat(a.value)||0)).toFixed(2);
-      p.addEventListener('input', calc);
-      a.addEventListener('input', calc);
-    }
-
-    function loadProveedoresDropdown() {
-      let html = `<option value="">Seleccione...</option>`;
-      localProveedores.forEach(p => html += `<option value="${p.nombre}">${p.nombre}</option>`);
-      document.getElementById('enc-proveedor').innerHTML = html;
-      document.getElementById('ticket-proveedor').innerHTML = html;
-    }
-
-    function handleImageUpload(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = evt => {
-          document.getElementById('enc-foto-base64').value = evt.target.result;
-          document.getElementById('img-preview').src = evt.target.result;
-          document.getElementById('photo-preview-container').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+      const groupCol = document.getElementById('group-colonia');
+      if (groupCol) {
+        groupCol.style.display = (tipo === 'Domicilio') ? 'flex' : 'none';
       }
-    }
-    
-    function handleTicketImageUpload(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = evt => {
-          document.getElementById('ticket-foto-base64').value = evt.target.result;
-          document.getElementById('ticket-img-preview').src = evt.target.result;
-          document.getElementById('ticket-photo-preview-container').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    }
+    };
 
-    // REGISTRO DE ENCARGOS
-    document.getElementById('form-encargo').addEventListener('submit', async (e) => {
+    window.calcularSaldoEncargo = function() {
+      const venta = parseFloat(document.getElementById('enc-venta').value) || 0;
+      const anticipo = parseFloat(document.getElementById('enc-anticipo').value) || 0;
+      const saldo = Math.max(0, venta - anticipo);
+      document.getElementById('enc-saldo').value = saldo.toFixed(2);
+    };
+
+    window.guardarEncargo = async function(e) {
       e.preventDefault();
-      if (!document.getElementById('enc-talla').value) return alert("Selecciona una talla.");
+      try {
+        const nuevo = {
+          cliente: document.getElementById('enc-cliente').value.trim(),
+          telefono: document.getElementById('enc-telefono').value.trim(),
+          prenda: document.getElementById('enc-prenda').value.trim(),
+          color: document.getElementById('enc-color').value.trim(),
+          talla: document.getElementById('enc-talla').value.trim() || 'Única',
+          proveedor: document.getElementById('enc-proveedor').value,
+          costoCompra: parseFloat(document.getElementById('enc-costo').value) || 0,
+          precioVenta: parseFloat(document.getElementById('enc-venta').value) || 0,
+          anticipo: parseFloat(document.getElementById('enc-anticipo').value) || 0,
+          saldoPendiente: parseFloat(document.getElementById('enc-saldo').value) || 0,
+          tipoEntrega: document.getElementById('enc-tipo-entrega').value,
+          colonia: document.getElementById('enc-colonia')?.value.trim() || '',
+          direccionEntrega: '',
+          mapsUrl: '',
+          estadoSurtido: 'Pendiente',
+          estadoEntrega: 'Pendiente',
+          ocultoSurtido: false,
+          fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
-      const encargoData = {
-        id: 'ENC_' + Date.now(),
-        clienteNombre: document.getElementById('enc-cliente').value.trim(),
-        clienteTelefono: document.getElementById('enc-telefono').value.trim(),
-        prendaNombre: document.getElementById('enc-prenda').value.trim(),
-        prendaColor: document.getElementById('enc-color').value.trim(),
-        prendaTalla: document.getElementById('enc-talla').value,
-        proveedorNombre: document.getElementById('enc-proveedor').value,
-        costoCompra: parseFloat(document.getElementById('enc-costo').value) || 0,
-        precioVenta: parseFloat(document.getElementById('enc-precio').value) || 0,
-        anticipo: parseFloat(document.getElementById('enc-anticipo').value) || 0,
-        saldoPendiente: parseFloat(document.getElementById('enc-saldo').value) || 0,
-        tipoEntrega: document.getElementById('enc-tipo-entrega').value,
-        colonia: document.getElementById('enc-colonia').value.trim(),
-        direccionEntrega: "", // Se llena en Entregas
-        mapsUrl: "", // Se llena en Entregas
-        notas: document.getElementById('enc-notas').value.trim(),
-        fotoUrl: document.getElementById('enc-foto-base64').value,
-        estado: 'Pendiente Surtido',
-        fechaCreacion: new Date().toISOString()
-      };
-
-      if (isOnline) {
-        try { await db.collection('encargos_pedidos').doc(encargoData.id).set(encargoData); } catch(err){}
+        await db.collection('encargos_pedidos').add(nuevo);
+        document.getElementById('form-encargo').reset();
+        document.getElementById('enc-saldo').value = "0.00";
+        toggleColoniaField();
+        mostrarNotificacion("✨ Encargo registrado con éxito");
+      } catch (err) {
+        alert("Error al guardar encargo: " + err.message);
       }
-      
-      localEncargos.unshift(encargoData);
-      localStorage.setItem('saray_encargos', JSON.stringify(localEncargos));
-
-      alert("¡Encargo registrado!");
-      document.getElementById('form-encargo').reset();
-      document.getElementById('photo-preview-container').style.display = 'none';
-      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-      toggleDeliverySection();
-      renderEncargos();
-    });
+    };
 
     function renderEncargos() {
-      let html = '';
-      if(localEncargos.length === 0) return document.getElementById('lista-encargos').innerHTML = '<p style="text-align:center;">No hay encargos.</p>';
-      
-      localEncargos.forEach(enc => {
-        let badgeClass = enc.estado === 'Surtido' ? 'badge-info' : enc.estado === 'Entregado' ? 'badge-success' : enc.estado === 'No Hubo' ? 'badge-danger' : 'badge-pending';
-        html += `
-          <div class="item-card">
-            <div class="item-header">
-              <div>
-                <div class="item-title">${enc.prendaNombre} (${enc.prendaTalla})</div>
-                <div class="item-subtitle"><i class="fa-solid fa-user"></i> ${enc.clienteNombre}</div>
-              </div>
-              <span class="badge ${badgeClass}">${enc.estado}</span>
-            </div>
-            <div class="item-body">
-              <div class="info-row"><span class="info-label">Color</span><span class="info-val">${enc.prendaColor}</span></div>
-              <div class="info-row"><span class="info-label">Saldo Pendiente</span><span class="info-val" style="color:var(--warning-gold); font-weight:700;">$${enc.saldoPendiente.toFixed(2)}</span></div>
-              <div class="info-row"><span class="info-label">Entrega</span><span class="info-val">${enc.tipoEntrega}</span></div>
-            </div>
-            ${enc.colonia ? `<div style="font-size:0.8rem; background:var(--primary-soft); padding:6px; border-radius:6px;">📍 Colonia: ${enc.colonia}</div>` : ''}
-            <div class="item-actions">
-              <button class="btn btn-outline btn-sm" onclick="openWhatsAppModal('${enc.id}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteEncargo('${enc.id}')"><i class="fa-solid fa-trash"></i> Eliminar</button>
-            </div>
-          </div>
-        `;
-      });
-      document.getElementById('lista-encargos').innerHTML = html;
-    }
+      const container = document.getElementById('lista-encargos-cards');
+      if (!container) return;
 
-    async function deleteEncargo(id) {
-      if (confirm("¿Eliminar encargo?")) {
-        localEncargos = localEncargos.filter(e => e.id !== id);
-        localStorage.setItem('saray_encargos', JSON.stringify(localEncargos));
-        if (isOnline) { try { await db.collection('encargos_pedidos').doc(id).delete(); } catch(e){} }
-        renderEncargos(); renderSurtido(); renderEntregas(); renderResumen();
-      }
-    }
-
-    function renderSurtido() {
-      const items = localEncargos.filter(e => e.estado !== 'Oculto' && e.estado !== 'Entregado');
-      if (items.length === 0) {
-        document.getElementById('lista-surtido-agrupada').innerHTML = '<p style="text-align:center;">No hay prendas para surtir.</p>';
-        document.getElementById('surtido-total-cash').innerText = "Total: $0.00";
+      if (listaEncargos.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay encargos registrados.</p>`;
         return;
       }
 
-      let req = 0;
-      const grouped = {};
-      items.forEach(i => {
-        if(!grouped[i.proveedorNombre]) grouped[i.proveedorNombre] = [];
-        grouped[i.proveedorNombre].push(i);
-        if(i.estado === 'Pendiente Surtido') req += i.costoCompra;
+      container.innerHTML = listaEncargos.map(item => `
+        <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:16px; margin-bottom:12px; background:#ffffff;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <strong style="font-size:1.05rem; color:var(--primary-vino);">${item.cliente}</strong>
+              <div style="font-size:0.85rem; color:var(--text-muted);"><i class="fa-brands fa-whatsapp"></i> ${item.telefono}</div>
+            </div>
+            <span class="badge ${item.tipoEntrega === 'Domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
+              ${item.tipoEntrega === 'Domicilio' ? '🚚 Domicilio' : '🏪 Tienda'}
+            </span>
+          </div>
+          <div style="margin-top:10px; font-size:0.9rem;">
+            <strong>${item.prenda}</strong> (${item.color || 'Sin color'}) — Talla: <strong>${item.talla}</strong>
+          </div>
+          <div style="margin-top:6px; font-size:0.85rem; color:var(--text-muted);">
+            Proveedor: <strong>${item.proveedor}</strong> | Costo: $${(item.costoCompra||0).toFixed(2)} | Venta: $${(item.precioVenta||0).toFixed(2)}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px dashed var(--border-color);">
+            <div>
+              <span style="font-size:0.8rem; color:var(--text-muted);">Anticipo: $${(item.anticipo||0).toFixed(2)}</span> |
+              <strong style="color:var(--primary-vino);">Saldo: $${(item.saldoPendiente||0).toFixed(2)}</strong>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button onclick="abrirWhatsAppModal('${item.id}', 'confirmacion')" class="btn-boutique-secondary" style="padding:6px 10px; font-size:0.75rem;"><i class="fa-brands fa-whatsapp"></i> Chat</button>
+              <button onclick="eliminarEncargo('${item.id}')" class="btn-boutique-secondary btn-danger" style="padding:6px 10px; font-size:0.75rem;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.eliminarEncargo = async function(id) {
+      if (confirm("¿Está seguro de eliminar este encargo?")) {
+        await db.collection('encargos_pedidos').doc(id).delete();
+        mostrarNotificacion("🗑️ Encargo eliminado");
+      }
+    };
+
+    // Pestaña 2: Proveedores Logic
+    window.guardarProveedor = async function(e) {
+      e.preventDefault();
+      try {
+        const nuevo = {
+          nombre: document.getElementById('prov-nombre').value.trim(),
+          telefono: document.getElementById('prov-telefono').value.trim(),
+          notas: document.getElementById('prov-notas').value.trim(),
+          fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        await db.collection('proveedores').add(nuevo);
+        document.getElementById('form-proveedor').reset();
+        mostrarNotificacion("🏭 Proveedor registrado");
+      } catch (err) {
+        alert("Error al guardar proveedor: " + err.message);
+      }
+    };
+
+    function renderProveedores() {
+      const container = document.getElementById('lista-proveedores-cards');
+      if (!container) return;
+
+      if (listaProveedores.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay proveedores registrados.</p>`;
+        return;
+      }
+
+      container.innerHTML = listaProveedores.map(prov => `
+        <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; background:#ffffff; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:var(--primary-vino);">${prov.nombre}</strong>
+            <div style="font-size:0.8rem; color:var(--text-muted);">${prov.telefono || 'Sin teléfono'} — ${prov.notas || 'Sin notas'}</div>
+          </div>
+          <button onclick="eliminarProveedor('${prov.id}')" class="btn-boutique-secondary btn-danger" style="padding:6px 10px;"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      `).join('');
+    }
+
+    window.eliminarProveedor = async function(id) {
+      if (confirm("¿Eliminar este proveedor?")) {
+        await db.collection('proveedores').doc(id).delete();
+        mostrarNotificacion("🗑️ Proveedor eliminado");
+      }
+    };
+
+    function poblarSelectoresProveedores() {
+      const selects = [document.getElementById('enc-proveedor'), document.getElementById('ticket-proveedor')];
+      selects.forEach(sel => {
+        if (!sel) return;
+        const valActual = sel.value;
+        sel.innerHTML = `<option value="">Seleccione proveedor...</option>` +
+          listaProveedores.map(p => `<option value="${p.nombre}">${p.nombre}</option>`).join('');
+        sel.value = valActual;
+      });
+    }
+
+    // Pestaña 3: Surtido Logic
+    function renderSurtido() {
+      const container = document.getElementById('contenedor-surtido');
+      if (!container) return;
+
+      const itemsVisibles = listaEncargos.filter(i => !i.ocultoSurtido);
+      if (itemsVisibles.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay encargos pendientes por surtir.</p>`;
+        return;
+      }
+
+      // Agrupar por proveedor
+      const porProveedor = {};
+      itemsVisibles.forEach(item => {
+        const prov = item.proveedor || 'Sin Proveedor';
+        if (!porProveedor[prov]) porProveedor[prov] = [];
+        porProveedor[prov].push(item);
       });
 
-      document.getElementById('surtido-total-cash').innerText = `Efectivo: $${req.toFixed(2)}`;
-
       let html = '';
-      for (const prov in grouped) {
-        html += `<div class="supplier-group"><div class="supplier-header"><span><i class="fa-solid fa-truck"></i> ${prov}</span></div><div class="supplier-items">`;
-        grouped[prov].forEach(i => {
+      for (const prov in porProveedor) {
+        const grupo = porProveedor[prov];
+        const totalEfectivoProv = grupo.reduce((sum, i) => sum + (parseFloat(i.costoCompra) || 0), 0);
+
+        html += `
+          <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); margin-bottom:20px; overflow:hidden;">
+            <div style="background:var(--primary-soft); padding:12px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color:var(--primary-vino); font-family:'Playfair Display', serif; font-size:1.1rem;"><i class="fa-solid fa-store"></i> ${prov}</strong>
+              <span style="font-weight:700; color:var(--primary-vino); background:#ffffff; padding:4px 10px; border-radius:20px; font-size:0.85rem; border:1px solid var(--border-color);">
+                Total Efectivo: $${totalEfectivoProv.toFixed(2)}
+              </span>
+            </div>
+            <div style="padding:12px;">
+        `;
+
+        grupo.forEach(item => {
           html += `
-            <div style="border-bottom:1px solid #eee; padding:10px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-              <div><strong>${i.prendaNombre}</strong> (${i.prendaTalla}) - ${i.prendaColor}<br><small>Cliente: ${i.clienteNombre} | Costo: $${i.costoCompra}</small></div>
-              <div style="display:flex; gap:6px; align-items:center;">
-                <span class="badge ${i.estado==='Surtido'?'badge-success':i.estado==='No Hubo'?'badge-danger':'badge-pending'}">${i.estado}</span>
-                <button class="btn btn-success btn-sm" onclick="setSurtido('${i.id}', 'Surtido')"><i class="fa-solid fa-check"></i> Surtí</button>
-                <button class="btn btn-warning btn-sm" onclick="setSurtido('${i.id}', 'No Hubo')"><i class="fa-solid fa-ban"></i> No Hubo</button>
-                <button class="btn btn-secondary btn-sm" onclick="setSurtido('${i.id}', 'Oculto')">Ocultar</button>
+            <div style="padding:10px; border-bottom:1px solid #f0f0f0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>
+                <strong>${item.prenda}</strong> (${item.color || ''}) — Talla: ${item.talla} | Cliente: ${item.cliente}
+                <div style="font-size:0.8rem; color:var(--text-muted);">Costo: $${(item.costoCompra||0).toFixed(2)}</div>
               </div>
-            </div>`;
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button onclick="cambiarEstadoSurtido('${item.id}', 'Surtí')" class="btn-boutique-secondary ${item.estadoSurtido === 'Surtí' ? 'btn-success' : ''}" style="padding:6px 10px; font-size:0.75rem;">
+                  <i class="fa-solid fa-check"></i> Surtí
+                </button>
+                <button onclick="cambiarEstadoSurtido('${item.id}', 'No Hubo')" class="btn-boutique-secondary ${item.estadoSurtido === 'No Hubo' ? 'btn-danger' : ''}" style="padding:6px 10px; font-size:0.75rem;">
+                  <i class="fa-solid fa-xmark"></i> No Hubo
+                </button>
+                <button onclick="ocultarDeSurtido('${item.id}')" class="btn-boutique-secondary" style="padding:6px 10px; font-size:0.75rem;" title="Ocultar de surtido">
+                  <i class="fa-solid fa-eye-slash"></i> Ocultar
+                </button>
+              </div>
+            </div>
+          `;
         });
+
         html += `</div></div>`;
       }
-      document.getElementById('lista-surtido-agrupada').innerHTML = html;
+
+      container.innerHTML = html;
     }
 
-    async function setSurtido(id, st) {
-      const idx = localEncargos.findIndex(e => e.id === id);
-      if(idx !== -1) {
-        localEncargos[idx].estado = st;
-        localStorage.setItem('saray_encargos', JSON.stringify(localEncargos));
-        if(isOnline) { try { await db.collection('encargos_pedidos').doc(id).update({estado: st}); } catch(e){} }
-        renderSurtido(); renderEntregas(); renderEncargos();
-      }
-    }
+    window.cambiarEstadoSurtido = async function(id, nuevoEstado) {
+      await db.collection('encargos_pedidos').doc(id).update({ estadoSurtido: nuevoEstado });
+      mostrarNotificacion(`Estado de surtido actualizado: ${nuevoEstado}`);
+    };
 
-    // LISTA DE ENTREGAS Y FICHA LOGISTICA DEL REPARTIDOR
+    window.ocultarDeSurtido = async function(id) {
+      await db.collection('encargos_pedidos').doc(id).update({ ocultoSurtido: true });
+      mostrarNotificacion("👁️ Artículo ocultado de la lista de surtido");
+    };
+
+    // PESTAÑA 4: ENTREGAS & LOGÍSTICA (CORREGIDA)
     function renderEntregas() {
-      const filtro = document.getElementById('filtro-entregas').value;
-      let entregas = localEncargos.filter(e => e.estado === 'Surtido' || e.estado === 'Entregado');
-      if (filtro !== 'todos') entregas = entregas.filter(e => e.tipoEntrega === filtro);
+      const container = document.getElementById('contenedor-entregas');
+      if (!container) return;
 
-      if (entregas.length === 0) return document.getElementById('lista-entregas').innerHTML = '<p style="text-align:center;">No hay entregas pendientes.</p>';
+      if (listaEncargos.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay registros de entrega.</p>`;
+        return;
+      }
 
-      let html = '';
-      entregas.forEach(item => {
-        const isEntregado = item.estado === 'Entregado';
-        
-        html += `
-          <div class="item-card">
-            <div class="item-header">
+      container.innerHTML = listaEncargos.map(item => {
+        const mapsBtnHtml = item.mapsUrl
+          ? `<a href="${item.mapsUrl}" target="_blank" class="btn-boutique-secondary" style="padding:6px 12px; font-size:0.8rem; background:#e0f2fe; color:#0369a1; border-color:#bae6fd;"><i class="fa-solid fa-map-location-dot"></i> Abrir en Maps</a>`
+          : '';
+
+        return `
+          <div style="border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:20px; margin-bottom:16px; background:#ffffff; box-shadow:var(--card-shadow);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
               <div>
-                <div class="item-title">${item.prendaNombre} (${item.prendaTalla})</div>
-                <div class="item-subtitle"><i class="fa-solid fa-user"></i> ${item.clienteNombre} | ${item.clienteTelefono || 'S/N'}</div>
+                <strong style="font-size:1.1rem; color:var(--primary-vino); font-family:'Playfair Display', serif;">${item.cliente}</strong>
+                <div style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
+                  <i class="fa-brands fa-whatsapp"></i> ${item.telefono}
+                </div>
               </div>
-              <span class="badge ${isEntregado ? 'badge-success' : 'badge-info'}">${item.estado}</span>
+              <span class="badge ${item.tipoEntrega === 'Domicilio' ? 'badge-domicilio' : 'badge-tienda'}">
+                ${item.tipoEntrega === 'Domicilio' ? '🚚 A Domicilio' : '🏪 Pasa a Tienda'}
+              </span>
             </div>
 
-            <div class="item-body">
-              <div class="info-row"><span class="info-label">Entrega</span><span class="info-val">${item.tipoEntrega}</span></div>
-              <div class="info-row"><span class="info-label">Saldo a Cobrar</span><span class="info-val" style="color:var(--warning-gold); font-size:1rem; font-weight:800;">$${item.saldoPendiente.toFixed(2)}</span></div>
+            <div style="margin-top:10px; font-size:0.9rem; background:#faf8f8; padding:10px; border-radius:var(--radius-md);">
+              <strong>${item.prenda}</strong> (${item.color || 'Sin color'}) — Talla: <strong>${item.talla}</strong>
+              <div style="margin-top:4px; font-size:0.85rem; color:var(--text-muted);">
+                Saldo Pendiente: <strong style="color:var(--primary-vino); font-size:1rem;">$${(item.saldoPendiente || 0).toFixed(2)}</strong>
+              </div>
             </div>
 
-            ${item.tipoEntrega === 'A Domicilio' && !isEntregado ? `
-              <div class="driver-logistics-box">
-                <div class="driver-header"><i class="fa-solid fa-map-location-dot"></i> Logística para Repartidor</div>
-                <div style="font-size: 0.85rem; color: var(--text-dark);">
-                  <strong>📍 Colonia Registrada:</strong> ${item.colonia || 'N/A'}
+            <!-- DRIVER LOGISTICS WIDGET -->
+            <div class="driver-box">
+              <div class="driver-box-header">
+                <i class="fa-solid fa-truck-ramp-box"></i> Datos de Dirección & Logística para Repartidor
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Colonia</label>
+                  <input type="text" id="col-${item.id}" value="${item.colonia || ''}" placeholder="Ej. Centro">
                 </div>
-                <div class="driver-inputs">
-                  <input type="text" id="dl-dir-${item.id}" value="${item.direccionEntrega || ''}" placeholder="Escribe la dirección exacta, calle, número...">
-                  <input type="url" id="dl-maps-${item.id}" value="${item.mapsUrl || ''}" placeholder="Pega aquí el link de Google Maps...">
+                <div class="form-group">
+                  <label>Dirección Completa (Calle, #, Ref.)</label>
+                  <input type="text" id="dir-${item.id}" value="${item.direccionEntrega || ''}" placeholder="Ej. Hidalgo #123 entre Juárez y Pino">
                 </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
-                  <button class="btn btn-outline btn-sm" style="flex:1;" onclick="guardarLogistica('${item.id}')"><i class="fa-solid fa-floppy-disk"></i> Guardar Datos</button>
-                  ${item.mapsUrl ? `<a href="${item.mapsUrl}" target="_blank" class="btn btn-secondary btn-sm" style="flex:1;"><i class="fa-solid fa-location-arrow"></i> Abrir Maps</a>` : ''}
+                <div class="form-group full-width">
+                  <label>Link de Google Maps / Waze</label>
+                  <input type="url" id="maps-${item.id}" value="${item.mapsUrl || ''}" placeholder="https://maps.google.com/?q=...">
                 </div>
               </div>
-            ` : ''}
 
-            ${isEntregado && item.datosEntrega ? `
-              <div style="background:var(--success-bg); padding:12px; border-radius:10px; font-size:0.85rem; color:var(--success-green); border:1px dashed var(--success-green);">
-                <strong>¡Entrega y Cobro Exitoso!</strong><br>
-                Pago vía ${item.datosEntrega.metodoPago} | Cambio dado: $${parseFloat(item.datosEntrega.cambio).toFixed(2)}
-              </div>
-            ` : ''}
-
-            <div class="item-actions">
-              ${!isEntregado ? `
-                <button class="btn btn-success btn-block" style="padding:14px; font-size:1rem;" onclick="openCheckoutModal('${item.id}')">
-                  <i class="fa-solid fa-cash-register"></i> Cobrar Entrega ($${item.saldoPendiente.toFixed(2)})
+              <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                <button type="button" onclick="guardarDatosEntrega('${item.id}')" class="btn-boutique-secondary">
+                  <i class="fa-solid fa-floppy-disk"></i> Guardar Datos de Entrega
                 </button>
-              ` : ''}
+                ${mapsBtnHtml}
+              </div>
+            </div>
+
+            <!-- CONTROLES DE COBRO Y ESTADO -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--border-color); flex-wrap:wrap; gap:10px;">
+              <div>
+                <label style="font-size:0.75rem;">Estado de Entrega:</label>
+                <select onchange="actualizarEstadoEntregaDirecto('${item.id}', this.value)" style="width:auto; padding:6px 10px; font-size:0.85rem; margin-left:6px;">
+                  <option value="Pendiente" ${item.estadoEntrega === 'Pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+                  <option value="En Camino" ${item.estadoEntrega === 'En Camino' ? 'selected' : ''}>🛵 En Camino</option>
+                  <option value="Entregado" ${item.estadoEntrega === 'Entregado' ? 'selected' : ''}>✅ Entregado</option>
+                </select>
+              </div>
+
+              <div>
+                ${(item.saldoPendiente || 0) > 0 
+                  ? `<button type="button" onclick="abrirPosModal('${item.id}')" class="btn-boutique-primary">
+                      <i class="fa-solid fa-cash-register"></i> Cobrar Entrega ($${(item.saldoPendiente || 0).toFixed(2)})
+                     </button>`
+                  : `<span class="badge badge-entregado" style="font-size:0.85rem; padding:8px 14px;"><i class="fa-solid fa-circle-check"></i> LIQUIDADO</span>`
+                }
+              </div>
             </div>
           </div>
         `;
-      });
-      document.getElementById('lista-entregas').innerHTML = html;
+      }).join('');
     }
 
-    async function guardarLogistica(id) {
-      const dir = document.getElementById(`dl-dir-${id}`).value.trim();
-      const maps = document.getElementById(`dl-maps-${id}`).value.trim();
-      
-      const idx = localEncargos.findIndex(e => e.id === id);
-      if(idx !== -1) {
-        localEncargos[idx].direccionEntrega = dir;
-        localEncargos[idx].mapsUrl = maps;
-        localStorage.setItem('saray_encargos', JSON.stringify(localEncargos));
-        
-        if (isOnline) {
-          try { await db.collection('encargos_pedidos').doc(id).update({ direccionEntrega: dir, mapsUrl: maps }); } catch(e){}
-        }
-        
-        // Efecto visual rápido
-        const btn = event.currentTarget;
-        const oldText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Guardado!';
-        btn.classList.add('btn-success');
-        btn.classList.remove('btn-outline');
-        
-        setTimeout(() => {
-          renderEntregas();
-        }, 1000);
+    // FUNCIÓN GUARDAR DATOS DE ENTREGA (CORREGIDA)
+    window.guardarDatosEntrega = async function(id) {
+      console.log("guardarDatosEntrega llamado para id:", id);
+      const dirEl = document.getElementById(`dir-${id}`);
+      const mapsEl = document.getElementById(`maps-${id}`);
+      const colEl = document.getElementById(`col-${id}`);
+
+      if (!dirEl && !mapsEl && !colEl) {
+        alert("Error: No se encontraron los elementos en la vista.");
+        return;
       }
+
+      const direccionEntrega = dirEl ? dirEl.value.trim() : '';
+      const mapsUrl = mapsEl ? mapsEl.value.trim() : '';
+      const colonia = colEl ? colEl.value.trim() : '';
+
+      try {
+        await db.collection('encargos_pedidos').doc(id).update({
+          direccionEntrega: direccionEntrega,
+          mapsUrl: mapsUrl,
+          colonia: colonia,
+          fechaActualizacionLogistica: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Actualizar array local en memoria
+        const local = listaEncargos.find(e => e.id === id);
+        if (local) {
+          local.direccionEntrega = direccionEntrega;
+          local.mapsUrl = mapsUrl;
+          local.colonia = colonia;
+        }
+
+        mostrarNotificacion("📍 Datos de dirección y mapa guardados correctamente");
+      } catch (err) {
+        console.error("Error al guardar datos de entrega:", err);
+        alert("Error al guardar datos de entrega: " + err.message);
+      }
+    };
+
+    window.actualizarEstadoEntregaDirecto = async function(id, estado) {
+      await db.collection('encargos_pedidos').doc(id).update({ estadoEntrega: estado });
+      mostrarNotificacion(`Estado de entrega: ${estado}`);
+    };
+
+    // FUNCIÓN ABRIR POS MODAL (CORREGIDA)
+    window.abrirPosModal = function(id) {
+      console.log("abrirPosModal llamado para id:", id);
+      const item = listaEncargos.find(e => e.id === id);
+      if (!item) {
+        alert("No se encontró la información del encargo.");
+        return;
+      }
+
+      orderPosActual = item;
+
+      const clienteEl = document.getElementById('pos-cliente-nombre');
+      const descEl = document.getElementById('pos-prenda-desc');
+      const saldoEl = document.getElementById('pos-saldo-pendiente');
+      const inputRecibido = document.getElementById('pos-monto-recibido');
+
+      if (clienteEl) clienteEl.innerText = item.cliente || 'Cliente';
+      if (descEl) descEl.innerText = `${item.prenda || 'Prenda'} - ${item.color || ''} (Talla: ${item.talla || 'Única'})`;
+
+      const saldoPendiente = parseFloat(item.saldoPendiente || 0);
+      if (saldoEl) saldoEl.innerText = `$${saldoPendiente.toFixed(2)}`;
+      if (inputRecibido) inputRecibido.value = saldoPendiente.toFixed(2);
+
+      setMetodoPagoPos('Efectivo');
+      calcularCambioPos();
+
+      const modal = document.getElementById('modal-pos-checkout');
+      if (modal) modal.classList.add('active');
+    };
+
+    window.cerrarModalPos = function() {
+      const modal = document.getElementById('modal-pos-checkout');
+      if (modal) modal.classList.remove('active');
+      orderPosActual = null;
+    };
+
+    window.setMetodoPagoPos = function(metodo) {
+      posMetodoSeleccionado = metodo;
+      document.querySelectorAll('.pos-pay-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-method') === metodo);
+      });
+    };
+
+    window.calcularCambioPos = function() {
+      if (!orderPosActual) return;
+      const saldoPendiente = parseFloat(orderPosActual.saldoPendiente || 0);
+      const montoInput = document.getElementById('pos-monto-recibido');
+      const montoRecibido = parseFloat(montoInput ? montoInput.value : 0) || 0;
+
+      const elemCambio = document.getElementById('pos-resultado-cambio');
+      const elemAvisoAbono = document.getElementById('pos-aviso-abono');
+
+      if (montoRecibido >= saldoPendiente) {
+        const cambio = montoRecibido - saldoPendiente;
+        if (elemCambio) {
+          elemCambio.innerHTML = `<div class="pos-cambio-box verde"><i class="fa-solid fa-money-bill-wave"></i> Cambio a entregar: <strong>$${cambio.toFixed(2)}</strong></div>`;
+        }
+        if (elemAvisoAbono) elemAvisoAbono.style.display = 'none';
+      } else {
+        const restante = saldoPendiente - montoRecibido;
+        if (elemCambio) {
+          elemCambio.innerHTML = `<div class="pos-cambio-box neutral"><i class="fa-solid fa-clock"></i> Saldo que restará: <strong>$${restante.toFixed(2)}</strong></div>`;
+        }
+        if (elemAvisoAbono) {
+          elemAvisoAbono.style.display = 'block';
+          elemAvisoAbono.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>Abono Parcial:</strong> Se registrará un abono de $${montoRecibido.toFixed(2)}. El encargo continuará en estado pendiente con un saldo restante de $${restante.toFixed(2)}.`;
+        }
+      }
+    };
+
+    // FUNCIÓN PROCESAR PAGO POS (CORREGIDA)
+    window.procesarPagoPos = async function() {
+      if (!orderPosActual) {
+        alert("No hay encargo seleccionado.");
+        return;
+      }
+
+      const id = orderPosActual.id;
+      const saldoPendiente = parseFloat(orderPosActual.saldoPendiente || 0);
+      const montoInput = document.getElementById('pos-monto-recibido');
+      const montoRecibido = parseFloat(montoInput ? montoInput.value : 0) || 0;
+
+      if (montoRecibido <= 0) {
+        alert("Por favor ingrese un monto pagado válido.");
+        return;
+      }
+
+      const btnSubmit = document.getElementById('btn-confirmar-pos');
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando...';
+      }
+
+      try {
+        let nuevoSaldo = 0;
+        let nuevoEstadoEntrega = 'Entregado';
+        const anticipoActual = parseFloat(orderPosActual.anticipo || 0);
+        let nuevoAnticipo = anticipoActual;
+
+        if (montoRecibido >= saldoPendiente) {
+          nuevoSaldo = 0;
+          nuevoEstadoEntrega = 'Entregado';
+          nuevoAnticipo = anticipoActual + saldoPendiente;
+        } else {
+          nuevoSaldo = saldoPendiente - montoRecibido;
+          nuevoEstadoEntrega = orderPosActual.estadoEntrega === 'Entregado' ? 'Entregado' : 'Pendiente';
+          nuevoAnticipo = anticipoActual + montoRecibido;
+        }
+
+        await db.collection('encargos_pedidos').doc(id).update({
+          saldoPendiente: nuevoSaldo,
+          anticipo: nuevoAnticipo,
+          estadoEntrega: nuevoEstadoEntrega,
+          metodoPagoPos: posMetodoSeleccionado,
+          ultimoMontoCobrado: montoRecibido,
+          fechaCobroPos: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Registrar venta en historial
+        await db.collection('ventas').add({
+          encargoId: id,
+          cliente: orderPosActual.cliente || 'Cliente',
+          prenda: orderPosActual.prenda || 'Prenda',
+          monto: Math.min(montoRecibido, saldoPendiente),
+          metodoPago: posMetodoSeleccionado,
+          concepto: nuevoSaldo === 0 ? "Liquidación Completa Encargo" : "Abono Parcial Encargo",
+          fecha: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        mostrarNotificacion(`✅ Cobro de $${montoRecibido.toFixed(2)} registrado (${posMetodoSeleccionado})`);
+        cerrarModalPos();
+      } catch (err) {
+        console.error("Error al procesar cobro POS:", err);
+        alert("Error al procesar el pago: " + err.message);
+      } finally {
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<i class="fa-solid fa-check-circle"></i> Confirmar Pago';
+        }
+      }
+    };
+
+    // Pestaña 5: Tickets Logic
+    window.guardarTicket = async function(e) {
+      e.preventDefault();
+      const proveedor = document.getElementById('ticket-proveedor').value;
+      const monto = parseFloat(document.getElementById('ticket-monto').value) || 0;
+      const fileInput = document.getElementById('ticket-foto');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Por favor seleccione la foto del ticket.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = async function(evt) {
+        const fotoBase64 = evt.target.result;
+        try {
+          await db.collection('tickets_proveedores').add({
+            proveedor: proveedor,
+            monto: monto,
+            fotoUrl: fotoBase64,
+            fecha: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          document.getElementById('form-ticket').reset();
+          mostrarNotificacion("🧾 Ticket guardado exitosamente");
+        } catch (err) {
+          alert("Error al guardar ticket: " + err.message);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    };
+
+    function renderTickets() {
+      const galeria = document.getElementById('galeria-tickets');
+      if (!galeria) return;
+
+      if (listaTickets.length === 0) {
+        galeria.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No hay tickets de compra registrados.</p>`;
+        return;
+      }
+
+      galeria.innerHTML = listaTickets.map(t => `
+        <div style="border:1px solid var(--border-color); border-radius:var(--radius-md); padding:10px; background:#ffffff;">
+          <img src="${t.fotoUrl}" style="width:100%; height:160px; object-fit:cover; border-radius:var(--radius-sm); cursor:pointer;" onclick="window.open('${t.fotoUrl}', '_blank')">
+          <div style="margin-top:8px;">
+            <strong style="color:var(--primary-vino);">${t.proveedor}</strong>
+            <div style="font-weight:700; color:var(--text-dark);">$${(t.monto||0).toFixed(2)}</div>
+          </div>
+          <button onclick="eliminarTicket('${t.id}')" class="btn-boutique-secondary btn-danger" style="width:100%; margin-top:8px; padding:4px 8px; font-size:0.75rem;"><i class="fa-solid fa-trash"></i> Eliminar Ticket</button>
+        </div>
+      `).join('');
     }
 
-    // POS CHECKOUT MODAL LOGIC
-    let currentPayMethod = 'Efectivo';
-    
-    function selectPayMethod(method) {
-      currentPayMethod = method;
-      document.getElementById('pay-selected-method').value = method;
-      
-      const btns = document.querySelectorAll('#pay-method-row .pay-method-btn');
-      btns.forEach(btn => btn.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+    window.eliminarTicket = async function(id) {
+      if (confirm("¿Eliminar este ticket?")) {
+        await db.collection('tickets_proveedores').doc(id).delete();
+        mostrarNotificacion("🗑️ Ticket eliminado");
+      }
+    };
+
+    // Pestaña 6: Resumen Financiero Logic
+    function renderResumen() {
+      let totalCosto = 0;
+      let totalVenta = 0;
+      let totalAnticipo = 0;
+      let totalSaldo = 0;
+
+      listaEncargos.forEach(item => {
+        totalCosto += parseFloat(item.costoCompra || 0);
+        totalVenta += parseFloat(item.precioVenta || 0);
+        totalAnticipo += parseFloat(item.anticipo || 0);
+        totalSaldo += parseFloat(item.saldoPendiente || 0);
+      });
+
+      const gananciaNeta = totalVenta - totalCosto;
+
+      document.getElementById('res-costo-total').innerText = `$${totalCosto.toFixed(2)}`;
+      document.getElementById('res-venta-total').innerText = `$${totalVenta.toFixed(2)}`;
+      document.getElementById('res-anticipo-total').innerText = `$${totalAnticipo.toFixed(2)}`;
+      document.getElementById('res-saldo-total').innerText = `$${totalSaldo.toFixed(2)}`;
+      document.getElementById('res-ganancia-total').innerText = `$${gananciaNeta.toFixed(2)}`;
     }
 
-    function openCheckoutModal(id) {
-      const item = localEncargos.find(e => e.id === id);
+    // Modal de WhatsApp
+    window.abrirWhatsAppModal = function(id, tipoPlantilla) {
+      const item = listaEncargos.find(e => e.id === id);
       if (!item) return;
 
-      document.getElementById('pay-encargo-id').value = item.id;
-      document.getElementById('pay-cliente-name').innerText = `${item.clienteNombre} — ${item.prendaNombre}`;
-      document.getElementById('pay-saldo-display').innerText = `$${item.saldoPendiente.toFixed(2)}`;
-      
-      // Hidden strict fields for calc
-      document.getElementById('pay-saldo-pendiente').value = item.saldoPendiente;
-      
-      document.getElementById('pay-recibido').value = item.saldoPendiente;
-      
-      // Default to Efectivo
-      selectPayMethod('Efectivo');
-      document.querySelector('#pay-method-row .pay-method-btn:first-child').classList.add('active');
+      waItemActual = item;
+      document.getElementById('wa-plantilla-select').value = tipoPlantilla;
+      cambiarPlantillaWA();
+      const modal = document.getElementById('modal-whatsapp');
+      if (modal) modal.classList.add('active');
+    };
 
-      calculateChange();
-      openModal('modal-checkout');
-    }
+    window.cerrarModalWA = function() {
+      const modal = document.getElementById('modal-whatsapp');
+      if (modal) modal.classList.remove('active');
+      waItemActual = null;
+    };
 
-    function calculateChange() {
-      const saldo = parseFloat(document.getElementById('pay-saldo-pendiente').value) || 0;
-      const recibido = parseFloat(document.getElementById('pay-recibido').value) || 0;
-      const aviso = document.getElementById('aviso-abono');
-      
-      if (recibido < saldo) {
-        aviso.style.display = 'block';
-        document.getElementById('pay-cambio-display').innerText = "$0.00";
-      } else {
-        aviso.style.display = 'none';
-        const cambio = recibido - saldo;
-        document.getElementById('pay-cambio-display').innerText = `$${cambio.toFixed(2)}`;
-      }
-    }
+    window.cambiarPlantillaWA = function() {
+      if (!waItemActual) return;
 
-    async function executeCheckout(e) {
-      e.preventDefault();
-      const id = document.getElementById('pay-encargo-id').value;
-      const recibido = parseFloat(document.getElementById('pay-recibido').value) || 0;
-      const saldo = parseFloat(document.getElementById('pay-saldo-pendiente').value) || 0;
-      const metodo = document.getElementById('pay-selected-method').value;
-      const cambio = Math.max(0, recibido - saldo);
+      const tipo = document.getElementById('wa-plantilla-select').value;
+      const c = waItemActual;
+      let texto = '';
 
-      const idx = localEncargos.findIndex(item => item.id === id);
-      if (idx !== -1) {
-        if (recibido < saldo) {
-          const abono = recibido;
-          localEncargos[idx].anticipo += abono;
-          localEncargos[idx].saldoPendiente = saldo - abono;
-          alert(`¡Abono parcial de $${abono.toFixed(2)} registrado exitosamente!`);
-        } else {
-          localEncargos[idx].estado = 'Entregado';
-          localEncargos[idx].saldoPendiente = 0;
-          localEncargos[idx].datosEntrega = {
-            metodoPago: metodo,
-            montoRecibido: recibido,
-            cambio: cambio,
-            fecha: new Date().toISOString()
-          };
-          alert(`¡Cobro completado ($${recibido.toFixed(2)}) y entrega finalizada!`);
-        }
-
-        localStorage.setItem('saray_encargos', JSON.stringify(localEncargos));
-
-        if (isOnline) {
-          try { await db.collection('encargos_pedidos').doc(id).set(localEncargos[idx]); } catch (err) {}
-        }
-
-        closeModal('modal-checkout');
-        renderEntregas();
-        renderEncargos();
-        renderResumen();
-      }
-    }
-
-    // UTILIDADES MODAL Y WHATSAPP
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-    function openWhatsAppModal(id) {
-      document.getElementById('ws-encargo-id').value = id;
-      openModal('modal-whatsapp');
-    }
-
-    function sendWSPTemplate(tipo) {
-      const id = document.getElementById('ws-encargo-id').value;
-      const enc = localEncargos.find(e => e.id === id);
-      if (!enc) return;
-      const phone = enc.clienteTelefono ? enc.clienteTelefono.replace(/\D/g, '') : '';
-      let msg = '';
       if (tipo === 'confirmacion') {
-        msg = `✨ *SARAY HA — Encargo Confirmado* ✨\n\nHola *${enc.clienteNombre}*, tu pedido está listo:\n👗 ${enc.prendaNombre}\n📏 Talla: ${enc.prendaTalla}\n📌 Saldo Pendiente: $${enc.saldoPendiente.toFixed(2)}\n\n¡Gracias por tu preferencia! 💕`;
-      } else if (tipo === 'listo') {
-        msg = `🛍️ *SARAY HA — Tu Prenda Está Lista* 🛍️\n\nHola *${enc.clienteNombre}*, tu prenda *${enc.prendaNombre}* ya está lista.\n💰 Saldo a liquidar: $${enc.saldoPendiente.toFixed(2)}\n\n¡Quedamos a tus órdenes!`;
-      } else if (tipo === 'agotado') {
-        msg = `📢 *SARAY HA — Aviso de Agotado* 📢\n\nHola *${enc.clienteNombre}*, lamentablemente tu prenda *${enc.prendaNombre}* se encuentra agotada con proveedor. Contáctanos para reembolsarte tu anticipo.`;
+        texto = `¡Hola ${c.cliente}! ✨ Confirmamos tu encargo en SARAY HA de: ${c.prenda} (Talla: ${c.talla}). Saldo pendiente: $${(c.saldoPendiente||0).toFixed(2)}. ¡Gracias por tu compra! 👗`;
+      } else if (tipo === 'surtido') {
+        texto = `¡Hola ${c.cliente}! 🛍️ Tu encargo ${c.prenda} (Talla: ${c.talla}) ya está surtido y listo para ${c.tipoEntrega === 'Domicilio' ? 'envío a domicilio' : 'recoger en tienda'}. Saldo pendiente: $${(c.saldoPendiente||0).toFixed(2)}.`;
+      } else if (tipo === 'nohubo') {
+        texto = `Hola ${c.cliente}. Te informamos que por el momento el producto ${c.prenda} está agotado con proveedor. Nos pondremos en contacto contigo para tu reembolso o cambio de prenda. ✨`;
       } else if (tipo === 'gracias') {
-        msg = `💖 *SARAY HA — ¡Gracias por tu compra!* 💖\n\nHola *${enc.clienteNombre}*, esperamos que disfrutes mucho tu prenda.\n\nRecuerda que no hay cambios ni devoluciones. ✨`;
+        texto = `¡Muchas gracias por tu compra en SARAY HA, ${c.cliente}! 💖 Esperamos que disfrutes tu ${c.prenda}. Recordatorio: No hay cambios ni devoluciones. ¡Hasta pronto!`;
       }
-      window.open(phone ? `https://wa.me/52${phone}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-      closeModal('modal-whatsapp');
-    }
 
-    // RESUMEN Y RESET
-    function renderResumen() {
-      let c=0, v=0, a=0, s=0;
-      localEncargos.forEach(i => {
-        if(i.estado !== 'No Hubo' && i.estado !== 'Oculto') {
-          c+=i.costoCompra||0; v+=i.precioVenta||0; a+=i.anticipo||0; s+=i.saldoPendiente||0;
-        }
-      });
-      document.getElementById('dash-costo-total').innerText = `$${c.toFixed(2)}`;
-      document.getElementById('dash-venta-total').innerText = `$${v.toFixed(2)}`;
-      document.getElementById('dash-anticipo-total').innerText = `$${a.toFixed(2)}`;
-      document.getElementById('dash-saldo-total').innerText = `$${s.toFixed(2)}`;
-      document.getElementById('dash-ganancia-neta').innerText = `$${(v-c).toFixed(2)}`;
-    }
+      document.getElementById('wa-texto-mensaje').value = texto;
+    };
 
-    async function confirmResetDatabase() {
-      if(confirm("⚠️ ATENCIÓN: Se eliminará TODO de forma permanente.")) {
-        if(prompt("Escribe ELIMINAR para proceder:") === "ELIMINAR") {
-          localStorage.clear();
-          if(isOnline) {
-            try {
-              for(const c of ['encargos_pedidos', 'proveedores', 'tickets_proveedores']) {
-                const snap = await db.collection(c).get();
-                snap.forEach(d => d.ref.delete());
-              }
-            }catch(e){}
-          }
-          alert("Base de datos limpia."); location.reload();
+    window.enviarWhatsAppModal = function() {
+      if (!waItemActual) return;
+      const tel = waItemActual.telefono.replace(/\D/g, '');
+      const texto = encodeURIComponent(document.getElementById('wa-texto-mensaje').value);
+      window.open(`https://wa.me/52${tel}?text=${texto}`, '_blank');
+      cerrarModalWA();
+    };
+
+    window.abrirWAEstadoGeneral = function() {
+      if (listaEncargos.length === 0) {
+        alert("No hay encargos para contactar.");
+        return;
+      }
+      abrirWhatsAppModal(listaEncargos[0].id, 'confirmacion');
+    };
+
+    // Emergency Reset
+    window.confirmarResetEmergencia = async function() {
+      const pass = prompt("🚨 REINICIO DE EMERGENCIA BBDD SARAY HA 🚨\nEscribe 'ELIMINAR' para borrar todos los encargos:");
+      if (pass === 'ELIMINAR') {
+        try {
+          const snapshot = await db.collection('encargos_pedidos').get();
+          const batch = db.batch();
+          snapshot.docs.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+          mostrarNotificacion("🔥 Base de datos de encargos reiniciada");
+        } catch (err) {
+          alert("Error en reset: " + err.message);
         }
       }
+    };
+
+    // Utilidad Notificaciones Toast
+    function mostrarNotificacion(msj) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerText = msj;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3500);
     }
   </script>
 </body>
