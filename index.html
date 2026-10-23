@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Saray HA — Punto de Venta & Encargos</title>
+  <title>Saray HA — Punto de Venta</title>
 
   <!-- Google Fonts: Poppins (UI) y Dancing Script (Logo Saray HA) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
 
   <style>
     :root {
-      /* Paleta Saray HA basada exactamente en tu imagen */
+      /* Estilo de la imagen Saray HA */
       --brand-pink: #F9507E;
       --brand-hover: #E03E6A;
       --brand-light: #FDE8ED;
@@ -34,11 +34,10 @@
       --border-color: #E2E8F0;
       
       --success: #38A169;
-      --warning: #DD6B20;
       --danger: #E53E3E;
       
       --shadow-sm: 0 2px 8px rgba(0,0,0,0.03);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
       
       --radius-sm: 8px;
       --radius-md: 12px;
@@ -58,7 +57,7 @@
 
     /* ================= 1. MENU LATERAL (SIDEBAR) ================= */
     .sidebar {
-      width: 250px;
+      width: 240px;
       background: var(--bg-panel);
       border-right: 1px solid var(--border-color);
       display: flex;
@@ -140,7 +139,7 @@
     }
     .btn-cierre:hover { background: #D92B58; }
 
-    /* ================= 2. ZONA PRINCIPAL ================= */
+    /* ================= 2. ZONA CENTRAL (PRODUCTOS) ================= */
     .main-area {
       flex: 1;
       display: flex;
@@ -166,7 +165,7 @@
       position: relative;
       width: 380px;
     }
-    .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+    .search-box i.fa-magnifying-glass { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
     .search-box input {
       width: 100%; padding: 0.6rem 2.8rem 0.6rem 2.5rem; border-radius: 25px;
       border: 1px solid var(--border-color); background: var(--bg-panel);
@@ -193,17 +192,15 @@
     }
     .btn-nueva-venta:hover { background: var(--brand-hover); }
 
-    .datetime { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 1rem; align-items: center; font-weight: 500; }
+    .datetime { font-size: 0.82rem; color: var(--text-muted); display: flex; gap: 1rem; align-items: center; font-weight: 500; }
 
-    .content-pane {
+    .products-content {
       padding: 1.5rem;
       overflow-y: auto;
       flex: 1;
-      display: none;
     }
-    .content-pane.active { display: block; }
 
-    /* Píldoras de Categorías en POS */
+    /* Píldoras de Categorías */
     .categories-bar {
       display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.25rem;
     }
@@ -310,56 +307,6 @@
 
     .thanks-note { text-align: center; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem; line-height: 1.3; }
 
-    /* ================= COMPONENTES FORMULARIO Y TABLAS DE ENCARGOS ================= */
-    .white-card {
-      background: var(--bg-panel); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
-      padding: 1.25rem; margin-bottom: 1.25rem; border: 1px solid var(--border-color);
-    }
-    .card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-dark); display: flex; align-items: center; gap: 0.5rem; }
-    
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-    .form-group.full { grid-column: 1 / -1; }
-    
-    label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    .input-control {
-      width: 100%; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid transparent;
-      border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; color: var(--text-dark); transition: 0.2s;
-    }
-    .input-control:focus { background: white; border-color: var(--brand-pink); outline: none; box-shadow: 0 0 0 3px var(--brand-light); }
-    .input-control[readonly] { background: #E8ECEF; color: var(--text-muted); }
-
-    .pills-container { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
-    .btn-pill {
-      padding: 0.35rem 0.85rem; background: white; border: 1px solid var(--border-color); border-radius: 20px;
-      font-size: 0.75rem; font-weight: 500; color: var(--text-dark); cursor: pointer; transition: 0.2s;
-    }
-    .btn-pill:hover { background: var(--bg-input); }
-    .btn-pill.selected { background: var(--brand-pink); color: white; border-color: var(--brand-pink); font-weight: 600; }
-
-    .btn {
-      padding: 0.65rem 1.25rem; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.85rem;
-      cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: 0.2s; text-decoration: none;
-    }
-    .btn-primary { background: var(--brand-pink); color: white; }
-    .btn-primary:hover { background: var(--brand-hover); }
-    .btn-secondary { background: var(--bg-input); color: var(--text-dark); }
-    .btn-whatsapp { background: #25D366; color: white; }
-    .btn-sm { padding: 0.35rem 0.7rem; font-size: 0.78rem; }
-
-    .badge-no-phone { background: #E2E8F0; color: #718096; padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem; }
-
-    .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-    .order-card {
-      background: white; border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm); display: flex; flex-direction: column; position: relative;
-    }
-    .status-badge { padding: 0.25rem 0.55rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-    .st-pendiente { background: #FFFAF0; color: var(--warning); border: 1px solid #FBD38D; }
-    .st-enruta { background: #EBF8FF; color: #3182CE; border: 1px solid #90CDF4; }
-    .st-entregado { background: #F0FFF4; color: var(--success); border: 1px solid #9AE6B4; }
-
     /* ================= MODALES ================= */
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -377,6 +324,12 @@
     .modal-header h3 { font-size: 1.15rem; font-weight: 600; color: var(--text-dark); }
     .btn-close-modal { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); }
     
+    .input-control {
+      width: 100%; padding: 0.65rem 0.85rem; background: var(--bg-input); border: 1px solid transparent;
+      border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; color: var(--text-dark); transition: 0.2s;
+    }
+    .input-control:focus { background: white; border-color: var(--brand-pink); outline: none; box-shadow: 0 0 0 3px var(--brand-light); }
+
     .quick-cash-pills { display: flex; gap: 0.4rem; margin-top: 0.8rem; flex-wrap: wrap; }
     .cash-pill {
       background: white; border: 1px solid var(--border-color); padding: 0.35rem 0.75rem;
@@ -398,24 +351,16 @@
     </div>
     
     <nav class="nav-menu">
-      <button class="nav-item active" onclick="switchNavTab('tab-pos', this)">
-        <i class="fa-solid fa-cash-register"></i> Punto de Venta
-      </button>
-      <button class="nav-item" onclick="switchNavTab('tab-encargos', this)">
-        <i class="fa-solid fa-boxes-packing"></i> Inventario Encargos
-      </button>
-      <button class="nav-item" onclick="switchNavTab('tab-entregas', this)">
-        <i class="fa-solid fa-truck-fast"></i> Entregas y Logística
-      </button>
-      <button class="nav-item" onclick="switchNavTab('tab-proveedores', this)">
-        <i class="fa-solid fa-store"></i> Proveedores
-      </button>
-      <button class="nav-item" onclick="switchNavTab('tab-tickets', this)">
-        <i class="fa-solid fa-receipt"></i> Tickets Compras
-      </button>
-      <button class="nav-item" onclick="switchNavTab('tab-reportes', this)">
-        <i class="fa-solid fa-chart-pie"></i> Reportes
-      </button>
+      <button class="nav-item active"><i class="fa-solid fa-cash-register"></i> Punto de Venta</button>
+      <button class="nav-item" onclick="showToast('Módulo Ventas')"><i class="fa-solid fa-chart-line"></i> Ventas</button>
+      <button class="nav-item" onclick="showToast('Módulo Productos')"><i class="fa-solid fa-box-open"></i> Productos</button>
+      <button class="nav-item" onclick="showToast('Módulo Categorías')"><i class="fa-solid fa-tags"></i> Categorías</button>
+      <button class="nav-item" onclick="showToast('Módulo Clientes')"><i class="fa-solid fa-users"></i> Clientes</button>
+      <button class="nav-item" onclick="showToast('Módulo Proveedores')"><i class="fa-solid fa-truck-field"></i> Proveedores</button>
+      <button class="nav-item" onclick="showToast('Módulo Inventario')"><i class="fa-solid fa-warehouse"></i> Inventario</button>
+      <button class="nav-item" onclick="showToast('Módulo Gastos')"><i class="fa-solid fa-money-bill-transfer"></i> Gastos</button>
+      <button class="nav-item" onclick="showToast('Módulo Reportes')"><i class="fa-solid fa-chart-pie"></i> Reportes</button>
+      <button class="nav-item" onclick="showToast('Módulo Configuración')"><i class="fa-solid fa-gear"></i> Configuración</button>
     </nav>
 
     <div class="sidebar-footer">
@@ -427,12 +372,12 @@
         </div>
       </div>
       <button class="btn-cierre" onclick="abrirModalResetSistema()">
-        <i class="fa-solid fa-power-off"></i> Cierre / Reiniciar
+        <i class="fa-solid fa-right-from-bracket"></i> Cierre de caja
       </button>
     </div>
   </aside>
 
-  <!-- 2. MAIN AREA -->
+  <!-- 2. ZONA CENTRAL (PRODUCTOS EN MOSTRADOR) -->
   <main class="main-area">
     
     <!-- TOP BAR -->
@@ -454,10 +399,8 @@
       </div>
     </header>
 
-    <!-- CONTENT PANES -->
-    
-    <!-- PANE 1: PUNTO DE VENTA (POS) -->
-    <div id="tab-pos" class="content-pane active">
+    <!-- PRODUCTOS -->
+    <div class="products-content">
       <div class="categories-bar">
         <button class="cat-pill active" onclick="filtrarPorCategoria('Todas', this)">Todas</button>
         <button class="cat-pill" onclick="filtrarPorCategoria('Blusas', this)">Blusas</button>
@@ -471,166 +414,6 @@
 
       <div class="products-grid" id="grid-productos-pos">
         <!-- Renderizado de tarjetas de tienda de ropa -->
-      </div>
-    </div>
-
-    <!-- PANE 2: INVENTARIO ENCARGOS -->
-    <div id="tab-encargos" class="content-pane">
-      <div class="white-card">
-        <h3 class="card-title"><i class="fa-solid fa-pen-to-square"></i> Registro de Nuevo Encargo</h3>
-        <form id="form-nuevo-encargo" novalidate onsubmit="guardarNuevoEncargo(event)">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Fecha de Registro</label>
-              <input type="text" id="enc-fecha-registro" class="input-control" readonly>
-            </div>
-            <div class="form-group">
-              <label>Nombre del Cliente *</label>
-              <input type="text" id="enc-cliente" class="input-control" placeholder="Ej. Sofia Ramos" required>
-            </div>
-            <div class="form-group">
-              <label>Teléfono (Opcional)</label>
-              <input type="tel" id="enc-telefono" class="input-control" placeholder="Ej. 8112345678">
-            </div>
-
-            <div class="form-group full">
-              <label>Nombre del Producto / Artículo *</label>
-              <input type="text" id="enc-producto-nombre" class="input-control" placeholder="Ej. Blusa Satinada" required>
-              <div class="pills-container">
-                <button type="button" class="btn-pill" onclick="setProductoInput('Vestido Elegante')">Vestido</button>
-                <button type="button" class="btn-pill" onclick="setProductoInput('Blusa de Seda')">Blusa</button>
-                <button type="button" class="btn-pill" onclick="setProductoInput('Conjunto Lino')">Conjunto</button>
-                <button type="button" class="btn-pill" onclick="setProductoInput('Jeans Mom Fit')">Jeans</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Talla</label>
-              <input type="hidden" id="enc-talla-val" value="M">
-              <div class="pills-container" id="pills-tallas">
-                <button type="button" class="btn-pill" onclick="seleccionarTalla('XS', this)">XS</button>
-                <button type="button" class="btn-pill" onclick="seleccionarTalla('S', this)">S</button>
-                <button type="button" class="btn-pill selected" onclick="seleccionarTalla('M', this)">M</button>
-                <button type="button" class="btn-pill" onclick="seleccionarTalla('L', this)">L</button>
-                <button type="button" class="btn-pill" onclick="seleccionarTalla('XL', this)">XL</button>
-                <button type="button" class="btn-pill" onclick="seleccionarTalla('Unitalla', this)">UNI</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Color</label>
-              <input type="text" id="enc-color-nombre" class="input-control" placeholder="Ej. Palo de Rosa">
-              <div class="pills-container">
-                <button type="button" class="btn-pill" onclick="setColorInput('Negro')">Negro</button>
-                <button type="button" class="btn-pill" onclick="setColorInput('Blanco')">Blanco</button>
-                <button type="button" class="btn-pill" onclick="setColorInput('Palo de Rosa')">Palo Rosa</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Proveedor</label>
-              <select id="enc-proveedor" class="input-control"></select>
-            </div>
-
-            <div class="form-group">
-              <label>Modalidad de Entrega</label>
-              <select id="enc-modalidad" class="input-control" onchange="toggleColoniaInput()">
-                <option value="Recoge en local">Recoge en local</option>
-                <option value="Envío a Domicilio">Envío a Domicilio</option>
-              </select>
-            </div>
-
-            <div class="form-group" id="grp-enc-colonia" style="display:none;">
-              <label>Colonia / Sector</label>
-              <input type="text" id="enc-colonia" class="input-control" placeholder="Ej. Col. Cumbres">
-            </div>
-
-            <div class="form-group">
-              <label>Costo de Compra ($)</label>
-              <input type="number" step="0.01" id="enc-costo-compra" class="input-control" value="0.00" oninput="calcularFinanzasEncargo()">
-            </div>
-            <div class="form-group">
-              <label>Precio de Venta ($)</label>
-              <input type="number" step="0.01" id="enc-precio-venta" class="input-control" value="0.00" oninput="calcularFinanzasEncargo()">
-            </div>
-            <div class="form-group">
-              <label>Anticipo ($)</label>
-              <input type="number" step="0.01" id="enc-anticipo" class="input-control" value="0.00" oninput="calcularFinanzasEncargo()">
-            </div>
-            <div class="form-group">
-              <label>Saldo Pendiente ($)</label>
-              <input type="number" step="0.01" id="enc-saldo" class="input-control" value="0.00" readonly style="font-weight:700; color:var(--brand-text);">
-            </div>
-            <div class="form-group">
-              <label>Ganancia Neta ($)</label>
-              <input type="number" step="0.01" id="enc-ganancia" class="input-control" value="0.00" readonly>
-            </div>
-          </div>
-          <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
-            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Guardar Encargo</button>
-          </div>
-        </form>
-      </div>
-
-      <div class="white-card">
-        <h3 class="card-title"><i class="fa-solid fa-list"></i> Lista de Encargos</h3>
-        <div id="grid-encargos" class="data-grid"></div>
-      </div>
-    </div>
-
-    <!-- PANE 3: LOGISTICA -->
-    <div id="tab-entregas" class="content-pane">
-      <div class="white-card">
-        <h3 class="card-title"><i class="fa-solid fa-route"></i> Control de Envíos</h3>
-        <div id="grid-logistica" class="data-grid"></div>
-      </div>
-    </div>
-
-    <!-- PANE 4: PROVEEDORES -->
-    <div id="tab-proveedores" class="content-pane">
-      <div class="white-card">
-        <h3 class="card-title"><i class="fa-solid fa-store"></i> Agregar Proveedor</h3>
-        <form id="form-proveedor" onsubmit="guardarProveedor(event)">
-          <div class="form-grid">
-            <div class="form-group"><label>Nombre</label><input type="text" id="prov-nombre" class="input-control" required></div>
-            <div class="form-group"><label>Contacto</label><input type="tel" id="prov-contacto" class="input-control"></div>
-            <div class="form-group"><label>Categoría</label><input type="text" id="prov-categoria" class="input-control"></div>
-          </div>
-          <div style="margin-top:1rem; text-align:right;"><button class="btn btn-primary">Registrar</button></div>
-        </form>
-      </div>
-      <div class="white-card">
-        <div id="grid-proveedores" class="data-grid"></div>
-      </div>
-    </div>
-
-    <!-- PANE 5: TICKETS COMPRAS -->
-    <div id="tab-tickets" class="content-pane">
-      <div class="white-card">
-        <h3 class="card-title"><i class="fa-solid fa-file-invoice-dollar"></i> Ticket de Compra</h3>
-        <form id="form-ticket-prov" onsubmit="guardarTicketProveedor(event)">
-          <div class="form-grid">
-            <div class="form-group"><label>Proveedor</label><select id="ticket-proveedor-select" class="input-control" required></select></div>
-            <div class="form-group"><label>Folio</label><input type="text" id="ticket-folio" class="input-control"></div>
-            <div class="form-group"><label>Monto ($)</label><input type="number" step="0.01" id="ticket-monto" class="input-control" required></div>
-          </div>
-          <div style="margin-top:1rem; text-align:right;"><button class="btn btn-primary">Guardar</button></div>
-        </form>
-      </div>
-      <div class="white-card">
-        <div id="grid-tickets-prov" class="data-grid"></div>
-      </div>
-    </div>
-
-    <!-- PANE 6: REPORTES -->
-    <div id="tab-reportes" class="content-pane">
-      <div class="white-card">
-        <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Resumen de Resultados</h3>
-        <div class="form-grid">
-          <div class="form-group"><label>Ventas Totales POS</label><input type="text" id="rep-total-pos" class="input-control" readonly style="font-weight:700; color:var(--brand-pink);"></div>
-          <div class="form-group"><label>Ventas Encargos</label><input type="text" id="rep-total-encargos" class="input-control" readonly></div>
-          <div class="form-group"><label>Gastos Proveedores</label><input type="text" id="rep-total-gastos" class="input-control" readonly></div>
-        </div>
       </div>
     </div>
 
@@ -708,19 +491,19 @@
     </div>
   </div>
 
-  <!-- MODAL: REINICIO DESEGURIDAD -->
+  <!-- MODAL: CIERRE / REINICIO DE BASE DE DATOS -->
   <div id="modal-reset-sistema" class="modal-overlay">
     <div class="modal-box" style="border-top: 5px solid var(--danger);">
       <div class="modal-header">
-        <h3 style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Reiniciar Base de Datos</h3>
+        <h3 style="color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Reiniciar Base de Datos POS</h3>
         <button class="btn-close-modal" onclick="cerrarModalResetSistema()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div>
-        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Esta acción eliminará registros de ventas, encargos y proveedores para reiniciar el sistema. Escriba <strong>BORRAR</strong> para confirmar:</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">Esta acción eliminará el historial de ventas POS para reiniciar la caja. Escriba <strong>BORRAR</strong> para confirmar:</p>
         <input type="text" id="reset-confirm-input" class="input-control" placeholder="Escriba BORRAR aquí">
         <div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1.25rem;">
-          <button class="btn btn-secondary" onclick="cerrarModalResetSistema()">Cancelar</button>
-          <button class="btn btn-primary" style="background:var(--danger);" onclick="ejecutarResetSistema()">Confirmar Eliminar</button>
+          <button class="btn-outline" style="flex:initial; padding:0.5rem 1rem;" onclick="cerrarModalResetSistema()">Cancelar</button>
+          <button class="btn-cobrar" style="background:var(--danger); margin-bottom:0; width:auto; padding:0.5rem 1rem;" onclick="ejecutarResetSistema()">Confirmar Eliminar</button>
         </div>
       </div>
     </div>
@@ -728,7 +511,7 @@
 
   <div id="toast-container" class="toast-container"></div>
 
-  <!-- LOGICA JS E INTEGRACIÓN CON FIREBASE -->
+  <!-- LOGICA JS E INTEGRACIÓN CON FIREBASE FIRESTORE -->
   <script>
     // 1. CONFIGURACIÓN FIREBASE PRO SARAY HA
     const firebaseConfig = {
@@ -743,13 +526,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ESTADO
+    // ESTADO LOCAL DE LA APLICACIÓN POS
     let posProductos = [];
-    let encargosLista = [];
-    let proveedoresLista = [];
-    let ticketsLista = [];
-    let posVentasLista = [];
-
     let carrito = [];
     let categoriaPOSActual = 'Todas';
     let metodoPagoActual = 'Efectivo';
@@ -758,8 +536,7 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       iniciarReloj();
-      autoSetFechaRegistro();
-      escucharColeccionesFirebase();
+      escucharProductosPOS();
     });
 
     function iniciarReloj() {
@@ -772,13 +549,6 @@
       }, 1000);
     }
 
-    function switchNavTab(tabId, btn) {
-      document.querySelectorAll('.content-pane').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      btn.classList.add('active');
-    }
-
     function showToast(msj) {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -788,9 +558,8 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    // FIREBASE SYNC EN TIEMPO REAL
-    function escucharColeccionesFirebase() {
-      // 1. Productos POS
+    // FIREBASE SYNC EN TIEMPO REAL (PRODUCTOS POS)
+    function escucharProductosPOS() {
       db.collection('pos_productos').onSnapshot(snap => {
         if(snap.empty) {
           inicializarProductosDemo();
@@ -799,37 +568,9 @@
           renderProductosPOS();
         }
       });
-
-      // 2. Encargos
-      db.collection('encargos_pedidos').onSnapshot(snap => {
-        encargosLista = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => (b.timestamp||0)-(a.timestamp||0));
-        renderEncargos();
-        renderLogistica();
-        calcularReportes();
-      });
-
-      // 3. Proveedores
-      db.collection('proveedores').onSnapshot(snap => {
-        proveedoresLista = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderProveedores();
-        poblarDropdownsProveedores();
-      });
-
-      // 4. Tickets
-      db.collection('tickets_proveedores').onSnapshot(snap => {
-        ticketsLista = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderTickets();
-        calcularReportes();
-      });
-
-      // 5. Ventas POS
-      db.collection('pos_ventas').onSnapshot(snap => {
-        posVentasLista = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        calcularReportes();
-      });
     }
 
-    // AUTO-CARGA DE PRODUCTOS DE LA FOTOGRAFÍA SI ESTÁ VACÍO
+    // AUTO-CARGA DE PRODUCTOS DE LA FOTOGRAFÍA SI LA BASE DE DATOS ESTÁ VACÍA
     function inicializarProductosDemo() {
       const demoData = [
         { nombre: "Blusa Satinada", categoria: "Blusas", tallas: "M, L", precio: 230.00, stock: 8, img: "https://images.unsplash.com/photo-1551163943-3f6a855d1153?auto=format&fit=crop&q=80&w=300" },
@@ -938,6 +679,7 @@
       if(carrito.length === 0) {
         box.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; margin-top:2rem;">🛒 Venta actual vacía</div>`;
         totalCarrito = 0;
+        document.getElementById('cart-subtotal').innerText = '$0.00';
       } else {
         let html = '';
         let subtotal = 0;
@@ -1028,126 +770,6 @@
       });
     }
 
-    // MODULO ENCARGOS
-    function autoSetFechaRegistro() {
-      document.getElementById('enc-fecha-registro').value = new Date().toLocaleDateString('es-MX');
-    }
-    function setProductoInput(v) { document.getElementById('enc-producto-nombre').value = v; }
-    function setColorInput(v) { document.getElementById('enc-color-nombre').value = v; }
-    function seleccionarTalla(t, elem) {
-      document.getElementById('enc-talla-val').value = t;
-      document.querySelectorAll('#pills-tallas .btn-pill').forEach(b=>b.classList.remove('selected'));
-      elem.classList.add('selected');
-    }
-    function toggleColoniaInput() {
-      const m = document.getElementById('enc-modalidad').value;
-      document.getElementById('grp-enc-colonia').style.display = (m==='Envío a Domicilio')?'flex':'none';
-    }
-    function calcularFinanzasEncargo() {
-      const c = parseFloat(document.getElementById('enc-costo-compra').value)||0;
-      const p = parseFloat(document.getElementById('enc-precio-venta').value)||0;
-      const a = parseFloat(document.getElementById('enc-anticipo').value)||0;
-      document.getElementById('enc-saldo').value = Math.max(0, p - a).toFixed(2);
-      document.getElementById('enc-ganancia').value = (p - c).toFixed(2);
-    }
-
-    function guardarNuevoEncargo(e) {
-      e.preventDefault();
-      const cli = document.getElementById('enc-cliente').value.trim();
-      const prod = document.getElementById('enc-producto-nombre').value.trim();
-      if(!cli || !prod) return;
-
-      db.collection('encargos_pedidos').add({
-        timestamp: Date.now(),
-        fechaRegistro: document.getElementById('enc-fecha-registro').value,
-        cliente: cli,
-        telefono: document.getElementById('enc-telefono').value.trim(),
-        productoNombre: prod,
-        talla: document.getElementById('enc-talla-val').value,
-        color: document.getElementById('enc-color-nombre').value.trim(),
-        proveedor: document.getElementById('enc-proveedor').value,
-        modalidad: document.getElementById('enc-modalidad').value,
-        colonia: document.getElementById('enc-colonia').value.trim(),
-        costoCompra: parseFloat(document.getElementById('enc-costo-compra').value)||0,
-        precioVenta: parseFloat(document.getElementById('enc-precio-venta').value)||0,
-        anticipo: parseFloat(document.getElementById('enc-anticipo').value)||0,
-        saldoPendiente: parseFloat(document.getElementById('enc-saldo').value)||0,
-        gananciaNeta: parseFloat(document.getElementById('enc-ganancia').value)||0,
-        estado: 'Pendiente'
-      }).then(() => {
-        showToast("Encargo Guardado");
-        document.getElementById('form-nuevo-encargo').reset();
-        autoSetFechaRegistro();
-      });
-    }
-
-    function renderEncargos() {
-      const box = document.getElementById('grid-encargos');
-      if(encargosLista.length === 0) { box.innerHTML = '<p style="color:var(--text-muted);">Sin encargos.</p>'; return; }
-      let html = '';
-      encargosLista.forEach(i => {
-        const btnWa = i.telefono 
-          ? `<a href="https://wa.me/52${i.telefono.replace(/\D/g,'')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fa-brands fa-whatsapp"></i> Chat</a>`
-          : `<span class="badge-no-phone"><i class="fa-solid fa-phone-slash"></i> Sin teléfono</span>`;
-
-        html += `
-          <div class="order-card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
-              <strong>${i.cliente}</strong>
-              <span class="status-badge st-pendiente">${i.estado}</span>
-            </div>
-            <div style="font-size:0.85rem; color:var(--text-dark); margin-bottom:0.5rem;">${i.productoNombre} (Talla ${i.talla})</div>
-            <div style="font-size:0.8rem; color:var(--brand-pink); font-weight:700;">Saldo: $${i.saldoPendiente.toFixed(2)}</div>
-            <div style="margin-top:0.6rem; display:flex; gap:0.4rem;">${btnWa}</div>
-          </div>
-        `;
-      });
-      box.innerHTML = html;
-    }
-
-    function renderLogistica() {
-      const box = document.getElementById('grid-logistica');
-      if(encargosLista.length === 0) { box.innerHTML = '<p style="color:var(--text-muted);">Sin envíos.</p>'; return; }
-      let html = '';
-      encargosLista.forEach(i => {
-        html += `
-          <div class="order-card">
-            <div style="font-weight:600;">${i.cliente}</div>
-            <div style="font-size:0.8rem;">${i.modalidad} - ${i.colonia||'N/A'}</div>
-            <div style="font-size:0.85rem; font-weight:700; color:var(--brand-pink); margin-top:0.3rem;">$${i.precioVenta.toFixed(2)}</div>
-          </div>
-        `;
-      });
-      box.innerHTML = html;
-    }
-
-    function poblarDropdownsProveedores() {
-      let h = '<option value="Sin Especificar">Seleccionar Proveedor...</option>';
-      proveedoresLista.forEach(p => h += `<option value="${p.nombre}">${p.nombre}</option>`);
-      document.getElementById('enc-proveedor').innerHTML = h;
-      document.getElementById('ticket-proveedor-select').innerHTML = h;
-    }
-
-    function guardarProveedor(e) { e.preventDefault(); db.collection('proveedores').add({ nombre: document.getElementById('prov-nombre').value, contacto: document.getElementById('prov-contacto').value, categoria: document.getElementById('prov-categoria').value }).then(()=> { document.getElementById('form-proveedor').reset(); showToast("Proveedor Creado"); }); }
-    function renderProveedores() {
-      document.getElementById('grid-proveedores').innerHTML = proveedoresLista.map(p=>`<div class="order-card"><strong>${p.nombre}</strong><div style="font-size:0.8rem;">${p.contacto}</div></div>`).join('');
-    }
-
-    function guardarTicketProveedor(e) { e.preventDefault(); db.collection('tickets_proveedores').add({ proveedor: document.getElementById('ticket-proveedor-select').value, folio: document.getElementById('ticket-folio').value, monto: parseFloat(document.getElementById('ticket-monto').value)||0 }).then(()=>{ document.getElementById('form-ticket-prov').reset(); showToast("Ticket Registrado"); }); }
-    function renderTickets() {
-      document.getElementById('grid-tickets-prov').innerHTML = ticketsLista.map(t=>`<div class="order-card"><strong>${t.proveedor}</strong><div>Monto: $${t.monto.toFixed(2)}</div></div>`).join('');
-    }
-
-    function calcularReportes() {
-      let totalPOS = 0; posVentasLista.forEach(v=>totalPOS += (v.total||0));
-      let totalEnc = 0; encargosLista.forEach(e=>totalEnc += (e.precioVenta||0));
-      let totalGas = 0; ticketsLista.forEach(t=>totalGas += (t.monto||0));
-
-      document.getElementById('rep-total-pos').value = `$${totalPOS.toFixed(2)}`;
-      document.getElementById('rep-total-encargos').value = `$${totalEnc.toFixed(2)}`;
-      document.getElementById('rep-total-gastos').value = `$${totalGas.toFixed(2)}`;
-    }
-
     function abrirModalNuevoProductoRapido() {
       const nom = prompt("Nombre del nuevo producto:");
       const prec = parseFloat(prompt("Precio de venta ($):"));
@@ -1166,13 +788,12 @@
     function abrirModalResetSistema() { document.getElementById('reset-confirm-input').value=''; document.getElementById('modal-reset-sistema').classList.add('show'); }
     function cerrarModalResetSistema() { document.getElementById('modal-reset-sistema').classList.remove('show'); }
     async function ejecutarResetSistema() {
-      if(document.getElementById('reset-confirm-input').value.trim() !== 'BORRAR') return alert("Escriba BORRAR");
+      if(document.getElementById('reset-confirm-input').value.trim() !== 'BORRAR') return alert("Escriba BORRAR para confirmar");
       const batch = db.batch();
       const s1 = await db.collection('pos_ventas').get(); s1.forEach(d=>batch.delete(d.ref));
-      const s2 = await db.collection('encargos_pedidos').get(); s2.forEach(d=>batch.delete(d.ref));
       await batch.commit();
       cerrarModalResetSistema();
-      showToast("Sistema Reiniciado");
+      showToast("Ventas de Caja Reiniciadas");
     }
   </script>
 </body>
