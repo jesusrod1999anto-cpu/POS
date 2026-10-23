@@ -185,10 +185,10 @@
       overflow: hidden;
     }
 
-    /* TOP BAR (CORREGIDO PARA EVITAR TEXTOS ENCIMADOS) */
+    /* TOP BAR (ESPACIAMO NORMAL Y LIMPIO) */
     header {
       background: #FFFFFF;
-      height: 70px;
+      min-height: 70px;
       border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
@@ -201,7 +201,8 @@
     .search-container {
       position: relative;
       flex: 1;
-      max-width: 450px;
+      max-width: 420px;
+      min-width: 200px;
       display: flex;
       align-items: center;
     }
@@ -894,7 +895,7 @@
 
   <!-- MAIN AREA -->
   <main>
-    <!-- TOP BAR (CORREGIDO) -->
+    <!-- TOP BAR -->
     <header>
       <div class="search-container">
         <i class="fa-solid fa-search"></i>
@@ -1281,9 +1282,17 @@
     let searchQuery = '';
     let selectedPaymentMethod = 'Efectivo';
     let discountAmount = 0;
-    let firestoreProductsMap = new Map();
+    
+    // Almacenamiento seguro multicolección
+    const collectionsData = {
+      'pos_productos': new Map(),
+      'productos': new Map(),
+      'inventario': new Map(),
+      'products': new Map(),
+      'items': new Map()
+    };
 
-    // --- LIMPIA GUIONES Y REEMPLAZA POR ESPACIOS Y CAPITALIZACIÓN ---
+    // --- LIMPIA GUIONES Y REEMPLAZA POR ESPACIOS CON CAPITALIZACIÓN ---
     function cleanProductName(name) {
       if (!name) return 'Producto Sin Nombre';
       let cleaned = String(name).replace(/[-_]+/g, ' ').trim();
@@ -1304,41 +1313,77 @@
       }, 1000);
     }
 
-    // --- FIRESTORE PRODUCT NORMALIZATION ---
+    // --- FIRESTORE PRODUCT NORMALIZATION (ULTRA RESILIENTE) ---
     function normalizeProduct(id, data) {
-      let tallasArr = [];
-      if (Array.isArray(data.tallas)) {
-        tallasArr = data.tallas;
-      } else if (typeof data.tallas === 'string') {
-        tallasArr = data.tallas.split(',').map(s => s.trim()).filter(Boolean);
-      } else if (data.talla) {
-        tallasArr = [data.talla];
-      } else {
-        tallasArr = ['Única'];
+      if (!data) return null;
+      try {
+        let tallasArr = [];
+        if (Array.isArray(data.tallas)) {
+          tallasArr = data.tallas;
+        } else if (typeof data.tallas === 'string') {
+          tallasArr = data.tallas.split(',').map(s => s.trim()).filter(Boolean);
+        } else if (data.talla) {
+          tallasArr = [String(data.talla)];
+        } else {
+          tallasArr = ['Única'];
+        }
+
+        const rawName = data.nombre || data.titulo || data.title || data.name || data.descripcion || data.producto || ('Producto ' + id);
+
+        return {
+          id: id,
+          nombre: cleanProductName(rawName),
+          precio: Number(data.precio || data.price || data.costo_venta || data.costo || 0),
+          codigoBarras: String(data.codigoBarras || data.codigo || data.barcode || data.code || id),
+          categoria: String(data.categoria || data.category || 'Blusas'),
+          imagen: data.imagen || data.image || data.foto || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
+          tallas: tallasArr.length ? tallasArr : ['Única'],
+          stock: typeof data.stock === 'number' ? data.stock : Number(data.cantidad || data.existencia || 0)
+        };
+      } catch (err) {
+        console.error("Error al normalizar producto:", id, err);
+        return {
+          id: id,
+          nombre: 'Producto ' + id,
+          precio: 0,
+          codigoBarras: String(id),
+          categoria: 'Blusas',
+          imagen: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
+          tallas: ['Única'],
+          stock: 0
+        };
       }
-
-      const rawName = data.nombre || data.titulo || data.title || data.name || data.descripcion || 'Producto sin nombre';
-
-      return {
-        id: id,
-        nombre: cleanProductName(rawName),
-        precio: Number(data.precio || data.price || data.costo_venta || 0),
-        codigoBarras: String(data.codigoBarras || data.codigo || data.barcode || data.code || id),
-        categoria: data.categoria || data.category || 'Blusas',
-        imagen: data.imagen || data.image || data.foto || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
-        tallas: tallasArr.length ? tallasArr : ['Única'],
-        stock: typeof data.stock === 'number' ? data.stock : Number(data.cantidad || data.existencia || 0)
-      };
     }
 
+    // --- ESCANEO Y FUSIÓN MULTICOLECCIÓN DE FIRESTORE ---
     function initFirestoreSync() {
-      db.collection('pos_productos').onSnapshot((snapshot) => {
-        firestoreProductsMap.clear();
-        snapshot.forEach(doc => {
-          firestoreProductsMap.set(doc.id, normalizeProduct(doc.id, doc.data()));
+      const targetCollections = ['pos_productos', 'productos', 'inventario', 'products', 'items'];
+      
+      targetCollections.forEach(colName => {
+        db.collection(colName).onSnapshot((snapshot) => {
+          collectionsData[colName].clear();
+          snapshot.forEach(doc => {
+            const normData = normalizeProduct(doc.id, doc.data());
+            if (normData) {
+              collectionsData[colName].set(doc.id, normData);
+            }
+          });
+          combineAllCollections();
+        }, err => console.warn(`Nota de lectura en ${colName}:`, err));
+      });
+    }
+
+    function combineAllCollections() {
+      const mergedMap = new Map();
+      Object.keys(collectionsData).forEach(col => {
+        collectionsData[col].forEach((prod, id) => {
+          mergedMap.set(id, prod);
         });
-        updateProductsState();
-      }, err => console.warn("Snapshot error on pos_productos:", err));
+      });
+
+      productos = Array.from(mergedMap.values());
+      renderProductos();
+      updateProductCounter();
     }
 
     function initVentasSync() {
@@ -1350,14 +1395,8 @@
       }, err => console.warn("Ventas sync note:", err));
     }
 
-    function updateProductsState() {
-      productos = Array.from(firestoreProductsMap.values());
-      renderProductos();
-      updateProductCounter();
-    }
-
     function syncFirestoreData() {
-      firestoreProductsMap.clear();
+      Object.keys(collectionsData).forEach(col => collectionsData[col].clear());
       initFirestoreSync();
       alert('⚡ Sincronizando catálogo real con Firestore...');
     }
@@ -1383,7 +1422,7 @@
       if (filtered.length === 0) {
         grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
           <i class="fa-solid fa-box-open" style="font-size:3rem; color:var(--brand-pink); margin-bottom:1rem;"></i>
-          <p>No se encontraron productos que coincidan.</p>
+          <p>No se encontraron productos registrados.</p>
         </div>`;
         return;
       }
@@ -1868,16 +1907,8 @@
       const name = prod ? prod.nombre : 'este producto';
       if (confirm(`¿Estás seguro de que deseas eliminar "${name}" permanentemente de Firestore?`)) {
         db.collection('pos_productos').doc(id).delete().then(() => {
-          firestoreProductsMap.delete(id);
-          updateProductsState();
+          syncFirestoreData();
           alert('✨ Producto eliminado correctamente.');
-          
-          if (document.getElementById('productosModal').classList.contains('active')) {
-            renderProductosTable(productos);
-          }
-          if (document.getElementById('inventarioModal').classList.contains('active')) {
-            renderInventarioTable(productos);
-          }
         }).catch((err) => {
           alert("Error al eliminar: " + err.message);
         });
