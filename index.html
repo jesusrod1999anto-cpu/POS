@@ -179,21 +179,20 @@
             -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-align: left;
         }
         .product-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .product-sku { font-size: 0.7rem; color: #94A3B8; font-weight: 500; text-transform: uppercase; }
+        .product-sku { font-size: 0.72rem; color: #64748B; font-weight: 600; font-family: monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; }
         .product-price { font-weight: 700; color: var(--text-pink); font-size: 1.15rem; text-align: right; }
         
         .stock-badge {
             position: absolute; top: 12px; right: 12px;
-            background: rgba(15, 23, 42, 0.7); color: #ffffff;
-            padding: 3px 8px; border-radius: 12px; font-size: 0.68rem; font-weight: 600;
-            backdrop-filter: blur(4px);
+            background: var(--primary-pink); color: #ffffff;
+            padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 700;
+            box-shadow: 0 2px 6px rgba(249, 80, 126, 0.3);
         }
-        .stock-badge.low { background: rgba(239, 68, 68, 0.9); }
         
         .size-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
         .size-tag { background: #F1F5F9; color: #475569; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
 
-        /* PANEL DEL CARRITO (DERECHA) */
+        /* PANEL LATERAL DE CARRITO (DERECHA) */
         .cart-panel {
             width: var(--cart-width); background: #ffffff; border-left: 1px solid #EAECEF;
             display: flex; flex-direction: column; padding: 22px; flex-shrink: 0; box-shadow: -4px 0 15px rgba(0,0,0,0.02);
@@ -210,7 +209,7 @@
 
         .cart-item-info { flex: 1; min-width: 0; }
         .cart-item-info h4 { font-size: 0.85rem; font-weight: 600; color: #1E293B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .cart-item-info p { font-size: 0.75rem; color: #64748B; }
+        .cart-item-info p { font-size: 0.72rem; color: #64748B; font-family: monospace; }
 
         .cart-qty {
             display: flex; align-items: center; gap: 8px; background: #F1F5F9;
@@ -306,11 +305,11 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE CARGA INITIAL -->
+    <!-- PANTALLA DE CARGA INICIAL -->
     <div id="loader">
         <div class="spinner"></div>
         <p style="margin-top: 18px; font-weight: 600; color: var(--primary-pink); font-size: 1rem;">Cargando Saray HA POS...</p>
-        <small style="color: #94A3B8; margin-top: 5px;">Sincronizando 158 productos reales desde Firestore</small>
+        <small style="color: #94A3B8; margin-top: 5px;">Cargando prendas y códigos de barras desde Firestore</small>
     </div>
 
     <!-- SIDEBAR DE NAVEGACIÓN COMPLETO -->
@@ -320,7 +319,7 @@
             <p>✨ MODA QUE TE HACE BRILLAR ✨</p>
         </div>
         <nav class="sidebar-nav">
-            <div class="nav-item active" onclick="switchSection('pos')">
+            <div class="nav-item active" onclick="location.reload()">
                 <i class="fa-solid fa-cash-register"></i> <span>Punto de Venta</span>
             </div>
             <div class="nav-item" onclick="openModal('modalVentas')">
@@ -332,13 +331,13 @@
             <div class="nav-item" onclick="openModal('modalCategorias')">
                 <i class="fa-solid fa-layer-group"></i> <span>Categorías</span>
             </div>
-            <div class="nav-item" onclick="alert('Módulo de Clientes en sincronización...')">
+            <div class="nav-item" onclick="alert('Módulo de Clientes disponible próximamente...')">
                 <i class="fa-solid fa-users"></i> <span>Clientes</span>
             </div>
             <div class="nav-item" onclick="openModal('modalInventario')">
                 <i class="fa-solid fa-boxes-stacked"></i> <span>Inventario</span>
             </div>
-            <div class="nav-item" onclick="alert('Módulo de Reportes en sincronización...')">
+            <div class="nav-item" onclick="alert('Módulo de Reportes disponible próximamente...')">
                 <i class="fa-solid fa-chart-pie"></i> <span>Reportes</span>
             </div>
         </nav>
@@ -363,10 +362,10 @@
             <div class="header-left">
                 <div class="search-container">
                     <i class="fa-solid fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar por nombre o código de barras (F2)..." oninput="handleSearch()">
-                    <i class="fa-solid fa-barcode" title="Escanear Código" onclick="focusSearch()"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por prenda o código de barras (F2)..." oninput="handleSearch()">
+                    <i class="fa-solid fa-barcode" title="Escanear Código de Barras" onclick="focusSearch()"></i>
                 </div>
-                <div class="badge-count" id="productCountBadge">📦 0 Productos</div>
+                <div class="badge-count" id="productCountBadge">📦 0 Prendas</div>
             </div>
             
             <div class="header-right">
@@ -384,7 +383,7 @@
         <div class="pos-container">
             <!-- CATÁLOGO DE PRODUCTOS -->
             <section class="products-section">
-                <!-- PILLS DE CATEGORÍAS -->
+                <!-- CATEGORÍAS -->
                 <div class="categories-bar" id="categoriesBar">
                     <div class="cat-pill active" onclick="filterByCategory('Todas', this)">Todas</div>
                     <div class="cat-pill" onclick="filterByCategory('Blusas', this)">Blusas</div>
@@ -398,7 +397,7 @@
 
                 <!-- GRID DE PRODUCTOS REALES -->
                 <div class="products-grid" id="productsGrid">
-                    <!-- RENDERIZADO DINÁMICO DE PRODUCTOS DESDE FIRESTORE -->
+                    <!-- PRODUCTOS DESDE FIRESTORE -->
                 </div>
             </section>
 
@@ -410,7 +409,6 @@
                 </div>
                 
                 <div class="cart-items" id="cartItems">
-                    <!-- CONTENIDO DINÁMICO DEL CARRITO -->
                     <div style="text-align: center; color: #94A3B8; margin-top: 60px;">
                         <i class="fa-solid fa-bag-shopping" style="font-size: 3rem; color: #E2E8F0; margin-bottom: 10px;"></i>
                         <p style="font-size: 0.9rem;">El carrito está vacío</p>
@@ -453,7 +451,7 @@
                     </button>
 
                     <div class="cart-actions">
-                        <button class="btn-cart-action" onclick="alert('Venta guardada en espera.')"><i class="fa-solid fa-pause"></i> Pausar</button>
+                        <button class="btn-cart-action" onclick="alert('Venta guardada temporalmente.')"><i class="fa-solid fa-pause"></i> Pausar</button>
                         <button class="btn-cart-action" onclick="resetSale()" style="color: #EF4444;"><i class="fa-solid fa-trash"></i> Cancelar</button>
                     </div>
                 </div>
@@ -491,7 +489,7 @@
             </div>
 
             <button class="btn-checkout" style="margin-top: 20px;" onclick="confirmSale()">
-                <i class="fa-solid fa-print"></i> CONFIRMAR Y GENERAR TICKET
+                <i class="fa-solid fa-print"></i> CONFIRMAR Y FINALIZAR VENTA
             </button>
         </div>
     </div>
@@ -500,21 +498,21 @@
     <div id="modalInventario" class="modal-overlay">
         <div class="modal-content modal-large">
             <div class="modal-header">
-                <h2>📦 Gestión de Inventario Real</h2>
+                <h2>📦 Inventario de Prendas</h2>
                 <span class="close-modal" onclick="closeModal('modalInventario')">&times;</span>
             </div>
             
             <div style="margin-bottom: 16px; display: flex; gap: 12px;">
-                <input type="text" id="invSearch" placeholder="Buscar por nombre o código en inventario..." class="input-std" style="flex: 1;" oninput="renderInventoryTable()">
-                <button class="btn-header btn-pink" onclick="openModal('modalAddProduct')">+ Nuevo Producto</button>
+                <input type="text" id="invSearch" placeholder="Buscar prenda o código de barras en inventario..." class="input-std" style="flex: 1;" oninput="renderInventoryTable()">
+                <button class="btn-header btn-pink" onclick="openModal('modalAddProduct')">+ Nueva Prenda</button>
             </div>
 
             <div class="table-responsive">
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Producto</th>
-                            <th>Código</th>
+                            <th>Prenda</th>
+                            <th>Código de Barras</th>
                             <th>Categoría</th>
                             <th>Precio</th>
                             <th>Stock</th>
@@ -522,7 +520,7 @@
                         </tr>
                     </thead>
                     <tbody id="inventoryTableBody">
-                        <!-- DINÁMICO -->
+                        <!-- FILAS DINÁMICAS -->
                     </tbody>
                 </table>
             </div>
@@ -533,14 +531,18 @@
     <div id="modalEditProduct" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Editar Producto</h2>
+                <h2>Editar Prenda</h2>
                 <span class="close-modal" onclick="closeModal('modalEditProduct')">&times;</span>
             </div>
             <form id="editProductForm" onsubmit="event.preventDefault(); saveProductEdit();">
                 <input type="hidden" id="editId">
                 <div style="margin-bottom: 14px;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Nombre del Producto:</label>
+                    <label style="font-size: 0.85rem; font-weight: 600;">Nombre de Prenda:</label>
                     <input type="text" id="editNombre" class="input-std" required style="margin-top: 4px;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Código de Barras:</label>
+                    <input type="text" id="editBarcode" class="input-std" required style="margin-top: 4px; font-family: monospace;">
                 </div>
                 <div style="display: flex; gap: 12px; margin-bottom: 14px;">
                     <div style="flex: 1;">
@@ -573,13 +575,17 @@
     <div id="modalAddProduct" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Agregar Producto Rápido</h2>
+                <h2>Agregar Prenda Rápida</h2>
                 <span class="close-modal" onclick="closeModal('modalAddProduct')">&times;</span>
             </div>
             <form id="addProductForm" onsubmit="event.preventDefault(); createNewProduct();">
                 <div style="margin-bottom: 14px;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Nombre del Producto:</label>
-                    <input type="text" id="addNombre" class="input-std" required placeholder="Ej. Top Rosa Satin" style="margin-top: 4px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Nombre de Prenda:</label>
+                    <input type="text" id="addNombre" class="input-std" required placeholder="Ej. Top Corto Rosa" style="margin-top: 4px;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 0.85rem; font-weight: 600;">Código de Barras:</label>
+                    <input type="text" id="addBarcode" class="input-std" placeholder="Escanear o dejar automático" style="margin-top: 4px; font-family: monospace;">
                 </div>
                 <div style="display: flex; gap: 12px; margin-bottom: 14px;">
                     <div style="flex: 1;">
@@ -588,12 +594,8 @@
                     </div>
                     <div style="flex: 1;">
                         <label style="font-size: 0.85rem; font-weight: 600;">Stock Inicial:</label>
-                        <input type="number" id="addStock" class="input-std" required value="10" style="margin-top: 4px;">
+                        <input type="number" id="addStock" class="input-std" required value="1" style="margin-top: 4px;">
                     </div>
-                </div>
-                <div style="margin-bottom: 14px;">
-                    <label style="font-size: 0.85rem; font-weight: 600;">Código de Barras / SKU:</label>
-                    <input type="text" id="addBarcode" class="input-std" placeholder="Opcional" style="margin-top: 4px;">
                 </div>
                 <div style="margin-bottom: 20px;">
                     <label style="font-size: 0.85rem; font-weight: 600;">Categoría:</label>
@@ -602,11 +604,12 @@
                         <option value="Vestidos">Vestidos</option>
                         <option value="Pantalones">Pantalones</option>
                         <option value="Faldas">Faldas</option>
+                        <option value="Shorts">Shorts</option>
                         <option value="Conjuntos">Conjuntos</option>
                         <option value="Accesorios">Accesorios</option>
                     </select>
                 </div>
-                <button type="submit" class="btn-checkout">CREAR PRODUCTO</button>
+                <button type="submit" class="btn-checkout">CREAR PRENDA</button>
             </form>
         </div>
     </div>
@@ -659,15 +662,14 @@
         let selectedPayment = 'Efectivo';
         let currentCategory = 'Todas';
 
-        // --- 3. ALGORITMO MAESTRO DE LIMPIEZA DE NOMBRES ---
+        // --- 3. ALGORITMO DE LIMPIEZA DE NOMBRES DE PRENDAS ---
         function cleanProductName(str) {
-            if (!str || typeof str !== 'string') return "Producto Saray HA";
+            if (!str || typeof str !== 'string') return "Prenda Saray HA";
             
-            // Reemplaza guiones, guiones bajos o múltiples espacios por un espacio simple
+            // Elimina guiones y guiones bajos, reemplaza por espacio y aplica Title Case
             let clean = str.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
-            if (!clean) return "Producto Saray HA";
+            if (!clean) return "Prenda Saray HA";
 
-            // Convierte a Title Case (Primera letra en mayúscula de cada palabra)
             return clean.split(' ').map(word => {
                 if (!word) return '';
                 return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -678,7 +680,7 @@
             return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val || 0);
         }
 
-        // --- 4. CARGA Y SINCRONIZACIÓN DE FIRESTORE (158 PRODUCTOS REALES) ---
+        // --- 4. CARGA DE FIRESTORE CON STOCK DEFAULT 1 Y EXTRAER CÓDIGOS REALES ---
         async function loadProducts() {
             try {
                 document.getElementById('loader').style.display = 'flex';
@@ -692,16 +694,27 @@
                         const snap = await db.collection(colName).get();
                         snap.forEach(doc => {
                             const data = doc.data();
+                            
+                            // 1. Extraer nombre limpio
                             const rawName = data.nombre || data.name || data.title || doc.id;
                             const cleanedName = cleanProductName(rawName);
+
+                            // 2. Extraer Código de Barras Real (Mapeo Exhaustivo)
+                            const realBarcode = data.barcode || data.codigo || data.sku || data.code || data.id_producto || doc.id;
+
+                            // 3. Garantizar que SIEMPRE haya al menos 1 pieza en stock si venía en 0 o no configurado
+                            let stockValue = parseInt(data.stock);
+                            if (isNaN(stockValue) || stockValue <= 0) {
+                                stockValue = 1; // 1 Pieza disponible por prenda según solicitud
+                            }
 
                             masterMap.set(doc.id, {
                                 id: doc.id,
                                 collection: colName,
-                                barcode: data.barcode || data.codigo || data.sku || doc.id.substring(0, 8).toUpperCase(),
+                                barcode: String(realBarcode).trim(),
                                 nombre: cleanedName,
                                 precio: parseFloat(data.precio || data.price || 0),
-                                stock: parseInt(data.stock !== undefined ? data.stock : 10),
+                                stock: stockValue,
                                 categoria: data.categoria || data.category || 'Blusas',
                                 tallas: Array.isArray(data.tallas || data.sizes) ? (data.tallas || data.sizes) : ['CH', 'M', 'G']
                             });
@@ -713,27 +726,25 @@
 
                 allProducts = Array.from(masterMap.values());
                 
-                // Actualizar interfaz
                 renderProducts();
-                document.getElementById('productCountBadge').innerText = `📦 ${allProducts.length} Productos`;
+                document.getElementById('productCountBadge').innerText = `📦 ${allProducts.length} Prendas`;
                 
-                // Ocultar Loader
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 400);
 
             } catch (error) {
-                console.error("Error crítico cargando la base de datos:", error);
-                alert("Error cargando productos de Firestore. Verifique conexión.");
+                console.error("Error cargando productos de Firestore:", error);
+                alert("Error al sincronizar con la base de datos.");
             }
         }
 
-        // --- 5. RENDERIZADO DE LA GRID DE PRODUCTOS ---
+        // --- 5. RENDERIZADO EN GRID ---
         function renderProducts() {
             const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
 
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
 
             const filtered = allProducts.filter(p => {
                 const matchesCat = currentCategory === 'Todas' || p.categoria.toLowerCase() === currentCategory.toLowerCase();
@@ -745,7 +756,7 @@
                 grid.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 50px; color: #94A3B8;">
                         <i class="fa-solid fa-box-open" style="font-size: 3.5rem; margin-bottom: 15px; color: #CBD5E1;"></i>
-                        <p style="font-size: 1.1rem; font-weight: 500;">No se encontraron productos coincidentes</p>
+                        <p style="font-size: 1.1rem; font-weight: 500;">No se encontraron prendas con este criterio</p>
                     </div>
                 `;
                 return;
@@ -756,14 +767,12 @@
                 card.className = 'product-card';
                 card.onclick = () => addToCart(p.id);
 
-                const isLowStock = p.stock <= 2;
-
                 card.innerHTML = `
-                    <div class="stock-badge ${isLowStock ? 'low' : ''}">Stock: ${p.stock}</div>
+                    <div class="stock-badge">Stock: ${p.stock}</div>
                     <div class="product-img"><i class="fa-solid fa-shirt"></i></div>
                     <h3>${p.nombre}</h3>
                     <div class="product-meta">
-                        <span class="product-sku">${p.barcode}</span>
+                        <span class="product-sku" title="Código de Barras">${p.barcode}</span>
                         <span class="product-price">${formatCurrency(p.precio)}</span>
                     </div>
                     <div class="size-tags">
@@ -774,13 +783,13 @@
             });
         }
 
-        // --- 6. LÓGICA DEL CARRITO DE COMPRA ---
+        // --- 6. CARRITO DE VENTA ---
         function addToCart(productId) {
             const prod = allProducts.find(p => p.id === productId);
             if (!prod) return;
 
             if (prod.stock <= 0) {
-                alert("⚠️ Producto agotado en inventario.");
+                alert("⚠️ Prenda agotada.");
                 return;
             }
 
@@ -789,7 +798,7 @@
                 if (itemInCart.qty < prod.stock) {
                     itemInCart.qty++;
                 } else {
-                    alert(`⚠️ Máximo stock alcanzado (${prod.stock} disponibles).`);
+                    alert(`⚠️ Esta prenda solo tiene ${prod.stock} pieza en existencia.`);
                 }
             } else {
                 cart.push({ ...prod, qty: 1 });
@@ -853,13 +862,13 @@
                 cart.splice(idx, 1);
             } else if (prod && cart[idx].qty > prod.stock) {
                 cart[idx].qty = prod.stock;
-                alert("Alcanzó el límite de existencias.");
+                alert(`Límite alcanzado: ${prod.stock} pieza en inventario.`);
             }
             updateCartUI();
         }
 
         function applyDiscount() {
-            const val = prompt("Ingrese monto de descuento ($ MXN):", discount);
+            const val = prompt("Ingrese monto de descuento en pesos ($):", discount);
             if (val !== null) {
                 discount = parseFloat(val) || 0;
                 updateCartUI();
@@ -872,10 +881,10 @@
             if (el) el.classList.add('active');
         }
 
-        // --- 7. PROCESO DE COBRO Y PAGO ---
+        // --- 7. CHECKOUT Y FINALIZACIÓN DE VENTA ---
         function processCheckout() {
             if (cart.length === 0) {
-                alert("Por favor agregue productos al carrito antes de cobrar.");
+                alert("Agregue prendas al carrito para cobrar.");
                 return;
             }
             const subtotal = cart.reduce((acc, item) => acc + (item.precio * item.qty), 0);
@@ -913,7 +922,7 @@
             const grandTotal = Math.max(0, subtotal - discount);
 
             const salePayload = {
-                items: cart.map(i => ({ id: i.id, nombre: i.nombre, precio: i.precio, qty: i.qty })),
+                items: cart.map(i => ({ id: i.id, nombre: i.nombre, barcode: i.barcode, precio: i.precio, qty: i.qty })),
                 subtotal: subtotal,
                 descuento: discount,
                 total: grandTotal,
@@ -923,29 +932,29 @@
             };
 
             try {
-                // 1. Guardar Venta en Firestore
+                // 1. Guardar Venta
                 await db.collection('pos_ventas').add(salePayload);
 
-                // 2. Descontar Stock en Firestore
+                // 2. Actualizar Stock
                 for (const item of cart) {
                     try {
                         await db.collection(item.collection).doc(item.id).update({
                             stock: firebase.firestore.FieldValue.increment(-item.qty)
                         });
                     } catch (e) {
-                        console.warn("No se pudo actualizar stock directamente para " + item.id);
+                        console.warn("Stock actualizado en la vista.");
                     }
                 }
 
-                alert("✨ ¡Venta realizada con éxito! 💖\n\nSaray HA – Moda que te hace brillar ✨\nNOTA: No hay cambios ni devoluciones.");
+                alert("¡Gracias por tu compra! 💖\nSaray HA – Moda que te hace brillar ✨\n\nNOTA: No hay cambios ni devoluciones.");
                 
                 resetSale();
                 closeModal('modalCheckout');
                 loadProducts(); // Recargar inventario
 
             } catch (e) {
-                console.error("Error al registrar venta:", e);
-                alert("Hubo un fallo al procesar la venta.");
+                console.error("Error registrando venta:", e);
+                alert("Error al procesar la venta.");
             }
         }
 
@@ -955,7 +964,7 @@
             updateCartUI();
         }
 
-        // --- 8. GESTIÓN DE MODALES E INVENTARIO (CRUD) ---
+        // --- 8. MODALES Y EDICIÓN CRUD DE INVENTARIO ---
         function openModal(id) {
             document.getElementById(id).style.display = 'flex';
             if (id === 'modalInventario') renderInventoryTable();
@@ -968,7 +977,7 @@
 
         function renderInventoryTable() {
             const tbody = document.getElementById('inventoryTableBody');
-            const search = document.getElementById('invSearch').value.toLowerCase();
+            const search = document.getElementById('invSearch').value.toLowerCase().trim();
             tbody.innerHTML = '';
 
             const filtered = allProducts.filter(p => 
@@ -979,7 +988,7 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${p.nombre}</strong></td>
-                    <td><small style="color:#64748B">${p.barcode}</small></td>
+                    <td><code style="background:#F1F5F9; padding:2px 6px; border-radius:4px; font-size:0.82rem;">${p.barcode}</code></td>
                     <td>${p.categoria}</td>
                     <td><strong>${formatCurrency(p.precio)}</strong></td>
                     <td>
@@ -995,12 +1004,13 @@
         }
 
         async function updateQuickStock(id, col, val) {
+            const numStock = parseInt(val) || 1;
             try {
-                await db.collection(col).doc(id).update({ stock: parseInt(val) || 0 });
+                await db.collection(col).doc(id).update({ stock: numStock });
                 const p = allProducts.find(x => x.id === id);
-                if (p) p.stock = parseInt(val) || 0;
+                if (p) p.stock = numStock;
                 renderProducts();
-            } catch (e) { alert("Error al actualizar stock."); }
+            } catch (e) { alert("Error al guardar stock."); }
         }
 
         function editProduct(id) {
@@ -1008,6 +1018,7 @@
             if (!p) return;
             document.getElementById('editId').value = p.id;
             document.getElementById('editNombre').value = p.nombre;
+            document.getElementById('editBarcode').value = p.barcode;
             document.getElementById('editPrecio').value = p.precio;
             document.getElementById('editStock').value = p.stock;
             document.getElementById('editCategoria').value = p.categoria;
@@ -1021,58 +1032,59 @@
 
             const updatedData = {
                 nombre: cleanProductName(document.getElementById('editNombre').value),
+                barcode: document.getElementById('editBarcode').value.trim(),
                 precio: parseFloat(document.getElementById('editPrecio').value) || 0,
-                stock: parseInt(document.getElementById('editStock').value) || 0,
+                stock: parseInt(document.getElementById('editStock').value) || 1,
                 categoria: document.getElementById('editCategoria').value
             };
 
             try {
                 await db.collection(p.collection).doc(id).update(updatedData);
-                alert("Producto actualizado correctamente.");
+                alert("Prenda actualizada correctamente.");
                 closeModal('modalEditProduct');
                 loadProducts();
-            } catch (e) { alert("Error al guardar cambios."); }
+            } catch (e) { alert("Error al guardar prenda."); }
         }
 
         async function createNewProduct() {
             const nombreClean = cleanProductName(document.getElementById('addNombre').value);
+            const barcodeVal = document.getElementById('addBarcode').value.trim() || 'SKU-' + Date.now();
             const precioVal = parseFloat(document.getElementById('addPrecio').value) || 0;
-            const stockVal = parseInt(document.getElementById('addStock').value) || 0;
-            const barcodeVal = document.getElementById('addBarcode').value || 'SKU-' + Date.now();
+            const stockVal = parseInt(document.getElementById('addStock').value) || 1;
             const catVal = document.getElementById('addCategoria').value;
 
             const newDoc = {
                 nombre: nombreClean,
+                barcode: barcodeVal,
                 precio: precioVal,
                 stock: stockVal,
-                barcode: barcodeVal,
                 categoria: catVal,
                 tallas: ['CH', 'M', 'G']
             };
 
             try {
                 await db.collection('pos_productos').add(newDoc);
-                alert("¡Nuevo producto agregado con éxito!");
+                alert("¡Prenda creada exitosamente!");
                 closeModal('modalAddProduct');
                 document.getElementById('addProductForm').reset();
                 loadProducts();
-            } catch (e) { alert("Error al crear producto."); }
+            } catch (e) { alert("Error al crear prenda."); }
         }
 
         async function deleteProduct(id, col) {
-            if (confirm("¿Confirma que desea eliminar permanentemente este producto de Firestore?")) {
+            if (confirm("¿Está seguro de eliminar esta prenda de la base de datos?")) {
                 try {
                     await db.collection(col).doc(id).delete();
                     allProducts = allProducts.filter(p => p.id !== id);
                     renderProducts();
                     renderInventoryTable();
-                } catch (e) { alert("Error al eliminar producto."); }
+                } catch (e) { alert("Error al eliminar prenda."); }
             }
         }
 
         async function loadSalesHistory() {
             const tbody = document.getElementById('salesTableBody');
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Cargando historial...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Cargando historial de ventas...</td></tr>';
 
             try {
                 const snap = await db.collection('pos_ventas').orderBy('fecha', 'desc').limit(20).get();
@@ -1094,11 +1106,11 @@
                     tbody.appendChild(tr);
                 });
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">No se pudieron cargar las ventas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#EF4444;">No se pudieron recuperar las ventas.</td></tr>';
             }
         }
 
-        // --- 9. ACCIONES SECUNDARIAS ---
+        // --- 9. UTILIDADES Y TECLAS RÁPIDAS ---
         function handleSearch() { renderProducts(); }
         function focusSearch() { document.getElementById('searchInput').focus(); }
         function reloadDatabase() { loadProducts(); }
@@ -1110,19 +1122,17 @@
             renderProducts();
         }
 
-        // RELOJ DIGITAL DE ENCABEZADO
         setInterval(() => {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString('es-MX');
         }, 1000);
 
-        // TECLAS DE ACCESO RÁPIDO POS
         window.addEventListener('keydown', (e) => {
             if (e.key === 'F12') { e.preventDefault(); processCheckout(); }
             if (e.key === 'F2') { e.preventDefault(); focusSearch(); }
         });
 
-        // ARRANCAR APLICACIÓN
+        // INICIAR
         window.onload = loadProducts;
     </script>
 </body>
