@@ -1,1959 +1,894 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saray HA - Punto de Venta (POS)</title>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <!-- Firebase SDKs (v10.8.0 compat) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    :root {
-      --brand-pink: #F9507E;
-      --brand-pink-hover: #E03E6A;
-      --brand-light-pink: #FDE8ED;
-      --brand-text-pink: #D6285A;
-      --bg-main: #F4F6F9;
-      --card-bg: #FFFFFF;
-      --text-dark: #2D3748;
-      --text-muted: #718096;
-      --border-color: #E2E8F0;
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
-      --shadow-md: 0 4px 12px rgba(249, 80, 126, 0.08);
-      --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-main);
-      color: var(--text-dark);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    /* --- SIDEBAR --- */
-    aside {
-      width: 260px;
-      background: #FFFFFF;
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 1.5rem 1rem;
-      z-index: 10;
-      flex-shrink: 0;
-    }
-
-    .brand-logo {
-      text-align: center;
-      padding-bottom: 1.2rem;
-      border-bottom: 1px solid var(--brand-light-pink);
-    }
-
-    .brand-logo h1 {
-      font-family: 'Dancing Script', cursive;
-      color: var(--brand-pink);
-      font-size: 2.2rem;
-      font-weight: 700;
-      line-height: 1.1;
-    }
-
-    .brand-logo p {
-      font-size: 0.75rem;
-      color: var(--brand-text-pink);
-      font-weight: 500;
-      margin-top: 4px;
-    }
-
-    .nav-menu {
-      list-style: none;
-      margin-top: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .nav-item a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 500;
-      border-radius: var(--radius-sm);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    .nav-item a:hover, .nav-item.active a {
-      background: var(--brand-light-pink);
-      color: var(--brand-pink);
-    }
-
-    .nav-item.active a {
-      font-weight: 600;
-    }
-
-    .sidebar-footer {
-      border-top: 1px solid var(--border-color);
-      padding-top: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-
-    .cashier-card {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--bg-main);
-      padding: 10px;
-      border-radius: var(--radius-sm);
-    }
-
-    .cashier-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--brand-pink);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .cashier-info h4 {
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .cashier-info p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .btn-reset-db {
-      width: 100%;
-      background: var(--brand-pink);
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: background 0.2s;
-    }
-
-    .btn-reset-db:hover {
-      background: var(--brand-pink-hover);
-    }
-
-    /* --- MAIN LAYOUT --- */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    /* TOP BAR (ESPACIAMO NORMAL Y LIMPIO) */
-    header {
-      background: #FFFFFF;
-      min-height: 70px;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 1.5rem;
-      gap: 1rem;
-      flex-wrap: nowrap;
-    }
-
-    .search-container {
-      position: relative;
-      flex: 1;
-      max-width: 420px;
-      min-width: 200px;
-      display: flex;
-      align-items: center;
-    }
-
-    .search-container i.fa-search {
-      position: absolute;
-      left: 14px;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 10px 45px 10px 38px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 20px;
-      font-size: 0.88rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .search-input:focus {
-      border-color: var(--brand-pink);
-    }
-
-    .barcode-btn {
-      position: absolute;
-      right: 6px;
-      background: var(--brand-light-pink);
-      border: none;
-      color: var(--brand-pink);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
-    }
-
-    .barcode-btn:hover {
-      transform: scale(1.05);
-    }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      flex-shrink: 0;
-    }
-
-    .badge-count {
-      background: var(--brand-light-pink);
-      color: var(--brand-text-pink);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .clock-display {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      background: var(--bg-main);
-      padding: 8px 14px;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-
-    .btn-header {
-      background: white;
-      border: 1.5px solid var(--brand-pink);
-      color: var(--brand-pink);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-
-    .btn-header:hover {
-      background: var(--brand-light-pink);
-    }
-
-    .btn-header.primary {
-      background: var(--brand-pink);
-      color: white;
-    }
-
-    .btn-header.primary:hover {
-      background: var(--brand-pink-hover);
-    }
-
-    /* CONTENT SPLIT (CATALOG + CART) */
-    .pos-body {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* CATALOG AREA */
-    .catalog-section {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      padding: 1.2rem;
-      overflow: hidden;
-    }
-
-    /* CATEGORIES BAR */
-    .categories-bar {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 1rem;
-      scrollbar-width: thin;
-    }
-
-    .categories-bar::-webkit-scrollbar {
-      height: 4px;
-    }
-
-    .category-pill {
-      background: white;
-      border: 1px solid var(--border-color);
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-
-    .category-pill:hover, .category-pill.active {
-      background: var(--brand-pink);
-      color: white;
-      border-color: var(--brand-pink);
-      box-shadow: var(--shadow-sm);
-    }
-
-    /* PRODUCT GRID */
-    .product-grid {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 1rem;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .product-card {
-      background: white;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .product-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--brand-pink);
-    }
-
-    .product-img-wrap {
-      width: 100%;
-      height: 150px;
-      background: #F8FAF9;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .product-img-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .stock-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255, 255, 255, 0.92);
-      color: var(--text-dark);
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 10px;
-      backdrop-filter: blur(4px);
-    }
-
-    .stock-badge.low {
-      background: #FED7D7;
-      color: #E53E3E;
-    }
-
-    .product-info {
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      justify-content: space-between;
-    }
-
-    .product-barcode {
-      font-size: 0.68rem;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-      font-family: monospace;
-    }
-
-    .product-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-dark);
-      line-height: 1.25;
-      margin-bottom: 6px;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-transform: capitalize;
-    }
-
-    .product-sizes {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-
-    .size-tag {
-      font-size: 0.65rem;
-      background: var(--bg-main);
-      color: var(--text-muted);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-
-    .product-price {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--brand-text-pink);
-    }
-
-    /* CART DRAWER / PANEL */
-    .cart-panel {
-      width: 380px;
-      background: white;
-      border-left: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      box-shadow: -4px 0 15px rgba(0,0,0,0.02);
-      flex-shrink: 0;
-    }
-
-    .cart-header {
-      padding: 1.2rem;
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .cart-header h2 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .cart-items {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-    }
-
-    .cart-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px;
-      background: var(--bg-main);
-      border-radius: var(--radius-sm);
-    }
-
-    .cart-item img {
-      width: 45px;
-      height: 45px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-
-    .cart-item-details {
-      flex: 1;
-    }
-
-    .cart-item-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .cart-item-meta {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-    }
-
-    .cart-item-price {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--brand-pink);
-    }
-
-    .cart-item-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: white;
-      border-radius: 6px;
-      padding: 2px;
-      border: 1px solid var(--border-color);
-    }
-
-    .qty-btn {
-      border: none;
-      background: transparent;
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      font-weight: bold;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qty-btn:hover {
-      color: var(--brand-pink);
-    }
-
-    .cart-summary {
-      padding: 1.2rem;
-      border-top: 1px solid var(--border-color);
-      background: #FAFAFC;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-
-    .summary-row.total {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--brand-text-pink);
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1.5px dashed var(--border-color);
-    }
-
-    .discount-trigger {
-      cursor: pointer;
-      color: var(--brand-pink);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-decoration: underline;
-    }
-
-    .payment-methods {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin: 12px 0;
-    }
-
-    .pay-method-btn {
-      border: 1px solid var(--border-color);
-      background: white;
-      padding: 8px 4px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .pay-method-btn.active {
-      border-color: var(--brand-pink);
-      background: var(--brand-light-pink);
-      color: var(--brand-text-pink);
-    }
-
-    .cart-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .btn-checkout {
-      width: 100%;
-      background: var(--brand-pink);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: var(--radius-md);
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: var(--shadow-md);
-      transition: background 0.2s;
-    }
-
-    .btn-checkout:hover {
-      background: var(--brand-pink-hover);
-    }
-
-    .btn-cart-sec {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn-sec {
-      flex: 1;
-      padding: 8px;
-      background: white;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      color: var(--text-muted);
-    }
-
-    .btn-sec:hover {
-      background: var(--bg-main);
-    }
-
-    /* MODALS SYSTEM */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .modal-card {
-      background: white;
-      width: 92%;
-      max-width: 650px;
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-lg);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-card.large {
-      max-width: 950px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .modal-header h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-dark);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .close-modal {
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .quick-cash-pills {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 1rem 0;
-    }
-
-    .cash-pill {
-      flex: 1;
-      min-width: 70px;
-      background: var(--bg-main);
-      border: 1.5px solid var(--border-color);
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      text-align: center;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .cash-pill:hover {
-      border-color: var(--brand-pink);
-      color: var(--brand-pink);
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    .form-control:focus {
-      border-color: var(--brand-pink);
-    }
-
-    /* TABLES FOR MODALS */
-    .data-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.85rem;
-    }
-
-    .data-table th, .data-table td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .data-table th {
-      background: var(--bg-main);
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    /* RECEIPT STYLE */
-    .receipt-box {
-      background: #FFF9FA;
-      border: 1px dashed var(--brand-pink);
-      padding: 1.2rem;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.82rem;
-      color: #333;
-      border-radius: var(--radius-sm);
-      margin-bottom: 1rem;
-    }
-
-    .receipt-box .rec-header {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .receipt-box .rec-header h2 {
-      font-family: 'Dancing Script', cursive;
-      font-size: 1.8rem;
-      color: var(--brand-pink);
-    }
-
-    .receipt-line {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    .policy-note {
-      text-align: center;
-      margin-top: 1rem;
-      padding-top: 0.8rem;
-      border-top: 1px dashed #ccc;
-      font-size: 0.75rem;
-      color: var(--brand-text-pink);
-      font-family: 'Poppins', sans-serif;
-      font-weight: 500;
-    }
-
-    @media print {
-      body * {
-        visibility: hidden;
-      }
-      #printArea, #printArea * {
-        visibility: visible;
-      }
-      #printArea {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saray HA - Sistema de Punto de Venta</title>
+    
+    <!-- Fuentes y Estilos Externos -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        :root {
+            --primary-pink: #F9507E;
+            --hover-pink: #E03E6A;
+            --light-pink: #FDE8ED;
+            --text-pink: #D6285A;
+            --bg-gray: #F4F6F9;
+            --sidebar-width: 260px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.05);
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-gray); display: flex; height: 100vh; overflow: hidden; color: #333; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #eee;
+            z-index: 100;
+        }
+        .sidebar-brand {
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .sidebar-brand h1 {
+            font-family: 'Dancing Script', cursive;
+            color: var(--primary-pink);
+            font-size: 1.8rem;
+        }
+        .sidebar-nav { flex: 1; padding: 10px; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 10px;
+            color: #666;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .nav-item:hover, .nav-item.active {
+            background: var(--light-pink);
+            color: var(--primary-pink);
+        }
+        .nav-item i { margin-right: 12px; font-size: 1.1rem; width: 20px; }
+        
+        .sidebar-footer { padding: 20px; border-top: 1px solid #eee; }
+        .cashier-card {
+            background: var(--light-pink);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cashier-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary-pink); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* HEADER */
+        .header {
+            height: 75px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            border-bottom: 1px solid #eee;
+            gap: 20px;
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+        .search-container {
+            position: relative;
+            max-width: 450px;
+            width: 100%;
+        }
+        .search-container input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 25px;
+            border: 1px solid #eee;
+            background: #f9f9f9;
+            outline: none;
+            transition: var(--transition);
+        }
+        .search-container input:focus { border-color: var(--primary-pink); background: white; }
+        .search-container i.fa-search { position: absolute; left: 18px; top: 14px; color: #999; }
+        .search-container i.fa-barcode { position: absolute; right: 18px; top: 14px; color: var(--primary-pink); cursor: pointer; }
+
+        .header-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
+        .badge-count { background: var(--light-pink); color: var(--text-pink); padding: 6px 15px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; white-space: nowrap; }
+        .clock-display { font-weight: 600; color: #555; background: #eee; padding: 6px 15px; border-radius: 20px; min-width: 100px; text-align: center; }
+        
+        .btn-header {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+        .btn-pink { background: var(--primary-pink); color: white; }
+        .btn-pink:hover { background: var(--hover-pink); transform: translateY(-2px); }
+
+        /* LAYOUT POS */
+        .pos-container { display: flex; flex: 1; overflow: hidden; }
+        
+        /* PRODUCTS GRID */
+        .products-section { flex: 1; display: flex; flex-direction: column; background: var(--bg-gray); padding: 20px; overflow-y: auto; }
+        .categories-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .cat-pill {
+            padding: 8px 20px;
+            background: white;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        .cat-pill.active { background: var(--primary-pink); color: white; }
+        .cat-pill:hover:not(.active) { border-color: var(--primary-pink); color: var(--primary-pink); }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .product-card:hover { transform: translateY(-5px); border-color: var(--primary-pink); box-shadow: var(--shadow); }
+        .product-img { width: 100%; aspect-ratio: 1; background: #f0f0f0; border-radius: 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #ccc; }
+        .product-card h3 { font-size: 0.95rem; margin-bottom: 5px; color: #333; height: 2.4em; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .product-sku { font-size: 0.7rem; color: #999; text-transform: uppercase; margin-bottom: 8px; }
+        .product-price { font-weight: 700; color: var(--text-pink); font-size: 1.1rem; }
+        .stock-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+        .size-tags { display: flex; gap: 4px; justify-content: center; margin-top: 5px; flex-wrap: wrap; }
+        .size-tag { background: #eee; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; }
+
+        /* CART PANEL */
+        .cart-panel {
+            width: 380px;
+            background: white;
+            border-left: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .cart-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; color: #333; display: flex; justify-content: space-between; }
+        .cart-items { flex: 1; overflow-y: auto; margin-bottom: 20px; }
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f9f9f9;
+        }
+        .cart-item-info { flex: 1; }
+        .cart-item-info h4 { font-size: 0.85rem; font-weight: 600; }
+        .cart-item-info p { font-size: 0.8rem; color: #888; }
+        .cart-qty { display: flex; align-items: center; gap: 10px; background: #f4f6f9; padding: 5px 10px; border-radius: 15px; }
+        .cart-qty button { border: none; background: none; cursor: pointer; color: var(--primary-pink); font-weight: bold; }
+        .cart-qty span { font-size: 0.9rem; font-weight: 600; width: 20px; text-align: center; }
+        .cart-item-price { font-weight: 600; color: var(--text-pink); min-width: 60px; text-align: right; }
+
+        .cart-summary { border-top: 2px dashed #eee; padding-top: 20px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; color: #666; font-size: 0.95rem; }
+        .summary-total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; color: var(--primary-pink); font-size: 1.5rem; font-weight: 800; }
+        
+        .discount-link { color: var(--primary-pink); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
+
+        .payment-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0; }
+        .pay-btn {
+            border: 1px solid #eee;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+        .pay-btn.active { background: var(--primary-pink); color: white; border-color: var(--primary-pink); }
+        .pay-btn i { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary-pink);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(249, 80, 126, 0.3);
+            transition: var(--transition);
+        }
+        .btn-checkout:hover { transform: translateY(-2px); background: var(--hover-pink); }
+
+        .cart-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-action { padding: 10px; border-radius: 8px; border: 1px solid #eee; background: white; cursor: pointer; font-size: 0.8rem; transition: var(--transition); }
+        .btn-action:hover { background: #f9f9f9; }
+
+        /* MODALES */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; padding: 20px;
+        }
+        .modal-content {
+            background: white; border-radius: 20px; width: 100%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto; padding: 30px; position: relative;
+        }
+        .modal-large { max-width: 900px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-modal { cursor: pointer; font-size: 1.5rem; color: #999; }
+
+        /* TABLAS MODAL INVENTARIO */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .data-table th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: #666; font-size: 0.85rem; }
+        .data-table td { padding: 12px; border-bottom: 1px solid #f4f6f9; font-size: 0.9rem; }
+        
+        .stock-input { width: 60px; padding: 5px; border: 1px solid #ddd; border-radius: 5px; text-align: center; }
+        .btn-table { padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; margin-right: 5px; }
+        .btn-edit { background: #e3f2fd; color: #2196f3; }
+        .btn-delete { background: #ffebee; color: #f44336; }
+
+        /* CHECKOUT MODAL UI */
+        .cash-pills { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .cash-pill { background: #f0f0f0; padding: 10px 15px; border-radius: 20px; cursor: pointer; transition: 0.2s; font-weight: 600; }
+        .cash-pill:hover { background: var(--light-pink); color: var(--text-pink); }
+        .change-display { background: #fdf2f5; padding: 20px; border-radius: 15px; text-align: center; margin-top: 20px; }
+        .change-amount { font-size: 2rem; font-weight: 800; color: var(--text-pink); }
+
+        /* LOADING */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999; transition: opacity 0.5s;
+        }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--light-pink); border-top: 5px solid var(--primary-pink); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 1024px) {
+            .sidebar { width: 80px; }
+            .sidebar-brand h1, .nav-item span, .cashier-info { display: none; }
+            .nav-item { justify-content: center; }
+            .nav-item i { margin: 0; }
+            .cart-panel { width: 320px; }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- SIDEBAR MENU -->
-  <aside>
-    <div>
-      <div class="brand-logo">
-        <h1>Saray HA</h1>
-        <p>Moda que te hace brillar ✨</p>
-      </div>
-
-      <ul class="nav-menu">
-        <li class="nav-item active" id="nav-pos"><a onclick="switchView('pos')"><i class="fa-solid fa-cash-register"></i> Punto de Venta</a></li>
-        <li class="nav-item" id="nav-ventas"><a onclick="openVentasModal()"><i class="fa-solid fa-receipt"></i> Ventas</a></li>
-        <li class="nav-item" id="nav-productos"><a onclick="openProductosManagerModal()"><i class="fa-solid fa-boxes-stacked"></i> Productos</a></li>
-        <li class="nav-item" id="nav-categorias"><a onclick="openCategoriasModal()"><i class="fa-solid fa-tags"></i> Categorías</a></li>
-        <li class="nav-item" id="nav-clientes"><a onclick="openClientesModal()"><i class="fa-solid fa-users"></i> Clientes</a></li>
-        <li class="nav-item" id="nav-inventario"><a onclick="openInventarioModal()"><i class="fa-solid fa-warehouse"></i> Inventario</a></li>
-        <li class="nav-item" id="nav-reportes"><a onclick="openReportesModal()"><i class="fa-solid fa-chart-line"></i> Reportes</a></li>
-      </ul>
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 600; color: var(--primary-pink);">Cargando Saray HA...</p>
     </div>
 
-    <div class="sidebar-footer">
-      <div class="cashier-card">
-        <div class="cashier-avatar">SH</div>
-        <div class="cashier-info">
-          <h4>Caja Principal</h4>
-          <p>Mostrador Saray HA</p>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Saray HA</h1>
+            <small style="color: #999; font-size: 0.7rem;">✨ Moda que brilla</small>
         </div>
-      </div>
-      <button class="btn-reset-db" onclick="syncFirestoreData()">
-        <i class="fa-solid fa-rotate"></i> Recargar Base de Datos
-      </button>
-    </div>
-  </aside>
-
-  <!-- MAIN AREA -->
-  <main>
-    <!-- TOP BAR -->
-    <header>
-      <div class="search-container">
-        <i class="fa-solid fa-search"></i>
-        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por producto, código de barras o categoría..." onkeyup="handleSearch(event)">
-        <button class="barcode-btn" title="Escanear código de barras" onclick="triggerBarcodeScan()">
-          <i class="fa-solid fa-barcode"></i>
-        </button>
-      </div>
-
-      <div class="top-actions">
-        <div class="badge-count" id="productCounter">📦 0 Productos</div>
-        <div class="clock-display" id="clockDisplay"><i class="fa-regular fa-clock"></i> --:--:--</div>
-        <button class="btn-header" onclick="openQuickProductModal()">
-          <i class="fa-solid fa-plus"></i> Producto Rápido
-        </button>
-        <button class="btn-header primary" onclick="clearCart()">
-          <i class="fa-solid fa-sparkles"></i> Nueva Venta
-        </button>
-      </div>
-    </header>
-
-    <!-- POS CONTENT -->
-    <div class="pos-body">
-      <!-- CATALOG SECTION -->
-      <section class="catalog-section">
-        <!-- CATEGORIES BAR -->
-        <div class="categories-bar" id="categoriesBar">
-          <button class="category-pill active" onclick="filterCategory('Todas')">Todas</button>
-          <button class="category-pill" onclick="filterCategory('Blusas')">Blusas</button>
-          <button class="category-pill" onclick="filterCategory('Vestidos')">Vestidos</button>
-          <button class="category-pill" onclick="filterCategory('Pantalones')">Pantalones</button>
-          <button class="category-pill" onclick="filterCategory('Faldas')">Faldas</button>
-          <button class="category-pill" onclick="filterCategory('Shorts')">Shorts</button>
-          <button class="category-pill" onclick="filterCategory('Conjuntos')">Conjuntos</button>
-          <button class="category-pill" onclick="filterCategory('Accesorios')">Accesorios</button>
-        </div>
-
-        <!-- PRODUCT GRID -->
-        <div class="product-grid" id="productGrid">
-          <!-- Rendered dynamically -->
-        </div>
-      </section>
-
-      <!-- CART PANEL -->
-      <section class="cart-panel">
-        <div class="cart-header">
-          <h2><i class="fa-solid fa-bag-shopping" style="color: var(--brand-pink)"></i> Venta Actual</h2>
-          <span style="font-size:0.8rem; color:var(--text-muted);" id="cartItemCount">0 items</span>
-        </div>
-
-        <div class="cart-items" id="cartItems">
-          <!-- Cart Items Dynamic -->
-        </div>
-
-        <div class="cart-summary">
-          <div class="summary-row">
-            <span>Subtotal</span>
-            <span id="subtotalVal">$0.00</span>
-          </div>
-          <div class="summary-row">
-            <span>Descuento <i class="fa-solid fa-pen-to-square discount-trigger" onclick="openDiscountModal()"></i></span>
-            <span id="discountVal">-$0.00</span>
-          </div>
-          <div class="summary-row total">
-            <span>Total</span>
-            <span id="totalVal">$0.00</span>
-          </div>
-
-          <label style="font-size:0.75rem; font-weight:600; color:var(--text-muted); margin-top:10px; display:block;">Método de Pago:</label>
-          <div class="payment-methods">
-            <button class="pay-method-btn active" onclick="setPaymentMethod('Efectivo', this)">Efectivo</button>
-            <button class="pay-method-btn" onclick="setPaymentMethod('Tarjeta', this)">Tarjeta</button>
-            <button class="pay-method-btn" onclick="setPaymentMethod('Transferencia', this)">Transf.</button>
-            <button class="pay-method-btn" onclick="setPaymentMethod('Otro', this)">Otro</button>
-          </div>
-
-          <div class="cart-actions">
-            <button class="btn-checkout" onclick="initiateCheckout()">
-              <i class="fa-solid fa-circle-check"></i> COBRAR
-            </button>
-            <div class="btn-cart-sec">
-              <button class="btn-sec" onclick="saveSaleDraft()"><i class="fa-solid fa-bookmark"></i> Guardar Venta</button>
-              <button class="btn-sec" onclick="clearCart()"><i class="fa-solid fa-trash"></i> Cancelar</button>
+        <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showSection('pos')">
+                <i class="fa-solid fa-cash-register"></i> <span>Punto de Venta</span>
             </div>
-          </div>
+            <div class="nav-item" onclick="openModal('modalVentas')">
+                <i class="fa-solid fa-receipt"></i> <span>Ventas</span>
+            </div>
+            <div class="nav-item" onclick="openModal('modalInventario')">
+                <i class="fa-solid fa-boxes-stacked"></i> <span>Inventario</span>
+            </div>
+            <div class="nav-item" onclick="openModal('modalProductos')">
+                <i class="fa-solid fa-tags"></i> <span>Productos</span>
+            </div>
+            <div class="nav-item" onclick="openModal('modalCategorias')">
+                <i class="fa-solid fa-layer-group"></i> <span>Categorías</span>
+            </div>
+            <div class="nav-item" onclick="alert('Módulo de Clientes en desarrollo...')">
+                <i class="fa-solid fa-users"></i> <span>Clientes</span>
+            </div>
+            <div class="nav-item" onclick="alert('Módulo de Reportes en desarrollo...')">
+                <i class="fa-solid fa-chart-line"></i> <span>Reportes</span>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="cashier-card">
+                <div class="cashier-avatar">A</div>
+                <div class="cashier-info">
+                    <p style="font-weight: 600; font-size: 0.8rem;">Admin</p>
+                    <p style="font-size: 0.7rem; color: #888;">Caja Abierta</p>
+                </div>
+            </div>
+            <button onclick="location.reload()" class="btn-action" style="width: 100%; margin-top: 10px;">
+                <i class="fa-solid fa-sync"></i> Recargar Base
+            </button>
         </div>
-      </section>
-    </div>
-  </main>
+    </aside>
 
-  <!-- CASH PAYMENT MODAL -->
-  <div class="modal-overlay" id="cashModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Pago en Efectivo</h3>
-        <button class="close-modal" onclick="closeModal('cashModal')">&times;</button>
-      </div>
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <span style="font-size: 0.9rem; color: var(--text-muted);">Monto Total a Cobrar:</span>
-        <h2 style="font-size: 2rem; color: var(--brand-pink); font-weight: 800;" id="cashModalTotal">$0.00</h2>
-      </div>
+    <!-- MAIN -->
+    <main class="main-content">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <div class="search-container">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar por nombre o código de barras..." oninput="handleSearch()">
+                    <i class="fa-solid fa-barcode" onclick="focusSearch()"></i>
+                </div>
+                <div class="badge-count" id="productCountBadge">📦 0 Productos</div>
+            </div>
+            
+            <div class="header-right">
+                <div class="clock-display" id="clock">00:00:00</div>
+                <button class="btn-header btn-action" onclick="openModal('modalAddProduct')">
+                    <i class="fa-solid fa-plus"></i> Rápido
+                </button>
+                <button class="btn-header btn-pink" onclick="resetSale()">
+                    <i class="fa-solid fa-plus-circle"></i> Nueva Venta
+                </button>
+            </div>
+        </header>
 
-      <div class="form-group">
-        <label>Monto Recibido ($)</label>
-        <input type="number" id="cashReceivedInput" class="form-control" placeholder="0.00" oninput="calculateChange()" style="font-size: 1.2rem; font-weight:700;">
-      </div>
+        <!-- POS BODY -->
+        <div class="pos-container">
+            <section class="products-section">
+                <div class="categories-bar" id="categoriesBar">
+                    <div class="cat-pill active" onclick="filterByCategory('Todas')">Todas</div>
+                    <div class="cat-pill" onclick="filterByCategory('Blusas')">Blusas</div>
+                    <div class="cat-pill" onclick="filterByCategory('Vestidos')">Vestidos</div>
+                    <div class="cat-pill" onclick="filterByCategory('Pantalones')">Pantalones</div>
+                    <div class="cat-pill" onclick="filterByCategory('Faldas')">Faldas</div>
+                    <div class="cat-pill" onclick="filterByCategory('Conjuntos')">Conjuntos</div>
+                    <div class="cat-pill" onclick="filterByCategory('Accesorios')">Accesorios</div>
+                </div>
+                <div class="products-grid" id="productsGrid">
+                    <!-- Productos se cargan aquí -->
+                </div>
+            </section>
 
-      <div class="quick-cash-pills">
-        <button class="cash-pill" onclick="setCashAmount(100)">$100</button>
-        <button class="cash-pill" onclick="setCashAmount(200)">$200</button>
-        <button class="cash-pill" onclick="setCashAmount(500)">$500</button>
-        <button class="cash-pill" onclick="setCashAmount(1000)">$1000</button>
-        <button class="cash-pill" onclick="setExactCash()">Exacto</button>
-      </div>
+            <!-- CART -->
+            <aside class="cart-panel">
+                <div class="cart-title">
+                    Venta Actual <i class="fa-solid fa-shopping-cart" style="color: var(--primary-pink);"></i>
+                </div>
+                
+                <div class="cart-items" id="cartItems">
+                    <!-- Items del carrito -->
+                    <p style="text-align: center; color: #999; margin-top: 50px;">El carrito está vacío</p>
+                </div>
 
-      <div style="background: var(--brand-light-pink); padding: 1rem; border-radius: var(--radius-sm); text-align: center; margin-bottom: 1rem;">
-        <span style="font-size: 0.85rem; color: var(--brand-text-pink); font-weight:600;">Cambio a Entregar:</span>
-        <h3 style="font-size: 1.6rem; color: var(--brand-text-pink); font-weight: 800;" id="changeVal">$0.00</h3>
-      </div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="subtotalText">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Descuento <i class="fa-solid fa-pencil" style="font-size: 0.7rem; cursor: pointer;" onclick="applyDiscount()"></i></span>
+                        <span id="discountText">-$0.00</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span id="totalText">$0.00</span>
+                    </div>
 
-      <button class="btn-checkout" onclick="confirmCashSale()">Confirmar Cobro e Imprimir Ticket</button>
-    </div>
-  </div>
+                    <div class="payment-methods">
+                        <div class="pay-btn active" onclick="setPaymentMethod('Efectivo')">
+                            <i class="fa-solid fa-money-bill-wave"></i> Efectivo
+                        </div>
+                        <div class="pay-btn" onclick="setPaymentMethod('Tarjeta')">
+                            <i class="fa-solid fa-credit-card"></i> Tarjeta
+                        </div>
+                        <div class="pay-btn" onclick="setPaymentMethod('Transferencia')">
+                            <i class="fa-solid fa-mobile-screen"></i> Transf.
+                        </div>
+                        <div class="pay-btn" onclick="setPaymentMethod('Otro')">
+                            <i class="fa-solid fa-ellipsis"></i> Otro
+                        </div>
+                    </div>
 
-  <!-- TICKET / RECEIPT PRINT MODAL -->
-  <div class="modal-overlay" id="receiptModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Comprobante de Venta</h3>
-        <button class="close-modal" onclick="closeModal('receiptModal')">&times;</button>
-      </div>
+                    <button class="btn-checkout" onclick="processCheckout()">
+                        COBRAR (F12)
+                    </button>
 
-      <div class="receipt-box" id="printArea">
-        <div class="rec-header">
-          <h2>Saray HA</h2>
-          <p>Moda que te hace brillar ✨</p>
-          <p id="recDate">Fecha: --/--/---- --:--</p>
-          <p id="recFolio">Folio: #0000</p>
+                    <div class="cart-actions">
+                        <button class="btn-action" onclick="savePendingSale()"><i class="fa-solid fa-pause"></i> Pausar</button>
+                        <button class="btn-action" onclick="resetSale()" style="color: #f44336;"><i class="fa-solid fa-trash"></i> Cancelar</button>
+                    </div>
+                </div>
+            </aside>
         </div>
+    </main>
 
-        <div style="border-bottom: 1px dashed #ccc; margin-bottom: 8px;"></div>
-        <div id="recItemsList"></div>
-        <div style="border-bottom: 1px dashed #ccc; margin: 8px 0;"></div>
+    <!-- MODAL: COBRAR -->
+    <div id="modalCheckout" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modalCheckout')">&times;</span>
+            <h2 style="margin-bottom: 20px;">Finalizar Venta</h2>
+            <div style="background: var(--light-pink); padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;">
+                <p style="font-size: 0.9rem; color: var(--text-pink);">Total a Pagar</p>
+                <h1 id="checkoutTotal" style="font-size: 2.5rem; color: var(--text-pink);">$0.00</h1>
+            </div>
+            
+            <label>Efectivo Recibido:</label>
+            <input type="number" id="cashReceived" class="stock-input" style="width: 100%; height: 50px; font-size: 1.5rem; margin: 10px 0;" oninput="calculateChange()">
+            
+            <div class="cash-pills">
+                <div class="cash-pill" onclick="quickCash(100)">$100</div>
+                <div class="cash-pill" onclick="quickCash(200)">$200</div>
+                <div class="cash-pill" onclick="quickCash(500)">$500</div>
+                <div class="cash-pill" onclick="quickCash(1000)">$1000</div>
+                <div class="cash-pill" onclick="quickCash('exact')">Exacto</div>
+            </div>
 
-        <div class="receipt-line"><span>Subtotal:</span><span id="recSubtotal">$0.00</span></div>
-        <div class="receipt-line"><span>Descuento:</span><span id="recDiscount">-$0.00</span></div>
-        <div class="receipt-line" style="font-weight:bold; font-size:0.95rem;"><span>TOTAL:</span><span id="recTotal">$0.00</span></div>
-        <div class="receipt-line"><span>Pago (<span id="recMethod">Efectivo</span>):</span><span id="recPaid">$0.00</span></div>
-        <div class="receipt-line"><span>Cambio:</span><span id="recChange">$0.00</span></div>
+            <div class="change-display">
+                <p>Cambio:</p>
+                <div class="change-amount" id="changeAmount">$0.00</div>
+            </div>
 
-        <div class="policy-note">
-          ¡Gracias por tu compra! 💖<br>
-          <strong>Saray HA – Moda que te hace brillar ✨</strong><br><br>
-          <span style="font-size:0.7rem; font-weight:bold;">NOTA: No hay cambios ni devoluciones</span>
+            <button class="btn-checkout" style="margin-top: 20px;" onclick="confirmSale()">CONFIRMAR VENTA</button>
         </div>
-      </div>
-
-      <div style="display:flex; gap:10px;">
-        <button class="btn-checkout" onclick="window.print()">Imprimir Ticket</button>
-        <button class="btn-sec" onclick="closeModal('receiptModal')" style="padding:10px;">Cerrar</button>
-      </div>
     </div>
-  </div>
 
-  <!-- DISCOUNT MODAL -->
-  <div class="modal-overlay" id="discountModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3>Aplicar Descuento</h3>
-        <button class="close-modal" onclick="closeModal('discountModal')">&times;</button>
-      </div>
-      <div class="form-group">
-        <label>Monto de Descuento ($)</label>
-        <input type="number" id="discountInput" class="form-control" placeholder="0.00">
-      </div>
-      <button class="btn-checkout" onclick="applyDiscount()">Aplicar</button>
-    </div>
-  </div>
-
-  <!-- QUICK ADD PRODUCT MODAL -->
-  <div class="modal-overlay" id="quickProductModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="qpModalTitle">Agregar / Editar Producto</h3>
-        <button class="close-modal" onclick="closeModal('quickProductModal')">&times;</button>
-      </div>
-      <form onsubmit="saveQuickProduct(event)">
-        <input type="hidden" id="qpEditId">
-        <div class="form-group">
-          <label>Nombre del Producto</label>
-          <input type="text" id="qpName" class="form-control" required placeholder="Ej. Blusa Manga Larga Floral">
+    <!-- MODAL: INVENTARIO / PRODUCTOS -->
+    <div id="modalInventario" class="modal-overlay">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h2>📦 Gestión de Inventario Real</h2>
+                <span class="close-modal" onclick="closeModal('modalInventario')">&times;</span>
+            </div>
+            <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+                <input type="text" id="invSearch" placeholder="Buscar en inventario..." class="stock-input" style="flex: 1; text-align: left; padding: 10px;" oninput="renderInventoryTable()">
+                <button class="btn-pink btn-header" onclick="openModal('modalAddProduct')">+ Nuevo Producto</button>
+            </div>
+            <div style="overflow-x: auto;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Código</th>
+                            <th>Categoría</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- Carga dinámica -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="form-group">
-          <label>Código de Barras</label>
-          <input type="text" id="qpBarcode" class="form-control" placeholder="Ej. 7501001">
+    </div>
+
+    <!-- MODAL: EDITAR PRODUCTO -->
+    <div id="modalEditProduct" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Producto</h2>
+                <span class="close-modal" onclick="closeModal('modalEditProduct')">&times;</span>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editId">
+                <div style="margin-bottom: 15px;">
+                    <label>Nombre:</label>
+                    <input type="text" id="editNombre" class="stock-input" style="width: 100%; text-align: left; padding: 10px;">
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <label>Precio:</label>
+                        <input type="number" id="editPrecio" class="stock-input" style="width: 100%;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Stock:</label>
+                        <input type="number" id="editStock" class="stock-input" style="width: 100%;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Categoría:</label>
+                    <select id="editCategoria" class="stock-input" style="width: 100%; text-align: left;">
+                        <option value="Blusas">Blusas</option>
+                        <option value="Vestidos">Vestidos</option>
+                        <option value="Pantalones">Pantalones</option>
+                        <option value="Faldas">Faldas</option>
+                        <option value="Conjuntos">Conjuntos</option>
+                        <option value="Accesorios">Accesorios</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-checkout" onclick="saveProductEdit()">GUARDAR CAMBIOS</button>
+            </form>
         </div>
-        <div style="display:flex; gap:10px;">
-          <div class="form-group" style="flex:1;">
-            <label>Precio ($)</label>
-            <input type="number" step="0.01" id="qpPrice" class="form-control" required placeholder="250.00">
-          </div>
-          <div class="form-group" style="flex:1;">
-            <label>Stock</label>
-            <input type="number" id="qpStock" class="form-control" value="10">
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Categoría</label>
-          <select id="qpCategory" class="form-control">
-            <option value="Blusas">Blusas</option>
-            <option value="Vestidos">Vestidos</option>
-            <option value="Pantalones">Pantalones</option>
-            <option value="Faldas">Faldas</option>
-            <option value="Shorts">Shorts</option>
-            <option value="Conjuntos">Conjuntos</option>
-            <option value="Accesorios">Accesorios</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Tallas (Separadas por coma)</label>
-          <input type="text" id="qpSizes" class="form-control" placeholder="S, M, L">
-        </div>
-        <button type="submit" class="btn-checkout">Guardar en Firestore</button>
-      </form>
     </div>
-  </div>
 
-  <!-- VENTAS MODAL (HISTORIAL DE VENTAS) -->
-  <div class="modal-overlay" id="ventasModal">
-    <div class="modal-card large">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-receipt" style="color:var(--brand-pink)"></i> Historial de Ventas</h3>
-        <button class="close-modal" onclick="closeModal('ventasModal')">&times;</button>
-      </div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Folio</th>
-            <th>Fecha</th>
-            <th>Método</th>
-            <th>Total</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody id="ventasTableBody">
-          <!-- Rendered dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <script>
+        // --- CONFIGURACIÓN FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
+            authDomain: "saray-ha-pos.firebaseapp.com",
+            projectId: "saray-ha-pos",
+            storageBucket: "saray-ha-pos.appspot.com",
+            messagingSenderId: "910404250860",
+            appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-  <!-- PRODUCTOS MANAGER MODAL -->
-  <div class="modal-overlay" id="productosModal">
-    <div class="modal-card large">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-boxes-stacked" style="color:var(--brand-pink)"></i> Catálogo Completo de Productos</h3>
-        <button class="close-modal" onclick="closeModal('productosModal')">&times;</button>
-      </div>
-      <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
-        <input type="text" class="form-control" placeholder="Filtrar por nombre o código..." style="max-width:300px;" onkeyup="filterProductosTable(this.value)">
-        <button class="btn-header primary" onclick="closeModal('productosModal'); openQuickProductModal();">+ Nuevo Producto</button>
-      </div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Código Barras</th>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Tallas</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="productosTableBody">
-          <!-- Rendered dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </div>
+        // --- ESTADO GLOBAL ---
+        let allProducts = [];
+        let cart = [];
+        let discount = 0;
+        let selectedPayment = 'Efectivo';
+        let currentCategory = 'Todas';
 
-  <!-- CATEGORIAS MODAL -->
-  <div class="modal-overlay" id="categoriasModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-tags" style="color:var(--brand-pink)"></i> Categorías de Productos</h3>
-        <button class="close-modal" onclick="closeModal('categoriasModal')">&times;</button>
-      </div>
-      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">Haz clic en una categoría para filtrar el mostrador:</p>
-      <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:10px;" id="catListGrid">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-  </div>
-
-  <!-- CLIENTES MODAL -->
-  <div class="modal-overlay" id="clientesModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-users" style="color:var(--brand-pink)"></i> Clientes Saray HA</h3>
-        <button class="close-modal" onclick="closeModal('clientesModal')">&times;</button>
-      </div>
-      <div class="form-group">
-        <label>Nombre del Cliente</label>
-        <input type="text" id="cliName" class="form-control" placeholder="Nombre completo">
-      </div>
-      <div class="form-group">
-        <label>Teléfono / WhatsApp</label>
-        <input type="text" id="cliPhone" class="form-control" placeholder="10 dígitos">
-      </div>
-      <button class="btn-checkout" onclick="alert('Cliente guardado exitosamente')">Registrar Cliente</button>
-    </div>
-  </div>
-
-  <!-- INVENTARIO MODAL (EDITAR Y BORRAR PRODUCTOS) -->
-  <div class="modal-overlay" id="inventarioModal">
-    <div class="modal-card large">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-warehouse" style="color:var(--brand-pink)"></i> Control de Inventario y Edición</h3>
-        <button class="close-modal" onclick="closeModal('inventarioModal')">&times;</button>
-      </div>
-      <div style="margin-bottom: 1rem;">
-        <input type="text" class="form-control" placeholder="Buscar producto en inventario..." style="max-width:350px;" onkeyup="filterInventarioTable(this.value)">
-      </div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Código</th>
-            <th>Stock Actual</th>
-            <th>Nuevo Stock</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="inventarioTableBody">
-          <!-- Rendered dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- REPORTES MODAL -->
-  <div class="modal-overlay" id="reportesModal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-chart-line" style="color:var(--brand-pink)"></i> Reporte Diario de Ventas</h3>
-        <button class="close-modal" onclick="closeModal('reportesModal')">&times;</button>
-      </div>
-      <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:1rem; text-align:center;">
-        <div style="background:var(--brand-light-pink); padding:1.2rem; border-radius:var(--radius-md);">
-          <span style="font-size:0.8rem; color:var(--brand-text-pink); font-weight:600;">Ventas Totales</span>
-          <h2 style="font-size:1.8rem; color:var(--brand-text-pink);" id="repTotalSales">$0.00</h2>
-        </div>
-        <div style="background:var(--bg-main); padding:1.2rem; border-radius:var(--radius-md);">
-          <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">Transacciones</span>
-          <h2 style="font-size:1.8rem; color:var(--text-dark);" id="repTotalCount">0</h2>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- JAVASCRIPT & FIREBASE SYNC LOGIC -->
-  <script>
-    // --- FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
-      authDomain: "saray-ha-pos.firebaseapp.com",
-      projectId: "saray-ha-pos",
-      storageBucket: "saray-ha-pos.appspot.com",
-      messagingSenderId: "910404250860",
-      appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
-    };
-
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // --- APP STATE ---
-    let productos = [];
-    let cart = [];
-    let ventasHistorial = [];
-    let selectedCategory = 'Todas';
-    let searchQuery = '';
-    let selectedPaymentMethod = 'Efectivo';
-    let discountAmount = 0;
-    
-    // Almacenamiento seguro multicolección
-    const collectionsData = {
-      'pos_productos': new Map(),
-      'productos': new Map(),
-      'inventario': new Map(),
-      'products': new Map(),
-      'items': new Map()
-    };
-
-    // --- LIMPIA GUIONES Y REEMPLAZA POR ESPACIOS CON CAPITALIZACIÓN ---
-    function cleanProductName(name) {
-      if (!name) return 'Producto Sin Nombre';
-      let cleaned = String(name).replace(/[-_]+/g, ' ').trim();
-      return cleaned.replace(/\b\w/g, letter => letter.toUpperCase());
-    }
-
-    // --- INITIALIZATION ---
-    window.addEventListener('DOMContentLoaded', () => {
-      startClock();
-      initFirestoreSync();
-      initVentasSync();
-    });
-
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('clockDisplay').innerHTML = `<i class="fa-regular fa-clock"></i> ${now.toLocaleTimeString('es-MX')}`;
-      }, 1000);
-    }
-
-    // --- FIRESTORE PRODUCT NORMALIZATION (ULTRA RESILIENTE) ---
-    function normalizeProduct(id, data) {
-      if (!data) return null;
-      try {
-        let tallasArr = [];
-        if (Array.isArray(data.tallas)) {
-          tallasArr = data.tallas;
-        } else if (typeof data.tallas === 'string') {
-          tallasArr = data.tallas.split(',').map(s => s.trim()).filter(Boolean);
-        } else if (data.talla) {
-          tallasArr = [String(data.talla)];
-        } else {
-          tallasArr = ['Única'];
+        // --- UTILIDADES ---
+        
+        // LIMPIEZA DE NOMBRES (Quita guiones y pone en mayúsculas)
+        function cleanProductName(name) {
+            if (!name) return "Producto sin nombre";
+            // Reemplaza guiones y guiones bajos por espacios, luego limpia espacios dobles
+            let clean = name.replace(/[-_]+/g, ' ').trim();
+            // Convierte a Formato Título (Primera letra mayúscula de cada palabra)
+            return clean.split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
         }
 
-        const rawName = data.nombre || data.titulo || data.title || data.name || data.descripcion || data.producto || ('Producto ' + id);
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(val);
+        }
 
-        return {
-          id: id,
-          nombre: cleanProductName(rawName),
-          precio: Number(data.precio || data.price || data.costo_venta || data.costo || 0),
-          codigoBarras: String(data.codigoBarras || data.codigo || data.barcode || data.code || id),
-          categoria: String(data.categoria || data.category || 'Blusas'),
-          imagen: data.imagen || data.image || data.foto || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
-          tallas: tallasArr.length ? tallasArr : ['Única'],
-          stock: typeof data.stock === 'number' ? data.stock : Number(data.cantidad || data.existencia || 0)
-        };
-      } catch (err) {
-        console.error("Error al normalizar producto:", id, err);
-        return {
-          id: id,
-          nombre: 'Producto ' + id,
-          precio: 0,
-          codigoBarras: String(id),
-          categoria: 'Blusas',
-          imagen: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80',
-          tallas: ['Única'],
-          stock: 0
-        };
-      }
-    }
+        // --- CARGA DE DATOS ---
+        async function loadProducts() {
+            try {
+                // Escuchar múltiples colecciones por si acaso
+                const collections = ['pos_productos', 'productos', 'inventario'];
+                let mergedProducts = new Map();
 
-    // --- ESCANEO Y FUSIÓN MULTICOLECCIÓN DE FIRESTORE ---
-    function initFirestoreSync() {
-      const targetCollections = ['pos_productos', 'productos', 'inventario', 'products', 'items'];
-      
-      targetCollections.forEach(colName => {
-        db.collection(colName).onSnapshot((snapshot) => {
-          collectionsData[colName].clear();
-          snapshot.forEach(doc => {
-            const normData = normalizeProduct(doc.id, doc.data());
-            if (normData) {
-              collectionsData[colName].set(doc.id, normData);
+                for (const col of collections) {
+                    const snap = await db.collection(col).get();
+                    snap.forEach(doc => {
+                        const data = doc.data();
+                        mergedProducts.set(doc.id, {
+                            id: doc.id,
+                            collection: col,
+                            barcode: data.barcode || data.codigo || 'S/C',
+                            nombre: cleanProductName(data.nombre || data.name || doc.id),
+                            precio: parseFloat(data.precio || data.price || 0),
+                            stock: parseInt(data.stock || 0),
+                            categoria: data.categoria || data.category || 'General',
+                            tallas: data.tallas || data.sizes || []
+                        });
+                    });
+                }
+
+                allProducts = Array.from(mergedProducts.values());
+                
+                // Si no hay productos reales, no cargar placeholders
+                renderProducts();
+                document.getElementById('productCountBadge').innerText = `📦 ${allProducts.length} Productos`;
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            } catch (e) {
+                console.error("Error cargando productos:", e);
             }
-          });
-          combineAllCollections();
-        }, err => console.warn(`Nota de lectura en ${colName}:`, err));
-      });
-    }
-
-    function combineAllCollections() {
-      const mergedMap = new Map();
-      Object.keys(collectionsData).forEach(col => {
-        collectionsData[col].forEach((prod, id) => {
-          mergedMap.set(id, prod);
-        });
-      });
-
-      productos = Array.from(mergedMap.values());
-      renderProductos();
-      updateProductCounter();
-    }
-
-    function initVentasSync() {
-      db.collection('pos_ventas').orderBy('fecha', 'desc').onSnapshot((snapshot) => {
-        ventasHistorial = [];
-        snapshot.forEach(doc => {
-          ventasHistorial.push({ id: doc.id, ...doc.data() });
-        });
-      }, err => console.warn("Ventas sync note:", err));
-    }
-
-    function syncFirestoreData() {
-      Object.keys(collectionsData).forEach(col => collectionsData[col].clear());
-      initFirestoreSync();
-      alert('⚡ Sincronizando catálogo real con Firestore...');
-    }
-
-    function updateProductCounter() {
-      document.getElementById('productCounter').innerText = `📦 ${productos.length} Productos`;
-    }
-
-    // --- RENDER CATALOG ---
-    function renderProductos() {
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
-
-      const filtered = productos.filter(p => {
-        const matchCat = selectedCategory === 'Todas' || p.categoria.toLowerCase() === selectedCategory.toLowerCase();
-        const q = searchQuery.toLowerCase();
-        const matchSearch = p.nombre.toLowerCase().includes(q) ||
-                            p.codigoBarras.toLowerCase().includes(q) ||
-                            p.categoria.toLowerCase().includes(q);
-        return matchCat && matchSearch;
-      });
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
-          <i class="fa-solid fa-box-open" style="font-size:3rem; color:var(--brand-pink); margin-bottom:1rem;"></i>
-          <p>No se encontraron productos registrados.</p>
-        </div>`;
-        return;
-      }
-
-      filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.onclick = () => addToCart(p);
-
-        const sizesHtml = p.tallas.map(t => `<span class="size-tag">${t}</span>`).join('');
-        const stockClass = p.stock <= 3 ? 'low' : '';
-
-        card.innerHTML = `
-          <div class="product-img-wrap">
-            <img src="${p.imagen}" alt="${p.nombre}" onerror="this.src='https://via.placeholder.com/200?text=Saray+HA'">
-            <span class="stock-badge ${stockClass}">Stock: ${p.stock}</span>
-          </div>
-          <div class="product-info">
-            <div class="product-barcode"><i class="fa-solid fa-barcode"></i> ${p.codigoBarras}</div>
-            <div class="product-title">${p.nombre}</div>
-            <div class="product-sizes">${sizesHtml}</div>
-            <div class="product-price">$${p.precio.toFixed(2)}</div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    // --- CATEGORY & SEARCH HANDLERS ---
-    function filterCategory(cat) {
-      selectedCategory = cat;
-      document.querySelectorAll('.category-pill').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText === cat);
-      });
-      renderProductos();
-    }
-
-    function handleSearch(e) {
-      searchQuery = e.target.value;
-      if (e.key === 'Enter') {
-        const exactMatch = productos.find(p => p.codigoBarras.toLowerCase() === searchQuery.trim().toLowerCase());
-        if (exactMatch) {
-          addToCart(exactMatch);
-          e.target.value = '';
-          searchQuery = '';
         }
-      }
-      renderProductos();
-    }
 
-    function triggerBarcodeScan() {
-      const code = prompt("Escanea o escribe el código de barras:");
-      if (code) {
-        document.getElementById('searchInput').value = code;
-        searchQuery = code;
-        const match = productos.find(p => p.codigoBarras === code);
-        if (match) addToCart(match);
-        else renderProductos();
-      }
-    }
+        // --- RENDERIZADO ---
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
 
-    // --- CART FUNCTIONS ---
-    function addToCart(product) {
-      if (product.stock <= 0) {
-        alert("¡Atención! Este producto no tiene stock disponible.");
-      }
+            const filtered = allProducts.filter(p => {
+                const matchesCat = currentCategory === 'Todas' || p.categoria === currentCategory;
+                const search = document.getElementById('searchInput').value.toLowerCase();
+                const matchesSearch = p.nombre.toLowerCase().includes(search) || p.barcode.toLowerCase().includes(search);
+                return matchesCat && matchesSearch;
+            });
 
-      const existing = cart.find(item => item.id === product.id);
-      if (existing) {
-        existing.qty += 1;
-      } else {
-        cart.push({
-          id: product.id,
-          nombre: product.nombre,
-          precio: product.precio,
-          talla: product.tallas[0] || 'Única',
-          imagen: product.imagen,
-          qty: 1
-        });
-      }
-      renderCart();
-    }
-
-    function updateCartQty(id, delta) {
-      const item = cart.find(i => i.id === id);
-      if (item) {
-        item.qty += delta;
-        if (item.qty <= 0) {
-          cart = cart.filter(i => i.id !== id);
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => addToCart(p.id);
+                card.innerHTML = `
+                    <div class="stock-badge">Stock: ${p.stock}</div>
+                    <div class="product-img"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="product-sku">${p.barcode}</div>
+                    <h3>${p.nombre}</h3>
+                    <div class="size-tags">
+                        ${p.tallas.map(t => `<span class="size-tag">${t}</span>`).join('')}
+                    </div>
+                    <div class="product-price">${formatCurrency(p.precio)}</div>
+                `;
+                grid.appendChild(card);
+            });
         }
-      }
-      renderCart();
-    }
 
-    function clearCart() {
-      cart = [];
-      discountAmount = 0;
-      renderCart();
-    }
+        // --- CARRITO ---
+        function addToCart(productId) {
+            const prod = allProducts.find(p => p.id === productId);
+            if (!prod || prod.stock <= 0) {
+                alert("Producto sin existencias");
+                return;
+            }
 
-    function renderCart() {
-      const cartContainer = document.getElementById('cartItems');
-      cartContainer.innerHTML = '';
-
-      let subtotal = 0;
-      let totalQty = 0;
-
-      cart.forEach(item => {
-        const itemSubtotal = item.precio * item.qty;
-        subtotal += itemSubtotal;
-        totalQty += item.qty;
-
-        const el = document.createElement('div');
-        el.className = 'cart-item';
-        el.innerHTML = `
-          <img src="${item.imagen}" alt="${item.nombre}">
-          <div class="cart-item-details">
-            <div class="cart-item-title">${item.nombre}</div>
-            <div class="cart-item-meta">Talla: ${item.talla}</div>
-            <div class="cart-item-price">$${item.precio.toFixed(2)}</div>
-          </div>
-          <div class="cart-item-controls">
-            <button class="qty-btn" onclick="updateCartQty('${item.id}', -1)">-</button>
-            <span style="font-size:0.8rem; font-weight:600;">${item.qty}</span>
-            <button class="qty-btn" onclick="updateCartQty('${item.id}', 1)">+</button>
-          </div>
-        `;
-        cartContainer.appendChild(el);
-      });
-
-      const grandTotal = Math.max(0, subtotal - discountAmount);
-
-      document.getElementById('cartItemCount').innerText = `${totalQty} items`;
-      document.getElementById('subtotalVal').innerText = `$${subtotal.toFixed(2)}`;
-      document.getElementById('discountVal').innerText = `-$${discountAmount.toFixed(2)}`;
-      document.getElementById('totalVal').innerText = `$${grandTotal.toFixed(2)}`;
-    }
-
-    function setPaymentMethod(method, btn) {
-      selectedPaymentMethod = method;
-      document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    }
-
-    // --- NAVIGATION & MODALS SYSTEM ---
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
-    }
-
-    function setActiveNav(navId) {
-      document.querySelectorAll('.nav-item').forEach(li => li.classList.remove('active'));
-      document.getElementById(navId).classList.add('active');
-    }
-
-    function switchView(view) {
-      setActiveNav('nav-' + view);
-    }
-
-    function openVentasModal() {
-      setActiveNav('nav-ventas');
-      const tbody = document.getElementById('ventasTableBody');
-      tbody.innerHTML = '';
-
-      if (ventasHistorial.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hay ventas registradas aún.</td></tr>`;
-      } else {
-        ventasHistorial.forEach(v => {
-          const dateStr = v.fecha ? (v.fecha.seconds ? new Date(v.fecha.seconds * 1000).toLocaleString() : v.fecha) : '--';
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><strong>#${v.folio || 'N/A'}</strong></td>
-            <td>${dateStr}</td>
-            <td><span class="size-tag">${v.metodoPago || 'Efectivo'}</span></td>
-            <td style="font-weight:700; color:var(--brand-pink);">$${(v.total || 0).toFixed(2)}</td>
-            <td><button class="btn-sec" onclick="reprintTicket('${v.id}')"><i class="fa-solid fa-print"></i> Ticket</button></td>
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-      openModal('ventasModal');
-    }
-
-    function openProductosManagerModal() {
-      setActiveNav('nav-productos');
-      renderProductosTable(productos);
-      openModal('productosModal');
-    }
-
-    function renderProductosTable(list) {
-      const tbody = document.getElementById('productosTableBody');
-      tbody.innerHTML = '';
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No hay productos en el catálogo.</td></tr>`;
-        return;
-      }
-      list.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="font-family:monospace; font-weight:600;">${p.codigoBarras}</td>
-          <td><strong style="text-transform:capitalize;">${p.nombre}</strong></td>
-          <td><span class="size-tag">${p.categoria}</span></td>
-          <td>${p.tallas.join(', ')}</td>
-          <td style="font-weight:700; color:var(--brand-pink);">$${p.precio.toFixed(2)}</td>
-          <td><span class="stock-badge ${p.stock <= 3 ? 'low' : ''}" style="position:static;">${p.stock}</span></td>
-          <td>
-            <button class="btn-sec" title="Editar" onclick="editProduct('${p.id}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn-sec" title="Eliminar" onclick="deleteProduct('${p.id}')" style="color:red;"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function filterProductosTable(query) {
-      const q = query.toLowerCase();
-      const filtered = productos.filter(p => p.nombre.toLowerCase().includes(q) || p.codigoBarras.toLowerCase().includes(q));
-      renderProductosTable(filtered);
-    }
-
-    function openCategoriasModal() {
-      setActiveNav('nav-categorias');
-      const cats = ['Blusas', 'Vestidos', 'Pantalones', 'Faldas', 'Shorts', 'Conjuntos', 'Accesorios'];
-      const grid = document.getElementById('catListGrid');
-      grid.innerHTML = '';
-      cats.forEach(c => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-checkout';
-        btn.style.background = 'var(--bg-main)';
-        btn.style.color = 'var(--text-dark)';
-        btn.style.border = '1px solid var(--border-color)';
-        btn.innerText = c;
-        btn.onclick = () => {
-          filterCategory(c);
-          closeModal('categoriasModal');
-        };
-        grid.appendChild(btn);
-      });
-      openModal('categoriasModal');
-    }
-
-    function openClientesModal() {
-      setActiveNav('nav-clientes');
-      openModal('clientesModal');
-    }
-
-    function openInventarioModal() {
-      setActiveNav('nav-inventario');
-      renderInventarioTable(productos);
-      openModal('inventarioModal');
-    }
-
-    function renderInventarioTable(list) {
-      const tbody = document.getElementById('inventarioTableBody');
-      tbody.innerHTML = '';
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hay productos en inventario.</td></tr>`;
-        return;
-      }
-      list.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><strong style="text-transform:capitalize;">${p.nombre}</strong></td>
-          <td style="font-family:monospace;">${p.codigoBarras}</td>
-          <td><span class="stock-badge ${p.stock <= 3 ? 'low' : ''}" style="position:static;">${p.stock}</span></td>
-          <td><input type="number" id="inv-stock-${p.id}" value="${p.stock}" class="form-control" style="width:90px;"></td>
-          <td style="display:flex; gap:6px;">
-            <button class="btn-header primary" style="padding:4px 10px; font-size:0.75rem;" onclick="updateStockDirect('${p.id}')">Guardar</button>
-            <button class="btn-sec" title="Editar completo" onclick="closeModal('inventarioModal'); editProduct('${p.id}');"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn-sec" title="Eliminar de Firestore" onclick="deleteProduct('${p.id}')" style="color:red;"><i class="fa-solid fa-trash"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function filterInventarioTable(query) {
-      const q = query.toLowerCase();
-      const filtered = productos.filter(p => p.nombre.toLowerCase().includes(q) || p.codigoBarras.toLowerCase().includes(q));
-      renderInventarioTable(filtered);
-    }
-
-    function updateStockDirect(id) {
-      const newStock = parseInt(document.getElementById(`inv-stock-${id}`).value) || 0;
-      const prod = productos.find(p => p.id === id);
-      if (prod) {
-        prod.stock = newStock;
-        db.collection('pos_productos').doc(id).update({ stock: newStock }).then(() => {
-          alert('¡Stock actualizado correctamente!');
-          renderProductos();
-        }).catch(() => {
-          alert('Stock actualizado localmente');
-          renderProductos();
-        });
-      }
-    }
-
-    function openReportesModal() {
-      setActiveNav('nav-reportes');
-      const totalRev = ventasHistorial.reduce((acc, v) => acc + (v.total || 0), 0);
-      document.getElementById('repTotalSales').innerText = `$${totalRev.toFixed(2)}`;
-      document.getElementById('repTotalCount').innerText = ventasHistorial.length;
-      openModal('reportesModal');
-    }
-
-    // --- CHECKOUT & PAYMENT ---
-    function openDiscountModal() {
-      if (cart.length === 0) return alert("El carrito está vacío.");
-      openModal('discountModal');
-    }
-
-    function applyDiscount() {
-      const val = parseFloat(document.getElementById('discountInput').value) || 0;
-      discountAmount = val;
-      renderCart();
-      closeModal('discountModal');
-    }
-
-    function initiateCheckout() {
-      if (cart.length === 0) return alert("Agrega productos al carrito antes de cobrar.");
-
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const grandTotal = Math.max(0, subtotal - discountAmount);
-
-      if (selectedPaymentMethod === 'Efectivo') {
-        document.getElementById('cashModalTotal').innerText = `$${grandTotal.toFixed(2)}`;
-        document.getElementById('cashReceivedInput').value = '';
-        document.getElementById('changeVal').innerText = '$0.00';
-        openModal('cashModal');
-      } else {
-        processSale(grandTotal, grandTotal, 0);
-      }
-    }
-
-    function setCashAmount(amt) {
-      document.getElementById('cashReceivedInput').value = amt;
-      calculateChange();
-    }
-
-    function setExactCash() {
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const grandTotal = Math.max(0, subtotal - discountAmount);
-      document.getElementById('cashReceivedInput').value = grandTotal.toFixed(2);
-      calculateChange();
-    }
-
-    function calculateChange() {
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const grandTotal = Math.max(0, subtotal - discountAmount);
-      const received = parseFloat(document.getElementById('cashReceivedInput').value) || 0;
-      const change = Math.max(0, received - grandTotal);
-      document.getElementById('changeVal').innerText = `$${change.toFixed(2)}`;
-    }
-
-    function confirmCashSale() {
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-      const grandTotal = Math.max(0, subtotal - discountAmount);
-      const received = parseFloat(document.getElementById('cashReceivedInput').value) || 0;
-
-      if (received < grandTotal) {
-        return alert("El dinero recibido es menor al monto total.");
-      }
-
-      closeModal('cashModal');
-      processSale(grandTotal, received, received - grandTotal);
-    }
-
-    function processSale(total, paid, change) {
-      const folio = 'SH-' + Math.floor(100000 + Math.random() * 900000);
-      const dateStr = new Date().toLocaleString('es-MX');
-      const subtotal = cart.reduce((acc, i) => acc + (i.precio * i.qty), 0);
-
-      const saleData = {
-        folio: folio,
-        fecha: new Date(),
-        items: cart,
-        subtotal: subtotal,
-        descuento: discountAmount,
-        total: total,
-        metodoPago: selectedPaymentMethod,
-        montoPagado: paid,
-        cambio: change
-      };
-
-      db.collection('pos_ventas').add(saleData).catch(err => console.error("Error guardando venta:", err));
-
-      cart.forEach(item => {
-        const prod = productos.find(p => p.id === item.id);
-        if (prod) {
-          prod.stock = Math.max(0, prod.stock - item.qty);
-          db.collection('pos_productos').doc(item.id).update({ stock: prod.stock }).catch(() => {});
+            const inCart = cart.find(item => item.id === productId);
+            if (inCart) {
+                if (inCart.qty < prod.stock) inCart.qty++;
+                else alert("Límite de stock alcanzado");
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+            updateCartUI();
         }
-      });
-      renderProductos();
 
-      document.getElementById('recDate').innerText = `Fecha: ${dateStr}`;
-      document.getElementById('recFolio').innerText = `Folio: #${folio}`;
-      document.getElementById('recSubtotal').innerText = `$${subtotal.toFixed(2)}`;
-      document.getElementById('recDiscount').innerText = `-$${discountAmount.toFixed(2)}`;
-      document.getElementById('recTotal').innerText = `$${total.toFixed(2)}`;
-      document.getElementById('recMethod').innerText = selectedPaymentMethod;
-      document.getElementById('recPaid').innerText = `$${paid.toFixed(2)}`;
-      document.getElementById('recChange').innerText = `$${change.toFixed(2)}`;
+        function updateCartUI() {
+            const container = document.getElementById('cartItems');
+            container.innerHTML = '';
 
-      const recItemsContainer = document.getElementById('recItemsList');
-      recItemsContainer.innerHTML = '';
-      cart.forEach(i => {
-        const line = document.createElement('div');
-        line.className = 'receipt-line';
-        line.innerHTML = `<span>${i.qty}x ${i.nombre} (${i.talla})</span><span>$${(i.precio * i.qty).toFixed(2)}</span>`;
-        recItemsContainer.appendChild(line);
-      });
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; margin-top: 50px;">El carrito está vacío</p>';
+            }
 
-      openModal('receiptModal');
-      clearCart();
-    }
+            let subtotal = 0;
+            cart.forEach(item => {
+                subtotal += item.precio * item.qty;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <h4>${item.nombre}</h4>
+                        <p>${item.barcode}</p>
+                    </div>
+                    <div class="cart-qty">
+                        <button onclick="changeQty('${item.id}', -1)">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty('${item.id}', 1)">+</button>
+                    </div>
+                    <div class="cart-item-price">${formatCurrency(item.precio * item.qty)}</div>
+                `;
+                container.appendChild(div);
+            });
 
-    function reprintTicket(saleId) {
-      const sale = ventasHistorial.find(v => v.id === saleId);
-      if (!sale) return;
+            const total = subtotal - discount;
+            document.getElementById('subtotalText').innerText = formatCurrency(subtotal);
+            document.getElementById('discountText').innerText = `-${formatCurrency(discount)}`;
+            document.getElementById('totalText').innerText = formatCurrency(total);
+        }
 
-      closeModal('ventasModal');
-      document.getElementById('recDate').innerText = `Fecha: ${sale.fecha ? new Date(sale.fecha.seconds * 1000).toLocaleString() : '--'}`;
-      document.getElementById('recFolio').innerText = `Folio: #${sale.folio || 'N/A'}`;
-      document.getElementById('recSubtotal').innerText = `$${(sale.subtotal || sale.total).toFixed(2)}`;
-      document.getElementById('recDiscount').innerText = `-$${(sale.descuento || 0).toFixed(2)}`;
-      document.getElementById('recTotal').innerText = `$${(sale.total || 0).toFixed(2)}`;
-      document.getElementById('recMethod').innerText = sale.metodoPago || 'Efectivo';
-      document.getElementById('recPaid').innerText = `$${(sale.montoPagado || sale.total).toFixed(2)}`;
-      document.getElementById('recChange').innerText = `$${(sale.cambio || 0).toFixed(2)}`;
+        function changeQty(id, delta) {
+            const idx = cart.findIndex(i => i.id === id);
+            if (idx === -1) return;
+            
+            cart[idx].qty += delta;
+            if (cart[idx].qty <= 0) cart.splice(idx, 1);
+            else {
+                const p = allProducts.find(prod => prod.id === id);
+                if (cart[idx].qty > p.stock) cart[idx].qty = p.stock;
+            }
+            updateCartUI();
+        }
 
-      const recItemsContainer = document.getElementById('recItemsList');
-      recItemsContainer.innerHTML = '';
-      (sale.items || []).forEach(i => {
-        const line = document.createElement('div');
-        line.className = 'receipt-line';
-        line.innerHTML = `<span>${i.qty}x ${i.nombre} (${i.talla})</span><span>$${(i.precio * i.qty).toFixed(2)}</span>`;
-        recItemsContainer.appendChild(line);
-      });
+        function applyDiscount() {
+            const val = prompt("Ingrese monto de descuento:", discount);
+            if (val !== null) {
+                discount = parseFloat(val) || 0;
+                updateCartUI();
+            }
+        }
 
-      openModal('receiptModal');
-    }
+        function setPaymentMethod(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.pay-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(method));
+            });
+        }
 
-    function saveSaleDraft() {
-      if (cart.length === 0) return alert("El carrito está vacío.");
-      alert("✨ Venta guardada como borrador local.");
-    }
+        // --- CHECKOUT ---
+        function processCheckout() {
+            if (cart.length === 0) return alert("Carrito vacío");
+            const subtotal = cart.reduce((acc, item) => acc + (item.precio * item.qty), 0);
+            const total = subtotal - discount;
+            
+            document.getElementById('checkoutTotal').innerText = formatCurrency(total);
+            document.getElementById('cashReceived').value = total;
+            calculateChange();
+            openModal('modalCheckout');
+        }
 
-    // --- PRODUCT EDITING & DELETION ---
-    function openQuickProductModal() {
-      document.getElementById('qpModalTitle').innerText = 'Agregar Producto';
-      document.getElementById('qpEditId').value = '';
-      document.getElementById('qpName').value = '';
-      document.getElementById('qpBarcode').value = '750' + Math.floor(10000 + Math.random() * 90000);
-      document.getElementById('qpPrice').value = '';
-      document.getElementById('qpStock').value = 10;
-      document.getElementById('qpSizes').value = 'S, M, L';
-      openModal('quickProductModal');
-    }
+        function calculateChange() {
+            const total = cart.reduce((acc, item) => acc + (item.precio * item.qty), 0) - discount;
+            const received = parseFloat(document.getElementById('cashReceived').value) || 0;
+            const change = received - total;
+            document.getElementById('changeAmount').innerText = formatCurrency(Math.max(0, change));
+        }
 
-    function editProduct(id) {
-      const p = productos.find(item => item.id === id);
-      if (!p) return;
-      closeModal('productosModal');
-      closeModal('inventarioModal');
-      document.getElementById('qpModalTitle').innerText = 'Editar Producto';
-      document.getElementById('qpEditId').value = p.id;
-      document.getElementById('qpName').value = p.nombre;
-      document.getElementById('qpBarcode').value = p.codigoBarras;
-      document.getElementById('qpPrice').value = p.precio;
-      document.getElementById('qpStock').value = p.stock;
-      document.getElementById('qpCategory').value = p.categoria;
-      document.getElementById('qpSizes').value = p.tallas.join(', ');
-      openModal('quickProductModal');
-    }
+        function quickCash(amt) {
+            const total = cart.reduce((acc, item) => acc + (item.precio * item.qty), 0) - discount;
+            if (amt === 'exact') document.getElementById('cashReceived').value = total;
+            else document.getElementById('cashReceived').value = amt;
+            calculateChange();
+        }
 
-    function deleteProduct(id) {
-      const prod = productos.find(p => p.id === id);
-      const name = prod ? prod.nombre : 'este producto';
-      if (confirm(`¿Estás seguro de que deseas eliminar "${name}" permanentemente de Firestore?`)) {
-        db.collection('pos_productos').doc(id).delete().then(() => {
-          syncFirestoreData();
-          alert('✨ Producto eliminado correctamente.');
-        }).catch((err) => {
-          alert("Error al eliminar: " + err.message);
+        async function confirmSale() {
+            const total = cart.reduce((acc, item) => acc + (item.precio * item.qty), 0) - discount;
+            const saleData = {
+                items: cart,
+                total: total,
+                descuento: discount,
+                metodo: selectedPayment,
+                fecha: firebase.firestore.FieldValue.serverTimestamp(),
+                vendedor: "Admin Saray"
+            };
+
+            try {
+                // 1. Guardar Venta
+                await db.collection('pos_ventas').add(saleData);
+
+                // 2. Actualizar Inventario
+                for (const item of cart) {
+                    const ref = db.collection(item.collection).doc(item.id);
+                    await ref.update({
+                        stock: firebase.firestore.FieldValue.increment(-item.qty)
+                    });
+                }
+
+                alert("¡Venta Realizada con éxito! 💖\nNOTA: No hay cambios ni devoluciones.");
+                resetSale();
+                closeModal('modalCheckout');
+                loadProducts(); // Recargar datos
+            } catch (e) {
+                console.error("Error al vender:", e);
+                alert("Error al procesar la venta");
+            }
+        }
+
+        function resetSale() {
+            cart = [];
+            discount = 0;
+            updateCartUI();
+            setPaymentMethod('Efectivo');
+        }
+
+        // --- GESTIÓN DE MODALES ---
+        function openModal(id) {
+            document.getElementById(id).style.display = 'flex';
+            if (id === 'modalInventario') renderInventoryTable();
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // --- GESTIÓN DE PRODUCTOS (CRUD) ---
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventoryTableBody');
+            const search = document.getElementById('invSearch').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            const filtered = allProducts.filter(p => 
+                p.nombre.toLowerCase().includes(search) || p.barcode.toLowerCase().includes(search)
+            );
+
+            filtered.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p.nombre}</strong></td>
+                    <td>${p.barcode}</td>
+                    <td>${p.categoria}</td>
+                    <td>${formatCurrency(p.precio)}</td>
+                    <td>
+                        <input type="number" value="${p.stock}" class="stock-input" onchange="updateQuickStock('${p.id}', '${p.collection}', this.value)">
+                    </td>
+                    <td>
+                        <button class="btn-table btn-edit" onclick="editProduct('${p.id}')"><i class="fa-solid fa-edit"></i></button>
+                        <button class="btn-table btn-delete" onclick="deleteProduct('${p.id}', '${p.collection}')"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function updateQuickStock(id, coll, newStock) {
+            try {
+                await db.collection(coll).doc(id).update({ stock: parseInt(newStock) });
+            } catch (e) { alert("Error al actualizar stock"); }
+        }
+
+        function editProduct(id) {
+            const p = allProducts.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('editId').value = p.id;
+            document.getElementById('editNombre').value = p.nombre;
+            document.getElementById('editPrecio').value = p.precio;
+            document.getElementById('editStock').value = p.stock;
+            document.getElementById('editCategoria').value = p.categoria;
+            openModal('modalEditProduct');
+        }
+
+        async function saveProductEdit() {
+            const id = document.getElementById('editId').value;
+            const p = allProducts.find(x => x.id === id);
+            const newData = {
+                nombre: document.getElementById('editNombre').value,
+                precio: parseFloat(document.getElementById('editPrecio').value),
+                stock: parseInt(document.getElementById('editStock').value),
+                categoria: document.getElementById('editCategoria').value
+            };
+
+            try {
+                await db.collection(p.collection).doc(id).update(newData);
+                alert("Producto actualizado");
+                closeModal('modalEditProduct');
+                loadProducts();
+            } catch (e) { alert("Error al guardar"); }
+        }
+
+        async function deleteProduct(id, coll) {
+            if (confirm("¿Estás seguro de eliminar este producto de la base de datos? Esta acción no se puede deshacer.")) {
+                try {
+                    await db.collection(coll).doc(id).delete();
+                    allProducts = allProducts.filter(p => p.id !== id);
+                    renderProducts();
+                    renderInventoryTable();
+                } catch (e) { alert("Error al eliminar"); }
+            }
+        }
+
+        // --- OTROS ---
+        function handleSearch() { renderProducts(); }
+        function focusSearch() { document.getElementById('searchInput').focus(); }
+        function filterByCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(p => {
+                p.classList.toggle('active', p.innerText === cat);
+            });
+            renderProducts();
+        }
+
+        // RELOJ
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }, 1000);
+
+        // INICIO
+        window.onload = loadProducts;
+
+        // Teclas Rápidas
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'F12') { e.preventDefault(); processCheckout(); }
+            if (e.key === 'F2') { e.preventDefault(); focusSearch(); }
         });
-      }
-    }
-
-    function saveQuickProduct(e) {
-      e.preventDefault();
-      const editId = document.getElementById('qpEditId').value;
-      const nameRaw = document.getElementById('qpName').value;
-      const cleanName = cleanProductName(nameRaw);
-      const barcode = document.getElementById('qpBarcode').value || ('750' + Math.floor(10000 + Math.random() * 90000));
-      const price = parseFloat(document.getElementById('qpPrice').value) || 0;
-      const category = document.getElementById('qpCategory').value;
-      const sizesStr = document.getElementById('qpSizes').value || 'Única';
-      const stock = parseInt(document.getElementById('qpStock').value) || 0;
-
-      const prodData = {
-        nombre: cleanName,
-        codigoBarras: barcode,
-        precio: price,
-        categoria: category,
-        tallas: sizesStr.split(',').map(s => s.trim()),
-        stock: stock,
-        imagen: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80'
-      };
-
-      if (editId) {
-        db.collection('pos_productos').doc(editId).set(prodData, { merge: true }).then(() => {
-          alert("¡Producto actualizado exitosamente!");
-          closeModal('quickProductModal');
-        }).catch((err) => {
-          alert("Error al actualizar: " + err.message);
-          closeModal('quickProductModal');
-        });
-      } else {
-        db.collection('pos_productos').add(prodData).then(() => {
-          alert("¡Producto registrado en Firestore!");
-          closeModal('quickProductModal');
-        }).catch((err) => {
-          alert("Error al guardar: " + err.message);
-          closeModal('quickProductModal');
-        });
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>
