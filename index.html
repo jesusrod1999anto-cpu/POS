@@ -61,11 +61,12 @@
       justify-content: space-between;
       padding: 1.5rem 1rem;
       z-index: 10;
+      flex-shrink: 0;
     }
 
     .brand-logo {
       text-align: center;
-      padding-bottom: 1.5rem;
+      padding-bottom: 1.2rem;
       border-bottom: 1px solid var(--brand-light-pink);
     }
 
@@ -86,7 +87,7 @@
 
     .nav-menu {
       list-style: none;
-      margin-top: 1.5rem;
+      margin-top: 1.2rem;
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
@@ -99,7 +100,7 @@
       padding: 10px 14px;
       color: var(--text-muted);
       text-decoration: none;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 500;
       border-radius: var(--radius-sm);
       transition: all 0.2s ease;
@@ -184,7 +185,7 @@
       overflow: hidden;
     }
 
-    /* TOP BAR */
+    /* TOP BAR (CORREGIDO PARA EVITAR TEXTOS ENCIMADOS) */
     header {
       background: #FFFFFF;
       height: 70px;
@@ -194,12 +195,13 @@
       justify-content: space-between;
       padding: 0 1.5rem;
       gap: 1rem;
+      flex-wrap: nowrap;
     }
 
     .search-container {
       position: relative;
       flex: 1;
-      max-width: 480px;
+      max-width: 450px;
       display: flex;
       align-items: center;
     }
@@ -248,20 +250,25 @@
     .top-actions {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.8rem;
+      flex-shrink: 0;
     }
 
     .badge-count {
       background: var(--brand-light-pink);
       color: var(--brand-text-pink);
-      padding: 6px 12px;
-      border-radius: 15px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .clock-display {
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       color: var(--text-dark);
       background: var(--bg-main);
@@ -270,6 +277,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
     }
 
     .btn-header {
@@ -278,12 +286,13 @@
       color: var(--brand-pink);
       padding: 8px 14px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap;
       transition: all 0.2s;
     }
 
@@ -429,7 +438,7 @@
       font-size: 0.85rem;
       font-weight: 600;
       color: var(--text-dark);
-      line-height: 1.2;
+      line-height: 1.25;
       margin-bottom: 6px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -468,6 +477,7 @@
       display: flex;
       flex-direction: column;
       box-shadow: -4px 0 15px rgba(0,0,0,0.02);
+      flex-shrink: 0;
     }
 
     .cart-header {
@@ -884,7 +894,7 @@
 
   <!-- MAIN AREA -->
   <main>
-    <!-- TOP BAR -->
+    <!-- TOP BAR (CORREGIDO) -->
     <header>
       <div class="search-container">
         <i class="fa-solid fa-search"></i>
@@ -1273,12 +1283,10 @@
     let discountAmount = 0;
     let firestoreProductsMap = new Map();
 
-    // --- HELPER TO CLEAN PRODUCT NAMES (REMOVES HYPHENS/UNDERSCORES) ---
+    // --- LIMPIA GUIONES Y REEMPLAZA POR ESPACIOS Y CAPITALIZACIÓN ---
     function cleanProductName(name) {
       if (!name) return 'Producto Sin Nombre';
-      // Replace hyphens and underscores with spaces
-      let cleaned = name.replace(/[-_]+/g, ' ').trim();
-      // Capitalize first letter of each word
+      let cleaned = String(name).replace(/[-_]+/g, ' ').trim();
       return cleaned.replace(/\b\w/g, letter => letter.toUpperCase());
     }
 
@@ -1296,7 +1304,7 @@
       }, 1000);
     }
 
-    // --- FIRESTORE PRODUCT NORMALIZATION & SCANNER ---
+    // --- FIRESTORE PRODUCT NORMALIZATION ---
     function normalizeProduct(id, data) {
       let tallasArr = [];
       if (Array.isArray(data.tallas)) {
@@ -1324,16 +1332,13 @@
     }
 
     function initFirestoreSync() {
-      const targetCollections = ['pos_productos', 'productos', 'products', 'inventario', 'items'];
-      
-      targetCollections.forEach(colName => {
-        db.collection(colName).onSnapshot((snapshot) => {
-          snapshot.forEach(doc => {
-            firestoreProductsMap.set(doc.id, normalizeProduct(doc.id, doc.data()));
-          });
-          updateProductsState();
-        }, err => console.warn(`Snapshot error on ${colName}:`, err));
-      });
+      db.collection('pos_productos').onSnapshot((snapshot) => {
+        firestoreProductsMap.clear();
+        snapshot.forEach(doc => {
+          firestoreProductsMap.set(doc.id, normalizeProduct(doc.id, doc.data()));
+        });
+        updateProductsState();
+      }, err => console.warn("Snapshot error on pos_productos:", err));
     }
 
     function initVentasSync() {
@@ -1378,7 +1383,7 @@
       if (filtered.length === 0) {
         grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
           <i class="fa-solid fa-box-open" style="font-size:3rem; color:var(--brand-pink); margin-bottom:1rem;"></i>
-          <p>No se encontraron productos registrados.</p>
+          <p>No se encontraron productos que coincidan.</p>
         </div>`;
         return;
       }
@@ -1862,21 +1867,20 @@
       const prod = productos.find(p => p.id === id);
       const name = prod ? prod.nombre : 'este producto';
       if (confirm(`¿Estás seguro de que deseas eliminar "${name}" permanentemente de Firestore?`)) {
-        // Delete from all possible primary collections
-        db.collection('pos_productos').doc(id).delete().catch(() => {});
-        db.collection('productos').doc(id).delete().catch(() => {});
-        
-        firestoreProductsMap.delete(id);
-        updateProductsState();
-        alert('✨ Producto eliminado correctamente.');
-        
-        // Refresh open modals if visible
-        if (document.getElementById('productosModal').classList.contains('active')) {
-          renderProductosTable(productos);
-        }
-        if (document.getElementById('inventarioModal').classList.contains('active')) {
-          renderInventarioTable(productos);
-        }
+        db.collection('pos_productos').doc(id).delete().then(() => {
+          firestoreProductsMap.delete(id);
+          updateProductsState();
+          alert('✨ Producto eliminado correctamente.');
+          
+          if (document.getElementById('productosModal').classList.contains('active')) {
+            renderProductosTable(productos);
+          }
+          if (document.getElementById('inventarioModal').classList.contains('active')) {
+            renderInventarioTable(productos);
+          }
+        }).catch((err) => {
+          alert("Error al eliminar: " + err.message);
+        });
       }
     }
 
@@ -1906,7 +1910,7 @@
           alert("¡Producto actualizado exitosamente!");
           closeModal('quickProductModal');
         }).catch((err) => {
-          alert("Guardado con advertencia: " + err.message);
+          alert("Error al actualizar: " + err.message);
           closeModal('quickProductModal');
         });
       } else {
@@ -1914,7 +1918,7 @@
           alert("¡Producto registrado en Firestore!");
           closeModal('quickProductModal');
         }).catch((err) => {
-          alert("Guardado con advertencia: " + err.message);
+          alert("Error al guardar: " + err.message);
           closeModal('quickProductModal');
         });
       }
