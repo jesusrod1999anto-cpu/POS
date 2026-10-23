@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saray HA - POS con Limpiador e Importador Loyverse</title>
+    <title>Saray HA - POS Oficial Loyverse Integrado</title>
     
     <!-- Fuentes Tipográficas Oficiales -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
-    <!-- PapaParse para lectura perfecta de CSV de Loyverse -->
+    <!-- PapaParse para lectura perfecta de CSV de Loyverse con BOM UTF-8 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <style>
@@ -45,7 +45,7 @@
         .spinner { width: 50px; height: 50px; border: 4px solid var(--light-pink); border-top: 4px solid var(--primary-pink); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* SIDEBAR LATERAL (ESCRITORIO/TABLET) */
+        /* SIDEBAR LATERAL */
         .sidebar {
             width: var(--sidebar-width); background: #ffffff; display: flex; flex-direction: column;
             border-right: 1px solid #EAECEF; z-index: 100; flex-shrink: 0; box-shadow: var(--shadow-sm);
@@ -115,7 +115,7 @@
         .product-img { width: 100%; aspect-ratio: 1; background: #F8FAFC; border-radius: var(--radius-sm); margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #CBD5E1; }
         .product-card h3 { font-size: 0.85rem; font-weight: 600; color: #1E293B; margin-bottom: 6px; line-height: 1.25; height: 2.5em; overflow: hidden; text-align: left; }
         .product-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-        .product-sku { font-size: 0.72rem; color: #64748B; font-family: monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .product-sku { font-size: 0.72rem; color: #475569; font-family: monospace; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
         .product-price { font-weight: 700; color: var(--text-pink); font-size: 1.1rem; }
         .stock-badge { position: absolute; top: 10px; right: 10px; background: var(--primary-pink); color: #ffffff; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; }
 
@@ -149,7 +149,7 @@
         .btn-checkout { width: 100%; padding: 15px; border-radius: var(--radius-md); border: none; background: var(--primary-pink); color: #ffffff; font-size: 1.05rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: var(--shadow-md); transition: var(--transition); }
         .btn-checkout:hover { background: var(--hover-pink); }
 
-        /* FAB CARRITO MÓVIL */
+        /* FAB MÓVIL */
         .fab-cart {
             display: none; position: fixed; bottom: 75px; right: 20px; background: var(--primary-pink); color: white;
             border: none; border-radius: 30px; padding: 12px 22px; font-size: 0.95rem; font-weight: 700;
@@ -177,7 +177,6 @@
         .input-std { width: 100%; padding: 10px 14px; border: 1px solid #E2E8F0; border-radius: var(--radius-sm); font-size: 0.9rem; outline: none; margin-top: 4px; }
         .input-std:focus { border-color: var(--primary-pink); }
 
-        /* RESPONSIVIDAD (MÓVIL Y TABLET) */
         @media (max-width: 1024px) {
             .sidebar { width: 80px; }
             .sidebar-brand h1, .sidebar-brand p, .nav-item span, .sidebar-footer { display: none; }
@@ -211,7 +210,7 @@
     <div id="loader">
         <div class="spinner"></div>
         <p style="margin-top: 15px; font-weight: 600; color: var(--primary-pink);">Iniciando Saray HA POS...</p>
-        <small style="color: #94A3B8;">Sincronizando inventario...</small>
+        <small id="loaderSub" style="color: #94A3B8;">Cargando catálogo...</small>
     </div>
 
     <!-- SIDEBAR ESCRITORIO -->
@@ -326,38 +325,30 @@
         <a class="mobile-nav-item" onclick="openModal('modalVentas')"><i class="fa-solid fa-receipt"></i> Ventas</a>
     </nav>
 
-    <!-- MODAL 1: IMPORTADOR Y LIMPIADOR LOYVERSE CSV -->
+    <!-- MODAL 1: IMPORTADOR LOYVERSE CON PARSER ULTRA PRECISO -->
     <div id="modalLoyverse" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>📥 Cargar CSV de Loyverse POS</h2>
                 <button class="close-modal" onclick="closeModal('modalLoyverse')">&times;</button>
             </div>
-            
-            <!-- OPCIÓN PARA VACIAR BASE DE DATOS -->
-            <div style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 12px 15px; border-radius: var(--radius-md); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+
+            <!-- VACIAR PRODUCTOS VIEJOS -->
+            <div style="background: #FEF2F2; border: 1px solid #FCA5A5; padding: 12px; border-radius: var(--radius-md); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <strong style="color: #DC2626; font-size: 0.85rem;">Limpieza de Inventario:</strong>
-                    <p style="font-size: 0.75rem; color: #7F1D1D; margin-top: 2px;">Elimina todos los productos actuales antes de subir el nuevo CSV.</p>
+                    <strong style="color: #DC2626; font-size: 0.85rem;">Eliminar productos viejos:</strong>
+                    <p style="font-size: 0.75rem; color: #7F1D1D;">Borra los códigos antiguos o incorrectos de la base de datos.</p>
                 </div>
-                <button class="btn-header btn-danger" style="font-size: 0.78rem; padding: 6px 12px;" onclick="clearAllProducts()">
+                <button class="btn-header btn-danger" style="font-size: 0.78rem; padding: 6px 12px;" onclick="clearAllProducts(true)">
                     <i class="fa-solid fa-trash-can"></i> Vaciar Todo
                 </button>
-            </div>
-
-            <!-- CHECKBOX REEMPLAZO AUTOMÁTICO -->
-            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" id="autoReplaceCheck" checked style="width: 16px; height: 16px; accent-color: var(--primary-pink);">
-                <label for="autoReplaceCheck" style="font-size: 0.82rem; font-weight: 600; color: #334155; cursor: pointer;">
-                    Borrar productos anteriores automáticamente al cargar CSV
-                </label>
             </div>
 
             <!-- DROPZONE DE ARCHIVO CSV -->
             <div style="border: 2px dashed #CBD5E1; padding: 25px; border-radius: var(--radius-md); text-align: center; background: #F8FAFC; cursor: pointer; margin-bottom: 15px;" onclick="document.getElementById('csvFileInput').click()">
                 <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.5rem; color: var(--primary-pink); margin-bottom: 8px;"></i>
-                <p style="font-weight: 600; font-size: 0.9rem; color: #334155;">Haz clic aquí para seleccionar tu archivo CSV de Loyverse</p>
-                <small style="color: #94A3B8;">Ejemplo: export_items.csv</small>
+                <p style="font-weight: 600; font-size: 0.9rem; color: #334155;">Seleccionar archivo CSV de Loyverse</p>
+                <small style="color: #94A3B8;">Sube export_items.csv</small>
                 <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleLoyverseCSV(this)">
             </div>
 
@@ -401,7 +392,7 @@
             <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap: wrap;">
                 <input type="text" id="invSearch" placeholder="Buscar prenda o código de barras real..." class="input-std" style="flex: 1; min-width: 200px;" oninput="renderInv()">
                 <button class="btn-header btn-pink" style="border-radius: 8px;" onclick="openModal('modalEditProduct'); clearEditForm();">+ Nueva Prenda</button>
-                <button class="btn-header btn-danger" style="border-radius: 8px;" onclick="clearAllProducts()"><i class="fa-solid fa-trash-can"></i> Vaciar Todo</button>
+                <button class="btn-header btn-danger" style="border-radius: 8px;" onclick="clearAllProducts(true)"><i class="fa-solid fa-trash-can"></i> Vaciar Todo</button>
             </div>
             <div style="overflow-x: auto; max-height: 400px;">
                 <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem;">
@@ -528,7 +519,12 @@
                         const snap = await db.collection(c).get();
                         snap.forEach(doc => {
                             const d = doc.data();
-                            const realCB = d.barcode || d.codigo_barras || d.cb || d.sku || d.codigo || doc.id;
+                            
+                            // EXTRACCIÓN DEL CÓDIGO REAL (NUNCA USAR DOC.ID SI EXISTE CÓDIGO)
+                            let realCB = d.barcode || d.codigo_barras || d.cb || d.codigo || d.sku;
+                            if (!realCB || realCB === doc.id) {
+                                realCB = d.barcode || d.sku || 'SIN CÓDIGO';
+                            }
                             
                             let numStock = parseInt(d.stock);
                             if (isNaN(numStock) || numStock <= 0) numStock = 1;
@@ -536,7 +532,7 @@
                             map.set(doc.id, {
                                 id: doc.id,
                                 collection: c,
-                                nombre: cleanName(d.nombre || d.name || doc.id),
+                                nombre: cleanName(d.nombre || d.name || 'Prenda'),
                                 barcode: String(realCB).trim(),
                                 precio: parseFloat(d.precio || 0),
                                 stock: numStock,
@@ -552,15 +548,15 @@
             } catch (e) { alert("Error al conectar con la base de datos."); }
         }
 
-        // --- BORRAR TODO EL INVENTARIO DE FIRESTORE ---
+        // --- VACIAMIENTO COMPLETO DE FIRESTORE ---
         async function clearAllProducts(confirmFirst = true) {
             if (confirmFirst) {
-                const conf = confirm("⚠️ ¿ESTÁS SEGURO DE BORRAR TODAS LAS PRENDAS?\n\nEsta acción eliminará permanentemente todo el inventario actual de Firestore para reemplazarlo por tu CSV de Loyverse.");
+                const conf = confirm("⚠️ ¿DESEAS ELIMINAR TODAS LAS PRENDAS ACTUALES?\n\nEsto borrará los productos anteriores para que solo aparezcan los de tu archivo CSV de Loyverse.");
                 if (!conf) return false;
             }
 
             document.getElementById('loader').style.display = 'flex';
-            document.getElementById('loader').querySelector('p').innerText = "Vaciando inventario anterior...";
+            document.getElementById('loaderSub').innerText = "Vaciando base de datos...";
 
             const cols = ['pos_productos', 'productos', 'inventario', 'products', 'items'];
             for (const colName of cols) {
@@ -575,9 +571,7 @@
                             await batch.commit();
                         }
                     }
-                } catch (err) {
-                    console.warn("No se pudo limpiar la colección " + colName);
-                }
+                } catch (err) {}
             }
 
             allProducts = [];
@@ -587,66 +581,98 @@
             document.getElementById('loader').style.display = 'none';
             
             if (confirmFirst) {
-                alert("✅ Se vació la base de datos correctamente. Ahora puedes subir tu archivo CSV de Loyverse.");
+                alert("✅ Base de datos vaciada. Ya puedes subir tu archivo de Loyverse.");
             }
             return true;
         }
 
-        // --- IMPORTADOR LOYVERSE CSV CON VACIADO AUTOMÁTICO ---
+        // --- IMPORTADOR LOYVERSE CSV ULTRA REFORZADO ---
         function handleLoyverseCSV(input) {
             const file = input.files[0];
             if (!file) return;
 
-            const shouldAutoReplace = document.getElementById('autoReplaceCheck').checked;
+            document.getElementById('loader').style.display = 'flex';
+            document.getElementById('loaderSub').innerText = "Procesando CSV de Loyverse...";
 
             Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
+                // TRUCO CLAVE: Eliminar BOM UTF-8 y espacios invisibles en los nombres de las columnas
+                transformHeader: function(h) {
+                    return h.replace(/^\ufeff/, '').trim();
+                },
                 complete: async function(results) {
-                    if (shouldAutoReplace) {
-                        await clearAllProducts(false);
-                    }
+                    // 1. Vaciar primero todo
+                    await clearAllProducts(false);
 
-                    document.getElementById('loader').style.display = 'flex';
-                    document.getElementById('loader').querySelector('p').innerText = "Guardando prendas de Loyverse...";
+                    document.getElementById('loaderSub').innerText = "Guardando prendas en Firestore...";
 
                     const rows = results.data;
+                    let newProductsList = [];
                     let count = 0;
 
                     for (const row of rows) {
-                        const rawName = row['Nombre del artículo'] || row['Item Name'] || row['Name'] || row['Nombre'] || row['Handle'];
-                        const rawSKU = row['SKU'] || row['Código de barras'] || row['Barcode'] || row['Código'] || row['Code'];
-                        const rawPrice = row['Precio'] || row['Price'] || 0;
-                        const rawStock = row['En stock'] || row['In stock'] || row['Stock'] || row['Cantidad'];
-                        const rawCat = row['Categoría'] || row['Category'] || 'Blusas';
+                        // Búsqueda inteligente de columnas Loyverse
+                        const keys = Object.keys(row);
+                        
+                        let rawName = row['Nombre del artículo'] || row['Item Name'] || row['Name'] || row['Nombre'] || row['Handle'];
+                        
+                        // PRIORIDAD MÁXIMA AL CÓDIGO DE BARRAS REAL
+                        let rawBarcode = row['Código de barras'] || row['Barcode'] || row['EAN'] || row['UPC'] || row['SKU'] || row['Código'] || row['Code'];
 
-                        if (rawName) {
+                        let rawPrice = row['Precio'] || row['Price'] || 0;
+                        let rawStock = row['En stock'] || row['In stock'] || row['Stock'] || row['Cantidad'];
+                        let rawCat = row['Categoría'] || row['Category'] || 'Blusas';
+
+                        // Búsqueda por coincidencia aproximada si alguna columna cambia levemente
+                        if (!rawName) {
+                            const nameKey = keys.find(k => k.toLowerCase().includes('nombre') || k.toLowerCase().includes('item'));
+                            if (nameKey) rawName = row[nameKey];
+                        }
+                        if (!rawBarcode) {
+                            const bcKey = keys.find(k => k.toLowerCase().includes('código') || k.toLowerCase().includes('barcode') || k.toLowerCase().includes('sku'));
+                            if (bcKey) rawBarcode = row[bcKey];
+                        }
+
+                        if (rawName && rawName.trim() !== '') {
                             let parsedStock = parseInt(rawStock);
                             if (isNaN(parsedStock) || parsedStock <= 0) parsedStock = 1;
 
                             const itemDoc = {
                                 nombre: cleanName(rawName),
-                                barcode: String(rawSKU || ('SKU-' + Date.now())).trim(),
+                                barcode: String(rawBarcode || ('SKU-' + Math.floor(Math.random()*100000))).trim(),
                                 precio: parseFloat(rawPrice) || 0,
                                 stock: parsedStock,
                                 categoria: rawCat.trim() || 'Blusas'
                             };
 
-                            await db.collection('pos_productos').add(itemDoc);
+                            // Guardar en Firestore
+                            const docRef = await db.collection('pos_productos').add(itemDoc);
+                            
+                            newProductsList.push({
+                                id: docRef.id,
+                                collection: 'pos_productos',
+                                ...itemDoc
+                            });
                             count++;
                         }
                     }
 
+                    // 2. Actualizar pantalla de inmediato sin demoras
+                    allProducts = newProductsList;
+                    renderProducts();
+                    document.getElementById('productCountBadge').innerText = `${allProducts.length} Prendas`;
+
                     document.getElementById('loader').style.display = 'none';
-                    document.getElementById('csvStatus').innerText = `¡Éxito! Se subieron ${count} prendas con sus códigos reales.`;
+                    document.getElementById('csvStatus').innerText = `¡Éxito! Importadas ${count} prendas con sus códigos reales de Loyverse.`;
                     
                     setTimeout(() => {
                         closeModal('modalLoyverse');
-                        loadProducts();
                     }, 1200);
                 },
                 error: function(err) {
-                    alert("Error al procesar el archivo CSV de Loyverse.");
+                    document.getElementById('loader').style.display = 'none';
+                    alert("Error al leer el archivo CSV. Asegúrate de exportarlo desde el panel de Loyverse POS.");
                 }
             });
         }
@@ -664,7 +690,7 @@
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#94A3B8;">No hay prendas en esta categoría. Carga tu CSV de Loyverse.</div>`;
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#94A3B8;">No hay prendas que mostrar. Usa el botón "Importar Loyverse" para cargar tu CSV.</div>`;
                 return;
             }
 
@@ -677,7 +703,7 @@
                     <div class="product-img"><i class="fa-solid fa-shirt"></i></div>
                     <h3>${p.nombre}</h3>
                     <div class="product-meta">
-                        <span class="product-sku" title="Código Loyverse">${p.barcode}</span>
+                        <span class="product-sku" title="Código de Barras Loyverse">${p.barcode}</span>
                         <span class="product-price">${fmt(p.precio)}</span>
                     </div>
                 `;
@@ -834,7 +860,7 @@
         }
 
         async function delP(id, col) {
-            if(confirm("¿Eliminar esta prenda definitivamente de la base de datos?")) { await db.collection(col).doc(id).delete(); loadProducts(); }
+            if(confirm("¿Eliminar esta prenda definitivamente?")) { await db.collection(col).doc(id).delete(); loadProducts(); }
         }
         async function updStock(id, col, val) { await db.collection(col).doc(id).update({stock: parseInt(val)||1}); loadProducts(); }
 
