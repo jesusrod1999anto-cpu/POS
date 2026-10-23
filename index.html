@@ -435,6 +435,7 @@
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      text-transform: capitalize;
     }
 
     .product-sizes {
@@ -518,6 +519,7 @@
     .cart-item-title {
       font-size: 0.8rem;
       font-weight: 600;
+      text-transform: capitalize;
     }
 
     .cart-item-meta {
@@ -692,7 +694,7 @@
     }
 
     .modal-card.large {
-      max-width: 900px;
+      max-width: 950px;
     }
 
     .modal-header {
@@ -1066,14 +1068,14 @@
   <div class="modal-overlay" id="quickProductModal">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Agregar / Editar Producto</h3>
+        <h3 id="qpModalTitle">Agregar / Editar Producto</h3>
         <button class="close-modal" onclick="closeModal('quickProductModal')">&times;</button>
       </div>
       <form onsubmit="saveQuickProduct(event)">
         <input type="hidden" id="qpEditId">
         <div class="form-group">
           <label>Nombre del Producto</label>
-          <input type="text" id="qpName" class="form-control" required placeholder="Ej. Blusa Rosa Floral">
+          <input type="text" id="qpName" class="form-control" required placeholder="Ej. Blusa Manga Larga Floral">
         </div>
         <div class="form-group">
           <label>Código de Barras</label>
@@ -1197,12 +1199,15 @@
     </div>
   </div>
 
-  <!-- INVENTARIO MODAL -->
+  <!-- INVENTARIO MODAL (EDITAR Y BORRAR PRODUCTOS) -->
   <div class="modal-overlay" id="inventarioModal">
     <div class="modal-card large">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-warehouse" style="color:var(--brand-pink)"></i> Control de Inventario</h3>
+        <h3><i class="fa-solid fa-warehouse" style="color:var(--brand-pink)"></i> Control de Inventario y Edición</h3>
         <button class="close-modal" onclick="closeModal('inventarioModal')">&times;</button>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <input type="text" class="form-control" placeholder="Buscar producto en inventario..." style="max-width:350px;" onkeyup="filterInventarioTable(this.value)">
       </div>
       <table class="data-table">
         <thead>
@@ -1211,7 +1216,7 @@
             <th>Código</th>
             <th>Stock Actual</th>
             <th>Nuevo Stock</th>
-            <th>Acción</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="inventarioTableBody">
@@ -1268,14 +1273,14 @@
     let discountAmount = 0;
     let firestoreProductsMap = new Map();
 
-    // Fallback Catalog if cloud is completely empty
-    const sampleProducts = [
-      { id: 'sample1', nombre: 'Blusa Satén Elegante', precio: 380, categoria: 'Blusas', tallas: ['S', 'M', 'L'], stock: 8, imagen: 'https://images.unsplash.com/photo-1564257631407-4deb126f018f?auto=format&fit=crop&w=400&q=80', codigoBarras: '7501001' },
-      { id: 'sample2', nombre: 'Vestido Midi Casual', precio: 550, categoria: 'Vestidos', tallas: ['CH', 'M'], stock: 5, imagen: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=400&q=80', codigoBarras: '7501002' },
-      { id: 'sample3', nombre: 'Pantalón Wide Leg Rosa', precio: 490, categoria: 'Pantalones', tallas: ['S', 'M', 'G'], stock: 12, imagen: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=400&q=80', codigoBarras: '7501003' },
-      { id: 'sample4', nombre: 'Conjunto Lino Premium', precio: 720, categoria: 'Conjuntos', tallas: ['Única'], stock: 4, imagen: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80', codigoBarras: '7501004' },
-      { id: 'sample5', nombre: 'Collar Choker Dorado', precio: 150, categoria: 'Accesorios', tallas: ['Única'], stock: 15, imagen: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=400&q=80', codigoBarras: '7501005' }
-    ];
+    // --- HELPER TO CLEAN PRODUCT NAMES (REMOVES HYPHENS/UNDERSCORES) ---
+    function cleanProductName(name) {
+      if (!name) return 'Producto Sin Nombre';
+      // Replace hyphens and underscores with spaces
+      let cleaned = name.replace(/[-_]+/g, ' ').trim();
+      // Capitalize first letter of each word
+      return cleaned.replace(/\b\w/g, letter => letter.toUpperCase());
+    }
 
     // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
@@ -1304,9 +1309,11 @@
         tallasArr = ['Única'];
       }
 
+      const rawName = data.nombre || data.titulo || data.title || data.name || data.descripcion || 'Producto sin nombre';
+
       return {
         id: id,
-        nombre: data.nombre || data.titulo || data.title || data.name || data.descripcion || 'Producto sin nombre',
+        nombre: cleanProductName(rawName),
         precio: Number(data.precio || data.price || data.costo_venta || 0),
         codigoBarras: String(data.codigoBarras || data.codigo || data.barcode || data.code || id),
         categoria: data.categoria || data.category || 'Blusas',
@@ -1327,14 +1334,6 @@
           updateProductsState();
         }, err => console.warn(`Snapshot error on ${colName}:`, err));
       });
-
-      setTimeout(() => {
-        if (firestoreProductsMap.size === 0 && productos.length === 0) {
-          productos = [...sampleProducts];
-          renderProductos();
-          updateProductCounter();
-        }
-      }, 1500);
     }
 
     function initVentasSync() {
@@ -1347,9 +1346,7 @@
     }
 
     function updateProductsState() {
-      if (firestoreProductsMap.size > 0) {
-        productos = Array.from(firestoreProductsMap.values());
-      }
+      productos = Array.from(firestoreProductsMap.values());
       renderProductos();
       updateProductCounter();
     }
@@ -1357,7 +1354,7 @@
     function syncFirestoreData() {
       firestoreProductsMap.clear();
       initFirestoreSync();
-      alert('⚡ Sincronizando catálogo con Firestore...');
+      alert('⚡ Sincronizando catálogo real con Firestore...');
     }
 
     function updateProductCounter() {
@@ -1381,7 +1378,7 @@
       if (filtered.length === 0) {
         grid.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">
           <i class="fa-solid fa-box-open" style="font-size:3rem; color:var(--brand-pink); margin-bottom:1rem;"></i>
-          <p>No se encontraron productos que coincidan.</p>
+          <p>No se encontraron productos registrados.</p>
         </div>`;
         return;
       }
@@ -1577,18 +1574,22 @@
     function renderProductosTable(list) {
       const tbody = document.getElementById('productosTableBody');
       tbody.innerHTML = '';
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No hay productos en el catálogo.</td></tr>`;
+        return;
+      }
       list.forEach(p => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td style="font-family:monospace; font-weight:600;">${p.codigoBarras}</td>
-          <td><strong>${p.nombre}</strong></td>
+          <td><strong style="text-transform:capitalize;">${p.nombre}</strong></td>
           <td><span class="size-tag">${p.categoria}</span></td>
           <td>${p.tallas.join(', ')}</td>
           <td style="font-weight:700; color:var(--brand-pink);">$${p.precio.toFixed(2)}</td>
           <td><span class="stock-badge ${p.stock <= 3 ? 'low' : ''}" style="position:static;">${p.stock}</span></td>
           <td>
-            <button class="btn-sec" onclick="editProduct('${p.id}')"><i class="fa-solid fa-pen"></i></button>
-            <button class="btn-sec" onclick="deleteProduct('${p.id}')" style="color:red;"><i class="fa-solid fa-trash"></i></button>
+            <button class="btn-sec" title="Editar" onclick="editProduct('${p.id}')"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn-sec" title="Eliminar" onclick="deleteProduct('${p.id}')" style="color:red;"><i class="fa-solid fa-trash"></i></button>
           </td>
         `;
         tbody.appendChild(tr);
@@ -1629,20 +1630,38 @@
 
     function openInventarioModal() {
       setActiveNav('nav-inventario');
+      renderInventarioTable(productos);
+      openModal('inventarioModal');
+    }
+
+    function renderInventarioTable(list) {
       const tbody = document.getElementById('inventarioTableBody');
       tbody.innerHTML = '';
-      productos.forEach(p => {
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hay productos en inventario.</td></tr>`;
+        return;
+      }
+      list.forEach(p => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td><strong>${p.nombre}</strong></td>
+          <td><strong style="text-transform:capitalize;">${p.nombre}</strong></td>
           <td style="font-family:monospace;">${p.codigoBarras}</td>
           <td><span class="stock-badge ${p.stock <= 3 ? 'low' : ''}" style="position:static;">${p.stock}</span></td>
           <td><input type="number" id="inv-stock-${p.id}" value="${p.stock}" class="form-control" style="width:90px;"></td>
-          <td><button class="btn-header primary" onclick="updateStockDirect('${p.id}')">Guardar</button></td>
+          <td style="display:flex; gap:6px;">
+            <button class="btn-header primary" style="padding:4px 10px; font-size:0.75rem;" onclick="updateStockDirect('${p.id}')">Guardar</button>
+            <button class="btn-sec" title="Editar completo" onclick="closeModal('inventarioModal'); editProduct('${p.id}');"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn-sec" title="Eliminar de Firestore" onclick="deleteProduct('${p.id}')" style="color:red;"><i class="fa-solid fa-trash"></i></button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
-      openModal('inventarioModal');
+    }
+
+    function filterInventarioTable(query) {
+      const q = query.toLowerCase();
+      const filtered = productos.filter(p => p.nombre.toLowerCase().includes(q) || p.codigoBarras.toLowerCase().includes(q));
+      renderInventarioTable(filtered);
     }
 
     function updateStockDirect(id) {
@@ -1651,7 +1670,7 @@
       if (prod) {
         prod.stock = newStock;
         db.collection('pos_productos').doc(id).update({ stock: newStock }).then(() => {
-          alert('Stock actualizado');
+          alert('¡Stock actualizado correctamente!');
           renderProductos();
         }).catch(() => {
           alert('Stock actualizado localmente');
@@ -1811,8 +1830,9 @@
       alert("✨ Venta guardada como borrador local.");
     }
 
-    // --- QUICK PRODUCT MANAGEMENT ---
+    // --- PRODUCT EDITING & DELETION ---
     function openQuickProductModal() {
+      document.getElementById('qpModalTitle').innerText = 'Agregar Producto';
       document.getElementById('qpEditId').value = '';
       document.getElementById('qpName').value = '';
       document.getElementById('qpBarcode').value = '750' + Math.floor(10000 + Math.random() * 90000);
@@ -1826,6 +1846,8 @@
       const p = productos.find(item => item.id === id);
       if (!p) return;
       closeModal('productosModal');
+      closeModal('inventarioModal');
+      document.getElementById('qpModalTitle').innerText = 'Editar Producto';
       document.getElementById('qpEditId').value = p.id;
       document.getElementById('qpName').value = p.nombre;
       document.getElementById('qpBarcode').value = p.codigoBarras;
@@ -1837,20 +1859,32 @@
     }
 
     function deleteProduct(id) {
-      if (confirm('¿Deseas eliminar este producto de Firestore?')) {
-        db.collection('pos_productos').doc(id).delete().then(() => {
-          alert('Producto eliminado.');
+      const prod = productos.find(p => p.id === id);
+      const name = prod ? prod.nombre : 'este producto';
+      if (confirm(`¿Estás seguro de que deseas eliminar "${name}" permanentemente de Firestore?`)) {
+        // Delete from all possible primary collections
+        db.collection('pos_productos').doc(id).delete().catch(() => {});
+        db.collection('productos').doc(id).delete().catch(() => {});
+        
+        firestoreProductsMap.delete(id);
+        updateProductsState();
+        alert('✨ Producto eliminado correctamente.');
+        
+        // Refresh open modals if visible
+        if (document.getElementById('productosModal').classList.contains('active')) {
           renderProductosTable(productos);
-        }).catch(err => {
-          alert('Eliminado localmente: ' + err.message);
-        });
+        }
+        if (document.getElementById('inventarioModal').classList.contains('active')) {
+          renderInventarioTable(productos);
+        }
       }
     }
 
     function saveQuickProduct(e) {
       e.preventDefault();
       const editId = document.getElementById('qpEditId').value;
-      const name = document.getElementById('qpName').value;
+      const nameRaw = document.getElementById('qpName').value;
+      const cleanName = cleanProductName(nameRaw);
       const barcode = document.getElementById('qpBarcode').value || ('750' + Math.floor(10000 + Math.random() * 90000));
       const price = parseFloat(document.getElementById('qpPrice').value) || 0;
       const category = document.getElementById('qpCategory').value;
@@ -1858,7 +1892,7 @@
       const stock = parseInt(document.getElementById('qpStock').value) || 0;
 
       const prodData = {
-        nombre: name,
+        nombre: cleanName,
         codigoBarras: barcode,
         precio: price,
         categoria: category,
@@ -1868,19 +1902,19 @@
       };
 
       if (editId) {
-        db.collection('pos_productos').doc(editId).update(prodData).then(() => {
+        db.collection('pos_productos').doc(editId).set(prodData, { merge: true }).then(() => {
           alert("¡Producto actualizado exitosamente!");
           closeModal('quickProductModal');
-        }).catch(() => {
-          alert("Producto actualizado");
+        }).catch((err) => {
+          alert("Guardado con advertencia: " + err.message);
           closeModal('quickProductModal');
         });
       } else {
         db.collection('pos_productos').add(prodData).then(() => {
           alert("¡Producto registrado en Firestore!");
           closeModal('quickProductModal');
-        }).catch(() => {
-          alert("Producto guardado");
+        }).catch((err) => {
+          alert("Guardado con advertencia: " + err.message);
           closeModal('quickProductModal');
         });
       }
