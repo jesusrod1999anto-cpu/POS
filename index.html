@@ -28,7 +28,7 @@
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: #f8f9fa; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* HEADER ORIGINAL */
+        /* HEADER ORIGINAL SARAY HA */
         header { 
             background: white; padding: 10px 20px; 
             display: flex; justify-content: space-between; align-items: center;
@@ -39,16 +39,16 @@
         .logo-container h1 { margin: 0; font-size: 1.2rem; color: var(--dark); text-transform: uppercase; letter-spacing: 1px; }
 
         .header-actions { display: flex; gap: 8px; align-items: center; }
-        .btn-header-action {
-            background: #fff; border: 1px solid #ddd; padding: 8px 12px;
+        .btn-header-act {
+            background: white; border: 1px solid #ddd; padding: 8px 12px;
             border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
-            display: flex; align-items: center; gap: 5px; color: var(--dark); transition: 0.2s;
+            display: flex; align-items: center; gap: 6px; color: var(--dark); transition: 0.2s;
         }
-        .btn-header-action:hover { background: var(--secondary); border-color: var(--primary); }
-        .btn-header-action.primary { background: var(--primary); color: white; border: none; }
-        .btn-header-action.primary:hover { background: #bc8a5f; }
+        .btn-header-act:hover { background: var(--secondary); border-color: var(--primary); }
+        .btn-header-act.btn-main { background: var(--primary); color: white; border: none; }
+        .btn-header-act.btn-main:hover { background: #bc8a5f; }
 
-        /* LAYOUT POS ORIGINAL */
+        /* LAYOUT PRINCIPAL POS */
         main { display: flex; flex: 1; overflow: hidden; }
 
         /* PANEL IZQUIERDO: PRODUCTOS */
@@ -70,13 +70,13 @@
         .product-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .product-card .price { color: var(--primary); font-weight: 600; font-size: 1.1rem; }
         .product-card .name { font-size: 0.85rem; margin: 6px 0; color: #555; height: 34px; overflow: hidden; }
-        .product-card .code-tag { font-size: 0.7rem; color: #888; background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
+        .product-card .code-tag { font-size: 0.7rem; color: #888; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 2px; }
         .product-card .stock-badge { 
             position: absolute; top: 5px; right: 5px; font-size: 0.7rem; 
             background: #eee; padding: 2px 6px; border-radius: 4px;
         }
 
-        /* PANEL DERECHO: CARRITO ORIGINAL */
+        /* PANEL DERECHO: CARRITO */
         .cart-panel { width: 400px; background: #fff; display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.05); }
         .cart-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .cart-items { flex: 1; overflow-y: auto; padding: 10px; }
@@ -102,18 +102,18 @@
         }
         .btn-checkout:hover { background: #bc8a5f; }
 
-        /* ESTILOS DE MODALES GENERALES */
-        .modal-overlay {
+        /* MODALES */
+        .modal-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
-        .modal-body {
+        .modal-box {
             background: white; width: 95%; max-width: 550px; border-radius: 15px; padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;
         }
-        .modal-header-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .modal-header-title h2 { margin: 0; font-size: 1.2rem; }
-        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+        .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-head h2 { margin: 0; font-size: 1.2rem; color: var(--dark); }
+        .btn-close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
 
         /* MODAL COBRAR */
         .cash-input-group { margin: 20px 0; }
@@ -133,21 +133,22 @@
         }
         .change-display.insufficient { background: #ffdada; color: var(--danger); }
 
-        /* FORMULARIOS DE NUEVO PRODUCTO Y TABLAS DE INVENTARIO */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-        .form-group-custom { display: flex; flex-direction: column; gap: 4px; }
-        .form-group-custom.full { grid-column: span 2; }
-        .form-group-custom label { font-size: 0.85rem; font-weight: 600; color: #555; }
-        .form-group-custom input, .form-group-custom select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-        .form-group-custom input:focus { border-color: var(--primary); }
-        
-        .inv-table-wrap { max-height: 380px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
-        .inv-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .inv-table th, .inv-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
-        .inv-table th { background: #f8f9fa; position: sticky; top: 0; }
-        .btn-act { border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; color: white; font-size: 0.75rem; }
+        /* FORMULARIO AGREGAR / EDITAR PRODUCTO */
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .form-field { display: flex; flex-direction: column; gap: 4px; }
+        .form-field.full { grid-column: span 2; }
+        .form-field label { font-size: 0.85rem; font-weight: 600; color: #555; }
+        .form-field input, .form-field select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 0.9rem; }
+        .form-field input:focus { border-color: var(--primary); }
 
-        /* MOBILE NAV ORIGINAL */
+        /* TABLAS DE INVENTARIO Y VENTAS */
+        .table-wrap { max-height: 380px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
+        .custom-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .custom-table th, .custom-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+        .custom-table th { background: #f8f9fa; position: sticky; top: 0; font-weight: 600; }
+        .btn-tb-act { border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; color: white; font-size: 0.75rem; }
+
+        /* MOBILE NAV */
         .bottom-nav { display: none; background: white; border-top: 1px solid #ddd; padding: 10px; }
 
         @media (max-width: 850px) {
@@ -163,7 +164,7 @@
             }
         }
 
-        /* TICKET IMPRESIÓN OFICIAL */
+        /* TICKET IMPRESIÓN */
         #ticket { display: none; width: 80mm; padding: 5mm; background: white; color: black; font-family: 'Courier New', monospace; font-size: 11px; }
         @media print {
             body * { visibility: hidden; }
@@ -176,7 +177,7 @@
 
 <header>
     <div class="logo-container">
-        <!-- Saray HA Logo SVG Incorporado -->
+        <!-- Logo Saray HA SVG Integrado -->
         <svg viewBox="0 0 100 100" id="brandLogo">
             <circle cx="50" cy="50" r="48" fill="none" stroke="#d4a373" stroke-width="2"/>
             <text x="50%" y="45%" text-anchor="middle" fill="#d4a373" font-size="28" font-family="Serif" dy=".3em">S</text>
@@ -186,52 +187,52 @@
     </div>
     
     <div class="header-actions">
-        <button class="btn-header-action primary" onclick="abrirModalNuevoProducto()">
-            <i class="fas fa-plus"></i> <span>Nuevo</span>
+        <button class="btn-header-act btn-main" onclick="abrirModalNuevoProducto()">
+            <i class="fas fa-plus-circle"></i> <span>Nuevo Producto</span>
         </button>
-        <button class="btn-header-action" onclick="abrirModalInventario()">
+        <button class="btn-header-act" onclick="abrirModalInventario()">
             <i class="fas fa-boxes"></i> <span>Inventario</span>
         </button>
-        <button class="btn-header-action" onclick="abrirModalVentas()">
+        <button class="btn-header-act" onclick="abrirModalVentas()">
             <i class="fas fa-history"></i> <span>Ventas</span>
         </button>
-        <button class="btn-header-action" onclick="abrirModalClientes()">
+        <button class="btn-header-act" onclick="abrirModalClientes()">
             <i class="fas fa-users"></i> <span>Clientes</span>
         </button>
-        <button class="btn-header-action" onclick="document.getElementById('modalScanner').style.display='flex'; startScanner();">
+        <button class="btn-header-act" onclick="document.getElementById('modalScanner').style.display='flex'; startScanner();">
             <i class="fas fa-camera"></i> <span>Escanear</span>
         </button>
-        <button class="btn-header-action" onclick="document.getElementById('modalConfig').style.display='flex'">
+        <button class="btn-header-act" onclick="document.getElementById('modalConfig').style.display='flex'">
             <i class="fas fa-file-import"></i> <span>Importar CSV</span>
         </button>
     </div>
 </header>
 
 <main>
-    <!-- PANEL IZQUIERDO: PRODUCTOS -->
+    <!-- PANEL IZQUIERDO: BUSCADOR Y LISTA DE PRODUCTOS -->
     <section class="inventory-panel">
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Buscar por nombre o código de barras (SH0001)..." oninput="filterProducts()">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre o código SH..." oninput="filterProducts()">
             <select id="categoryFilter" onchange="filterProducts()">
                 <option value="">Todas las categorías</option>
             </select>
         </div>
         <div class="product-grid" id="productGrid">
-            <!-- Productos cargados desde Firebase -->
+            <!-- Carga de Productos -->
         </div>
     </section>
 
-    <!-- PANEL DERECHO: CARRITO -->
+    <!-- PANEL DERECHO: CARRITO DE VENTA -->
     <aside class="cart-panel" id="cartPanel">
         <div class="cart-header">
             <h3>Carrito de Venta</h3>
             <button onclick="clearCart()" style="border:none; background:none; color: var(--danger); cursor:pointer;">
-                <i class="fas fa-trash-alt"></i> Limpiar
+                <i class="fas fa-trash-alt"></i> Vaciar
             </button>
         </div>
         
         <div class="cart-items" id="cartItems">
-            <!-- Items agregados -->
+            <!-- Items en Carrito -->
         </div>
 
         <div class="cart-summary">
@@ -258,13 +259,13 @@
     </aside>
 </main>
 
-<!-- BOTÓN FLOTANTE CARRITO (MÓVIL) -->
+<!-- BOTÓN FLOTANTE CARRITO MÓVIL -->
 <button class="btn-cart-fab" onclick="toggleCart()">
     <i class="fas fa-shopping-cart"></i>
 </button>
 
 <div class="bottom-nav">
-    <button onclick="location.reload()" style="background:none; border:none; color: var(--primary);"><i class="fas fa-home"></i><br>Inicio</button>
+    <button onclick="location.reload()" style="background:none; border:none; color: var(--primary);"><i class="fas fa-home"></i><br>POS</button>
     <button onclick="abrirModalNuevoProducto()" style="background:none; border:none; color: #888;"><i class="fas fa-plus-circle"></i><br>Nuevo</button>
     <button onclick="abrirModalInventario()" style="background:none; border:none; color: #888;"><i class="fas fa-boxes"></i><br>Inventario</button>
     <button onclick="abrirModalVentas()" style="background:none; border:none; color: #888;"><i class="fas fa-history"></i><br>Ventas</button>
@@ -272,53 +273,53 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL REGISTRO DE PRODUCTO / EDICIÓN CON CÓDIGO SH AUTO -->
-<div class="modal-overlay" id="modalProducto">
-    <div class="modal-body">
-        <div class="modal-header-title">
+<!-- 1. MODAL AGREGAR / EDITAR PRODUCTO CON CÓDIGO SECUENCIAL SH0001 AUTOMÁTICO -->
+<div class="modal-bg" id="modalProducto">
+    <div class="modal-box">
+        <div class="modal-head">
             <h2 id="modalProductoTitle">Agregar Nuevo Producto</h2>
-            <button class="close-modal" onclick="cerrarModal('modalProducto')">&times;</button>
+            <button class="btn-close-modal" onclick="cerrarModal('modalProducto')">&times;</button>
         </div>
         <form id="formProducto" onsubmit="guardarProducto(event)">
             <input type="hidden" id="prodDocId">
             
-            <div class="form-row">
-                <div class="form-group-custom full">
+            <div class="form-grid-2">
+                <div class="form-field full">
                     <label>Nombre del Producto *</label>
-                    <input type="text" id="prodNombre" placeholder="Blusa Seda Rosa" required>
+                    <input type="text" id="prodNombre" placeholder="Ej. Blusa Seda Rosa" required>
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group-custom full">
+            <div class="form-grid-2">
+                <div class="form-field full">
                     <label>Código de Barras *</label>
                     <div style="display:flex; gap:8px;">
                         <input type="text" id="prodCodigo" placeholder="SH0001" style="flex:1;" required>
-                        <button type="button" onclick="asignarCodigoSecuencialSH()" style="padding:0 12px; background:var(--secondary); border:1px solid var(--primary); border-radius:8px; cursor:pointer; font-weight:600; font-size:0.8rem;">
+                        <button type="button" onclick="generarYAsignarCodigoSH()" style="padding:0 12px; background:var(--secondary); border:1px solid var(--primary); border-radius:8px; cursor:pointer; font-weight:600; font-size:0.8rem;">
                             <i class="fas fa-magic"></i> Auto SH
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group-custom">
+            <div class="form-grid-2">
+                <div class="form-field">
                     <label>Precio de Venta ($) *</label>
                     <input type="number" step="0.01" id="prodPrecio" placeholder="250.00" required>
                 </div>
-                <div class="form-group-custom">
+                <div class="form-field">
                     <label>Stock Inicial *</label>
                     <input type="number" id="prodStock" placeholder="1" value="1" min="0" required>
                 </div>
             </div>
 
-            <div class="form-row">
-                <div class="form-group-custom">
+            <div class="form-grid-2">
+                <div class="form-field">
                     <label>Categoría</label>
                     <input type="text" id="prodCategoria" placeholder="Blusas, Accesorios, etc." list="categoriesList">
                     <datalist id="categoriesList"></datalist>
                 </div>
-                <div class="form-group-custom">
+                <div class="form-field">
                     <label>Costo de Compra ($)</label>
                     <input type="number" step="0.01" id="prodCosto" placeholder="120.00">
                 </div>
@@ -332,25 +333,26 @@
     </div>
 </div>
 
-<!-- 2. MODAL GESTOR DE INVENTARIO -->
-<div class="modal-overlay" id="modalInventario">
-    <div class="modal-body" style="max-width: 750px;">
-        <div class="modal-header-title">
-            <h2>Control de Inventario</h2>
-            <button class="close-modal" onclick="cerrarModal('modalInventario')">&times;</button>
+<!-- 2. MODAL GESTOR DE INVENTARIO COMPLETO -->
+<div class="modal-bg" id="modalInventario">
+    <div class="modal-box" style="max-width: 750px;">
+        <div class="modal-head">
+            <h2>Administración de Inventario</h2>
+            <button class="btn-close-modal" onclick="cerrarModal('modalInventario')">&times;</button>
         </div>
         <div style="display:flex; gap:10px; margin-bottom: 10px;">
             <input type="text" id="invSearchInput" placeholder="Buscar por código SH o nombre..." style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px;" oninput="renderTablaInventario()">
-            <button onclick="abrirModalNuevoProducto()" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer;">
+            <button onclick="abrirModalNuevoProducto()" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; font-weight:600;">
                 <i class="fas fa-plus"></i> Nuevo
             </button>
         </div>
-        <div class="inv-table-wrap">
-            <table class="inv-table">
+        <div class="table-wrap">
+            <table class="custom-table">
                 <thead>
                     <tr>
                         <th>Código</th>
                         <th>Nombre</th>
+                        <th>Categoría</th>
                         <th>Precio</th>
                         <th>Stock</th>
                         <th>Acciones</th>
@@ -362,12 +364,12 @@
     </div>
 </div>
 
-<!-- 3. MODAL COBRAR ORIGINAL -->
-<div class="modal-overlay" id="modalCobrar">
-    <div class="modal-body">
-        <div class="modal-header-title">
+<!-- 3. MODAL COBRAR -->
+<div class="modal-bg" id="modalCobrar">
+    <div class="modal-box">
+        <div class="modal-head">
             <h2>Finalizar Venta</h2>
-            <button class="close-modal" onclick="cerrarModal('modalCobrar')">&times;</button>
+            <button class="btn-close-modal" onclick="cerrarModal('modalCobrar')">&times;</button>
         </div>
         <div style="text-align: center; margin: 15px 0;">
             <span style="font-size: 0.9rem; color: #666;">Total a Pagar</span>
@@ -394,20 +396,20 @@
         </div>
 
         <button class="btn-checkout" id="btnFinalizar" onclick="processSale()" style="background: var(--success); margin-top:20px;">
-            CONFIRMAR VENTA
+            CONFIRMAR Y IMPRIMIR
         </button>
     </div>
 </div>
 
-<!-- 4. MODAL HISTORIAL VENTAS -->
-<div class="modal-overlay" id="modalVentas">
-    <div class="modal-body" style="max-width: 700px;">
-        <div class="modal-header-title">
+<!-- 4. MODAL HISTORIAL DE VENTAS -->
+<div class="modal-bg" id="modalVentas">
+    <div class="modal-box" style="max-width: 700px;">
+        <div class="modal-head">
             <h2>Historial de Ventas</h2>
-            <button class="close-modal" onclick="cerrarModal('modalVentas')">&times;</button>
+            <button class="btn-close-modal" onclick="cerrarModal('modalVentas')">&times;</button>
         </div>
-        <div class="inv-table-wrap">
-            <table class="inv-table">
+        <div class="table-wrap">
+            <table class="custom-table">
                 <thead>
                     <tr>
                         <th>Fecha</th>
@@ -424,25 +426,25 @@
 </div>
 
 <!-- 5. MODAL CLIENTES -->
-<div class="modal-overlay" id="modalClientes">
-    <div class="modal-body">
-        <div class="modal-header-title">
+<div class="modal-bg" id="modalClientes">
+    <div class="modal-box">
+        <div class="modal-head">
             <h2>Gestión de Clientes</h2>
-            <button class="close-modal" onclick="cerrarModal('modalClientes')">&times;</button>
+            <button class="btn-close-modal" onclick="cerrarModal('modalClientes')">&times;</button>
         </div>
         <form id="formCliente" onsubmit="guardarCliente(event)">
-            <div class="form-group-custom" style="margin-bottom:10px;">
-                <label>Nombre del Cliente</label>
+            <div class="form-field" style="margin-bottom:10px;">
+                <label>Nombre Completo</label>
                 <input type="text" id="cliNombre" required>
             </div>
-            <div class="form-group-custom" style="margin-bottom:10px;">
+            <div class="form-field" style="margin-bottom:10px;">
                 <label>Teléfono</label>
                 <input type="text" id="cliTelefono">
             </div>
             <button type="submit" style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600;">Guardar Cliente</button>
         </form>
-        <div class="inv-table-wrap" style="margin-top: 15px;">
-            <table class="inv-table">
+        <div class="table-wrap" style="margin-top: 15px;">
+            <table class="custom-table">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -456,17 +458,17 @@
     </div>
 </div>
 
-<!-- 6. MODAL IMPORTAR CSV Y VACIAR BASE DE DATOS -->
-<div class="modal-overlay" id="modalConfig">
-    <div class="modal-body">
-        <div class="modal-header-title">
+<!-- 6. MODAL IMPORTAR LOYVERSE CSV -->
+<div class="modal-bg" id="modalConfig">
+    <div class="modal-box">
+        <div class="modal-head">
             <h2>Importar CSV de Loyverse</h2>
-            <button class="close-modal" onclick="cerrarModal('modalConfig')">&times;</button>
+            <button class="btn-close-modal" onclick="cerrarModal('modalConfig')">&times;</button>
         </div>
-        <p style="font-size:0.85rem; color:#666;">Selecciona tu archivo .csv exportado de Loyverse:</p>
+        <p style="font-size:0.85rem; color:#666;">Selecciona el archivo .csv exportado de Loyverse:</p>
         <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 20px; width:100%;">
         <div style="background: #fff3cd; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px;">
-            <i class="fas fa-exclamation-triangle"></i> Puedes vaciar el inventario anterior para evitar registros viejos o solo actualizar.
+            <i class="fas fa-exclamation-triangle"></i> Puedes vaciar la base de datos previa antes de importar para evitar duplicados.
         </div>
         <div style="display: flex; gap: 10px;">
             <button onclick="importCSV(true)" style="flex:1; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
@@ -485,7 +487,7 @@
     <button onclick="stopScanner()" style="padding: 20px; background: var(--danger); color: white; border: none; font-weight: bold;">CERRAR CÁMARA</button>
 </div>
 
-<!-- TICKET IMPRESIÓN -->
+<!-- TICKET OFICIAL SARAY HA -->
 <div id="ticket">
     <div style="text-align: center;">
         <svg viewBox="0 0 100 100" style="width: 35mm; height: 35mm;">
@@ -516,7 +518,7 @@
 </div>
 
 <script>
-    // --- CONEXIÓN FIREBASE ---
+    // --- CONEXIÓN FIREBASE FIRESTORE ---
     const firebaseConfig = {
         apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
         authDomain: "saray-ha-pos.firebaseapp.com",
@@ -535,7 +537,7 @@
     let html5QrCode = null;
     let barcodeBuffer = "";
 
-    // --- FORMATEO Y PARSEO DE DATOS ---
+    // --- UTILERÍAS ---
     function cleanName(str) {
         if (!str) return '';
         return str.replace(/[-_]/g, ' ')
@@ -563,28 +565,27 @@
         return isNaN(num) ? 0 : num;
     }
 
-    // GENERAR CÓDIGO SECUENCIAL AUTOMÁTICO SH0001, SH0002...
-    function generarCodigoSecuencialSH() {
+    // CALCULAR CÓDIGO SECUENCIAL SH0001, SH0002...
+    function calcularSiguienteSH() {
         let maxNum = 0;
         allProducts.forEach(p => {
-            if (p.codigo && typeof p.codigo === 'string') {
-                const match = p.codigo.trim().match(/^SH(\d+)$/i);
-                if (match) {
-                    const num = parseInt(match[1], 10);
-                    if (num > maxNum) maxNum = num;
+            if (p.codigo && /^SH\d+$/i.test(p.codigo.trim())) {
+                const num = parseInt(p.codigo.trim().substring(2), 10);
+                if (!isNaN(num) && num > maxNum) {
+                    maxNum = num;
                 }
             }
         });
-        const nextNum = maxNum + 1;
-        return 'SH' + String(nextNum).padStart(4, '0');
+        const siguiente = maxNum + 1;
+        return 'SH' + String(siguiente).padStart(4, '0');
     }
 
-    function asignarCodigoSecuencialSH() {
-        document.getElementById('prodCodigo').value = generarCodigoSecuencialSH();
+    function generarYAsignarCodigoSH() {
+        document.getElementById('prodCodigo').value = calcularSiguienteSH();
     }
 
-    // --- CARGAR DATOS FIRESTORE ---
-    function initApp() {
+    // --- CARGA DE DATOS REALTIME ---
+    function initDatabase() {
         db.collection("pos_productos").onSnapshot(snapshot => {
             allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderProducts(allProducts);
@@ -693,7 +694,7 @@
         updateCartUI();
     }
 
-    // --- PROCESO DE VENTA & COBRO ---
+    // --- COBRO Y VENTA ---
     function abrirCobro() {
         if (cart.length === 0) return Swal.fire("Carrito vacío", "", "warning");
         const total = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
@@ -788,12 +789,12 @@
         document.getElementById('ticketItems').innerHTML = itemsHtml;
     }
 
-    // --- NUEVO PRODUCTO Y EDICIÓN (CRUD PRODUCTOS) ---
+    // --- ADMINISTRACIÓN DE PRODUCTOS Y CÓDIGOS SH ---
     function abrirModalNuevoProducto() {
         document.getElementById('formProducto').reset();
         document.getElementById('prodDocId').value = "";
         document.getElementById('modalProductoTitle').innerText = "Agregar Nuevo Producto";
-        asignarCodigoSecuencialSH();
+        generarYAsignarCodigoSH();
         document.getElementById('modalProducto').style.display = 'flex';
     }
 
@@ -818,7 +819,7 @@
         e.preventDefault();
         const docId = document.getElementById('prodDocId').value;
         const nombre = cleanName(document.getElementById('prodNombre').value);
-        const codigo = document.getElementById('prodCodigo').value.trim() || generarCodigoSecuencialSH();
+        const codigo = document.getElementById('prodCodigo').value.trim() || calcularSiguienteSH();
         const precio = parsePrice(document.getElementById('prodPrecio').value);
         let stock = parseInt(document.getElementById('prodStock').value);
         if (isNaN(stock) || stock <= 0) stock = 1;
@@ -855,6 +856,12 @@
         }
     }
 
+    async function modificarStockDirecto(id, delta) {
+        await db.collection("pos_productos").doc(id).update({
+            stock: firebase.firestore.FieldValue.increment(delta)
+        });
+    }
+
     function abrirModalInventario() {
         renderTablaInventario();
         document.getElementById('modalInventario').style.display = 'flex';
@@ -869,17 +876,22 @@
             <tr>
                 <td><strong>${p.codigo || '-'}</strong></td>
                 <td>${p.nombre}</td>
+                <td>${p.categoria || 'General'}</td>
                 <td>$${p.precio.toFixed(2)}</td>
-                <td>${p.stock}</td>
                 <td>
-                    <button class="btn-act" style="background:#3b82f6;" onclick="editarProducto('${p.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn-act" style="background:var(--danger);" onclick="eliminarProducto('${p.id}')"><i class="fas fa-trash"></i></button>
+                    <strong style="${p.stock <= 0 ? 'color:red;' : ''}">${p.stock}</strong>
+                </td>
+                <td>
+                    <button class="btn-tb-act" style="background:#2a9d8f;" onclick="modificarStockDirecto('${p.id}', 1)">+1</button>
+                    <button class="btn-tb-act" style="background:#e76f51;" onclick="modificarStockDirecto('${p.id}', -1)">-1</button>
+                    <button class="btn-tb-act" style="background:#3b82f6;" onclick="editarProducto('${p.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-tb-act" style="background:var(--danger);" onclick="eliminarProducto('${p.id}')"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
     }
 
-    // --- VENTAS & CLIENTES ---
+    // --- VENTAS Y CLIENTES ---
     async function abrirModalVentas() {
         const snapshot = await db.collection("pos_ventas").orderBy("fecha", "desc").limit(30).get();
         const tbody = document.getElementById('ventasTableBody');
@@ -893,7 +905,7 @@
                     <td>${v.pago}</td>
                     <td>$${v.total.toFixed(2)}</td>
                     <td>
-                        <button class="btn-act" style="background:var(--danger);" onclick="cancelarVenta('${doc.id}')">Eliminar</button>
+                        <button class="btn-tb-act" style="background:var(--danger);" onclick="cancelarVenta('${doc.id}')">Eliminar</button>
                     </td>
                 </tr>
             `;
@@ -948,7 +960,7 @@
                 <td>${c.nombre}</td>
                 <td>${c.telefono || '-'}</td>
                 <td>
-                    <button class="btn-act" style="background:var(--danger);" onclick="eliminarCliente('${c.id}')"><i class="fas fa-trash"></i></button>
+                    <button class="btn-tb-act" style="background:var(--danger);" onclick="eliminarCliente('${c.id}')"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
@@ -967,7 +979,7 @@
         await db.collection("pos_clientes").doc(id).delete();
     }
 
-    // --- IMPORTADOR CSV CON OPCIÓN VACIAR TODO Y LIMPIEZA BOM ---
+    // --- IMPORTADOR CSV Y LIMPIEZA DE BASE DE DATOS ---
     async function importCSV(clearOld) {
         const file = document.getElementById('csvFile').files[0];
         if(!file) return Swal.fire("Elige un archivo CSV", "", "warning");
@@ -975,7 +987,7 @@
         if(clearOld) {
             const confirm = await Swal.fire({
                 title: '¿Borrar todo el inventario anterior?',
-                text: "Esta acción borrará los productos viejos de la base de datos",
+                text: "Esta acción eliminará todos los productos existentes en la base de datos.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e63946'
@@ -1002,7 +1014,7 @@
                     if(isNaN(stockNum) || stockNum <= 0) stockNum = 1;
 
                     let barcode = row["Código de barras"] || row["Barcode"] || "";
-                    if (!barcode) barcode = generarCodigoSecuencialSH();
+                    if (!barcode) barcode = calcularSiguienteSH();
 
                     const productData = {
                         nombre: nombreLimpio,
@@ -1015,13 +1027,13 @@
                     await db.collection("pos_productos").doc(barcode).set(productData, {merge: true});
                     count++;
                 }
-                Swal.fire("Importación Completa", `${count} productos guardados`, "success");
+                Swal.fire("Importación Completa", `${count} productos procesados`, "success");
                 cerrarModal('modalConfig');
             }
         });
     }
 
-    // --- ESCÁNER HARDWARE & CÁMARA ---
+    // --- ESCÁNER HARDWARE Y CÁMARA ---
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
         
@@ -1079,8 +1091,8 @@
         document.getElementById(id).style.display = 'none';
     }
 
-    // Inicializar
-    initApp();
+    // Inicializar App
+    initDatabase();
 </script>
 </body>
 </html>
