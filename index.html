@@ -3,192 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SARAY HA - POS & Control de Inventario</title>
-
+    <title>SARAY HA - POS System</title>
+    
     <!-- Librerías Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
             --primary: #d4a373;
-            --primary-dark: #bc8a5f;
             --secondary: #faedcd;
             --accent: #ccd5ae;
             --dark: #1d1d1d;
             --light: #fefae0;
-            --gray-bg: #f8f9fa;
             --danger: #e63946;
             --success: #2a9d8f;
-            --border-color: #e2e8f0;
         }
 
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--gray-bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; color: var(--dark); }
+        body { background: #f8f9fa; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* HEADER */
+        /* HEADER ORIGINAL */
         header { 
-            background: #ffffff; padding: 10px 20px; 
+            background: white; padding: 10px 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
-            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10;
         }
-        .logo-container { display: flex; align-items: center; gap: 12px; }
-        .logo-container svg { width: 42px; height: 42px; }
-        .logo-container h1 { margin: 0; font-size: 1.25rem; color: var(--dark); font-weight: 700; letter-spacing: 1px; }
+        .logo-container { display: flex; align-items: center; gap: 10px; }
+        .logo-container svg { width: 45px; height: 45px; }
+        .logo-container h1 { margin: 0; font-size: 1.2rem; color: var(--dark); text-transform: uppercase; letter-spacing: 1px; }
 
-        .header-nav { display: flex; gap: 8px; align-items: center; }
-        .btn-header {
-            background: #ffffff; border: 1px solid var(--border-color); color: var(--dark);
-            padding: 8px 14px; border-radius: 8px; font-weight: 500; font-size: 0.88rem;
-            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s;
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .btn-header-action {
+            background: #fff; border: 1px solid #ddd; padding: 8px 12px;
+            border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
+            display: flex; align-items: center; gap: 5px; color: var(--dark); transition: 0.2s;
         }
-        .btn-header:hover { background: var(--secondary); border-color: var(--primary); }
-        .btn-header.active-primary { background: var(--primary); color: white; border-color: var(--primary); }
-        .btn-header.active-primary:hover { background: var(--primary-dark); }
+        .btn-header-action:hover { background: var(--secondary); border-color: var(--primary); }
+        .btn-header-action.primary { background: var(--primary); color: white; border: none; }
+        .btn-header-action.primary:hover { background: #bc8a5f; }
 
-        /* LAYOUT PRINCIPAL */
+        /* LAYOUT POS ORIGINAL */
         main { display: flex; flex: 1; overflow: hidden; }
 
-        /* PANEL PRODUCTOS */
-        .inventory-panel { flex: 1; display: flex; flex-direction: column; background: #fff; border-right: 1px solid var(--border-color); }
-        .search-bar { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; gap: 12px; background: #fff; }
-        .search-bar input { flex: 1; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; font-size: 0.95rem; }
-        .search-bar input:focus { border-color: var(--primary); }
-        .search-bar select { padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); outline: none; background: white; font-size: 0.9rem; }
+        /* PANEL IZQUIERDO: PRODUCTOS */
+        .inventory-panel { flex: 1; display: flex; flex-direction: column; background: #fff; border-right: 1px solid #ddd; }
+        .search-bar { padding: 15px; border-bottom: 1px solid #eee; display: flex; gap: 10px; }
+        .search-bar input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .search-bar select { padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none; background: white; }
         
         .product-grid { 
             flex: 1; overflow-y: auto; display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
-            gap: 15px; padding: 20px; align-content: flex-start;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px; padding: 15px; align-content: flex-start;
         }
         .product-card { 
-            background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 14px;
-            text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative;
+            background: white; border: 1px solid #eee; border-radius: 12px; padding: 12px;
+            text-align: center; cursor: pointer; transition: 0.2s; position: relative;
             display: flex; flex-direction: column; justify-content: space-between;
         }
-        .product-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
-        .product-card .price { color: var(--primary-dark); font-weight: 700; font-size: 1.15rem; }
-        .product-card .name { font-size: 0.88rem; margin: 8px 0; color: #444; font-weight: 500; height: 38px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-        .product-card .code-tag { font-size: 0.72rem; color: #888; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; align-self: center; margin-bottom: 4px; }
+        .product-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .product-card .price { color: var(--primary); font-weight: 600; font-size: 1.1rem; }
+        .product-card .name { font-size: 0.85rem; margin: 6px 0; color: #555; height: 34px; overflow: hidden; }
+        .product-card .code-tag { font-size: 0.7rem; color: #888; background: #f0f0f0; padding: 2px 4px; border-radius: 3px; }
         .product-card .stock-badge { 
-            position: absolute; top: 8px; right: 8px; font-size: 0.7rem; font-weight: 600;
-            background: #e2e8f0; color: #475569; padding: 3px 8px; border-radius: 20px;
+            position: absolute; top: 5px; right: 5px; font-size: 0.7rem; 
+            background: #eee; padding: 2px 6px; border-radius: 4px;
         }
-        .product-card .stock-badge.low { background: #fee2e2; color: var(--danger); }
 
-        /* PANEL CARRITO */
-        .cart-panel { width: 400px; background: #fff; display: flex; flex-direction: column; box-shadow: -4px 0 15px rgba(0,0,0,0.03); }
-        .cart-header { padding: 18px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .cart-header h3 { margin: 0; font-size: 1.1rem; }
-        .cart-items { flex: 1; overflow-y: auto; padding: 15px; }
+        /* PANEL DERECHO: CARRITO ORIGINAL */
+        .cart-panel { width: 400px; background: #fff; display: flex; flex-direction: column; box-shadow: -2px 0 10px rgba(0,0,0,0.05); }
+        .cart-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 10px; }
         .cart-item { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem;
+            padding: 10px; border-bottom: 1px solid #f9f9f9; font-size: 0.9rem;
         }
-        .cart-item-info { flex: 1; padding-right: 10px; }
-        .cart-item-title { font-weight: 600; color: var(--dark); }
-        .cart-item-sub { font-size: 0.78rem; color: #777; }
+        .cart-item-info { flex: 1; }
         .cart-item-controls { display: flex; align-items: center; gap: 8px; }
         .cart-item-controls button { 
-            border: 1px solid var(--border-color); background: #f8fafc; width: 28px; height: 28px; 
-            border-radius: 6px; cursor: pointer; font-weight: bold; color: var(--dark);
+            border: none; background: #eee; width: 25px; height: 25px; 
+            border-radius: 5px; cursor: pointer; font-weight: bold;
         }
-        .cart-item-controls button:hover { background: var(--secondary); }
 
         .cart-summary { padding: 20px; background: #fafafa; border-top: 2px solid var(--primary); }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; color: #555; }
-        .total-row { font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-top: 10px; padding-top: 10px; border-top: 1px dashed #cbd5e1; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1rem; }
+        .total-row { font-size: 1.4rem; font-weight: 600; color: var(--dark); margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc; }
         
         .btn-checkout { 
             width: 100%; background: var(--primary); color: white; border: none; 
-            padding: 15px; border-radius: 10px; font-size: 1.05rem; font-weight: 600; 
-            cursor: pointer; margin-top: 15px; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
+            padding: 15px; border-radius: 10px; font-size: 1.1rem; font-weight: 600; 
+            cursor: pointer; margin-top: 15px; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px;
         }
-        .btn-checkout:hover { background: var(--primary-dark); }
+        .btn-checkout:hover { background: #bc8a5f; }
 
-        /* MODALES GENERALES */
-        .modal {
+        /* ESTILOS DE MODALES GENERALES */
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(3px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
-        .modal-content {
-            background: white; width: 95%; max-width: 600px; border-radius: 16px; padding: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            max-height: 90vh; overflow-y: auto; position: relative;
+        .modal-body {
+            background: white; width: 95%; max-width: 550px; border-radius: 15px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto;
         }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 18px; }
-        .modal-header h2 { margin: 0; font-size: 1.25rem; color: var(--dark); }
-        .close-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #64748b; }
-        .close-btn:hover { color: var(--danger); }
-
-        /* FORMULARIOS MODAL */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-        .form-group.full { grid-column: span 2; }
-        .form-group label { font-size: 0.85rem; font-weight: 600; color: #475569; }
-        .form-group input, .form-group select, .form-group textarea { 
-            padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; font-size: 0.9rem; 
-        }
-        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-        .input-with-btn { display: flex; gap: 8px; }
-        .input-with-btn input { flex: 1; }
-        .btn-input-action { background: var(--secondary); border: 1px solid var(--primary); color: var(--dark); font-weight: 600; padding: 0 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
-        .btn-input-action:hover { background: var(--primary); color: white; }
+        .modal-header-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .modal-header-title h2 { margin: 0; font-size: 1.2rem; }
+        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
 
         /* MODAL COBRAR */
         .cash-input-group { margin: 20px 0; }
-        .cash-input-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .cash-input-group label { display: block; margin-bottom: 10px; font-weight: 600; }
         .cash-input-group input { 
-            width: 100%; padding: 14px; font-size: 1.8rem; text-align: center; font-weight: bold;
+            width: 100%; padding: 15px; font-size: 1.5rem; text-align: center; 
             border: 2px solid var(--primary); border-radius: 10px; outline: none;
         }
-        .quick-cash { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+        .quick-cash { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .quick-cash button { 
-            padding: 10px; border: 1px solid var(--border-color); background: #f8fafc; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem;
+            padding: 10px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: 600;
         }
-        .quick-cash button:hover { background: var(--secondary); border-color: var(--primary); }
+        .quick-cash button:hover { background: var(--secondary); }
         .change-display { 
-            background: #f1f5f9; padding: 14px; border-radius: 10px; text-align: center; 
-            margin-top: 15px; font-size: 1.25rem; font-weight: 600; color: #334155;
+            background: #f0f0f0; padding: 15px; border-radius: 10px; text-align: center; 
+            margin-top: 15px; font-size: 1.2rem; font-weight: 600;
         }
-        .change-display.insufficient { background: #fee2e2; color: var(--danger); }
+        .change-display.insufficient { background: #ffdada; color: var(--danger); }
 
-        /* TABLA DE GESTIÓN INVENTARIO */
-        .inv-table-container { overflow-x: auto; max-height: 400px; margin-top: 15px; border: 1px solid var(--border-color); border-radius: 8px; }
+        /* FORMULARIOS DE NUEVO PRODUCTO Y TABLAS DE INVENTARIO */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .form-group-custom { display: flex; flex-direction: column; gap: 4px; }
+        .form-group-custom.full { grid-column: span 2; }
+        .form-group-custom label { font-size: 0.85rem; font-weight: 600; color: #555; }
+        .form-group-custom input, .form-group-custom select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
+        .form-group-custom input:focus { border-color: var(--primary); }
+        
+        .inv-table-wrap { max-height: 380px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
         .inv-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .inv-table th, .inv-table td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .inv-table th { background: #f8fafc; font-weight: 600; color: #475569; position: sticky; top: 0; z-index: 5; }
-        .inv-actions { display: flex; gap: 6px; }
-        .btn-tbl { border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; color: white; }
-        .btn-tbl-edit { background: #3b82f6; }
-        .btn-tbl-del { background: var(--danger); }
-        .btn-tbl-stock { background: var(--success); }
+        .inv-table th, .inv-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
+        .inv-table th { background: #f8f9fa; position: sticky; top: 0; }
+        .btn-act { border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; color: white; font-size: 0.75rem; }
 
-        /* MOBILE NAV */
-        .bottom-nav { display: none; background: white; border-top: 1px solid var(--border-color); padding: 8px; }
+        /* MOBILE NAV ORIGINAL */
+        .bottom-nav { display: none; background: white; border-top: 1px solid #ddd; padding: 10px; }
 
         @media (max-width: 850px) {
             .cart-panel { display: none; position: fixed; right: 0; top: 0; height: 100%; z-index: 100; width: 85%; }
             .cart-panel.active { display: flex; }
             .bottom-nav { display: flex; justify-content: space-around; }
-            .header-nav span { display: none; }
+            .header-actions span { display: none; }
             .btn-cart-fab { 
-                position: fixed; bottom: 75px; right: 20px; width: 56px; height: 56px; 
-                border-radius: 28px; background: var(--primary); color: white; 
-                display: flex; justify-content: center; align-items: center; font-size: 1.4rem; 
-                box-shadow: 0 6px 16px rgba(0,0,0,0.2); z-index: 90; border: none;
+                position: fixed; bottom: 80px; right: 20px; width: 60px; height: 60px; 
+                border-radius: 30px; background: var(--primary); color: white; 
+                display: flex; justify-content: center; align-items: center; font-size: 1.5rem; 
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 90; border: none;
             }
         }
 
-        /* TICKET IMPRESIÓN */
-        #ticket { display: none; width: 80mm; padding: 4mm; background: white; color: black; font-family: 'Courier New', monospace; font-size: 11px; }
+        /* TICKET IMPRESIÓN OFICIAL */
+        #ticket { display: none; width: 80mm; padding: 5mm; background: white; color: black; font-family: 'Courier New', monospace; font-size: 11px; }
         @media print {
             body * { visibility: hidden; }
             #ticket, #ticket * { visibility: visible; }
@@ -200,33 +176,33 @@
 
 <header>
     <div class="logo-container">
-        <!-- Logo SVG Integrado Directamente -->
+        <!-- Saray HA Logo SVG Incorporado -->
         <svg viewBox="0 0 100 100" id="brandLogo">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="#d4a373" stroke-width="3"/>
-            <text x="50%" y="46%" text-anchor="middle" fill="#d4a373" font-size="28" font-family="Serif" dy=".3em">S</text>
-            <text x="50%" y="66%" text-anchor="middle" fill="#d4a373" font-size="10" font-family="Poppins" letter-spacing="2">SARAY HA</text>
+            <circle cx="50" cy="50" r="48" fill="none" stroke="#d4a373" stroke-width="2"/>
+            <text x="50%" y="45%" text-anchor="middle" fill="#d4a373" font-size="28" font-family="Serif" dy=".3em">S</text>
+            <text x="50%" y="65%" text-anchor="middle" fill="#d4a373" font-size="12" font-family="Poppins" letter-spacing="2">SARAY HA</text>
         </svg>
         <h1>SARAY HA</h1>
     </div>
     
-    <div class="header-nav">
-        <button class="btn-header active-primary" onclick="abrirModalAgregarProducto()">
-            <i class="fas fa-plus-circle"></i> <span>Nuevo Producto</span>
+    <div class="header-actions">
+        <button class="btn-header-action primary" onclick="abrirModalNuevoProducto()">
+            <i class="fas fa-plus"></i> <span>Nuevo</span>
         </button>
-        <button class="btn-header" onclick="abrirModalInventario()">
+        <button class="btn-header-action" onclick="abrirModalInventario()">
             <i class="fas fa-boxes"></i> <span>Inventario</span>
         </button>
-        <button class="btn-header" onclick="abrirModalVentas()">
-            <i class="fas fa-receipt"></i> <span>Ventas</span>
+        <button class="btn-header-action" onclick="abrirModalVentas()">
+            <i class="fas fa-history"></i> <span>Ventas</span>
         </button>
-        <button class="btn-header" onclick="abrirModalClientes()">
+        <button class="btn-header-action" onclick="abrirModalClientes()">
             <i class="fas fa-users"></i> <span>Clientes</span>
         </button>
-        <button class="btn-header" onclick="document.getElementById('modalScanner').style.display='flex'; startScanner();">
-            <i class="fas fa-barcode"></i> <span>Escanear</span>
+        <button class="btn-header-action" onclick="document.getElementById('modalScanner').style.display='flex'; startScanner();">
+            <i class="fas fa-camera"></i> <span>Escanear</span>
         </button>
-        <button class="btn-header" onclick="document.getElementById('modalConfig').style.display='flex'">
-            <i class="fas fa-file-import"></i> <span>Loyverse CSV</span>
+        <button class="btn-header-action" onclick="document.getElementById('modalConfig').style.display='flex'">
+            <i class="fas fa-file-import"></i> <span>Importar CSV</span>
         </button>
     </div>
 </header>
@@ -241,26 +217,26 @@
             </select>
         </div>
         <div class="product-grid" id="productGrid">
-            <!-- Productos cargados desde Firestore -->
+            <!-- Productos cargados desde Firebase -->
         </div>
     </section>
 
-    <!-- PANEL DERECHO: CARRITO DE VENTA -->
+    <!-- PANEL DERECHO: CARRITO -->
     <aside class="cart-panel" id="cartPanel">
         <div class="cart-header">
             <h3>Carrito de Venta</h3>
-            <button onclick="clearCart()" style="border:none; background:none; color: var(--danger); cursor:pointer; font-size: 0.85rem;">
-                <i class="fas fa-trash-alt"></i> Vaciar
+            <button onclick="clearCart()" style="border:none; background:none; color: var(--danger); cursor:pointer;">
+                <i class="fas fa-trash-alt"></i> Limpiar
             </button>
         </div>
         
         <div class="cart-items" id="cartItems">
-            <!-- Items de la venta -->
+            <!-- Items agregados -->
         </div>
 
         <div class="cart-summary">
             <div class="summary-row">
-                <span>Items en Carrito:</span>
+                <span>Items:</span>
                 <span id="cartCount">0</span>
             </div>
             <div class="summary-row total-row">
@@ -268,15 +244,15 @@
                 <span id="cartTotal">$0.00</span>
             </div>
             
-            <div style="margin-top:12px;">
-                <label style="font-size: 0.8rem; color: #64748b; font-weight: 600;">Cliente Asignado:</label>
-                <select id="cartClient" style="width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border-color); margin-top:4px; font-size: 0.88rem;">
+            <div style="margin-top:15px;">
+                <label style="font-size: 0.8rem; color: #666;">Cliente:</label>
+                <select id="cartClient" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-top:5px;">
                     <option value="Público General">Público General</option>
                 </select>
             </div>
 
             <button class="btn-checkout" onclick="abrirCobro()">
-                <i class="fas fa-cash-register"></i> COBRAR (F10)
+                COBRAR (F10)
             </button>
         </div>
     </aside>
@@ -287,122 +263,119 @@
     <i class="fas fa-shopping-cart"></i>
 </button>
 
-<!-- NAV INFERIOR MÓVIL -->
 <div class="bottom-nav">
-    <button onclick="location.reload()" style="background:none; border:none; color: var(--primary); font-weight: 600;"><i class="fas fa-store"></i><br>POS</button>
-    <button onclick="abrirModalAgregarProducto()" style="background:none; border:none; color: #64748b;"><i class="fas fa-plus-circle"></i><br>Nuevo</button>
-    <button onclick="abrirModalInventario()" style="background:none; border:none; color: #64748b;"><i class="fas fa-boxes"></i><br>Inventario</button>
-    <button onclick="abrirModalVentas()" style="background:none; border:none; color: #64748b;"><i class="fas fa-history"></i><br>Ventas</button>
+    <button onclick="location.reload()" style="background:none; border:none; color: var(--primary);"><i class="fas fa-home"></i><br>Inicio</button>
+    <button onclick="abrirModalNuevoProducto()" style="background:none; border:none; color: #888;"><i class="fas fa-plus-circle"></i><br>Nuevo</button>
+    <button onclick="abrirModalInventario()" style="background:none; border:none; color: #888;"><i class="fas fa-boxes"></i><br>Inventario</button>
+    <button onclick="abrirModalVentas()" style="background:none; border:none; color: #888;"><i class="fas fa-history"></i><br>Ventas</button>
 </div>
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL AGREGAR / EDITAR PRODUCTO COMPLETO -->
-<div class="modal" id="modalProducto">
-    <div class="modal-content">
-        <div class="modal-header">
+<!-- 1. MODAL REGISTRO DE PRODUCTO / EDICIÓN CON CÓDIGO SH AUTO -->
+<div class="modal-overlay" id="modalProducto">
+    <div class="modal-body">
+        <div class="modal-header-title">
             <h2 id="modalProductoTitle">Agregar Nuevo Producto</h2>
-            <button class="close-btn" onclick="cerrarModal('modalProducto')">&times;</button>
+            <button class="close-modal" onclick="cerrarModal('modalProducto')">&times;</button>
         </div>
         <form id="formProducto" onsubmit="guardarProducto(event)">
             <input type="hidden" id="prodDocId">
             
-            <div class="form-grid">
-                <div class="form-group full">
+            <div class="form-row">
+                <div class="form-group-custom full">
                     <label>Nombre del Producto *</label>
-                    <input type="text" id="prodNombre" placeholder="Ej. Blusa Seda Rosa" required>
+                    <input type="text" id="prodNombre" placeholder="Blusa Seda Rosa" required>
                 </div>
-                
-                <div class="form-group full">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group-custom full">
                     <label>Código de Barras *</label>
-                    <div class="input-with-btn">
-                        <input type="text" id="prodCodigo" placeholder="SH0001" required>
-                        <button type="button" class="btn-input-action" onclick="setGeneratedBarcode()">
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="prodCodigo" placeholder="SH0001" style="flex:1;" required>
+                        <button type="button" onclick="asignarCodigoSecuencialSH()" style="padding:0 12px; background:var(--secondary); border:1px solid var(--primary); border-radius:8px; cursor:pointer; font-weight:600; font-size:0.8rem;">
                             <i class="fas fa-magic"></i> Auto SH
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-group">
+            <div class="form-row">
+                <div class="form-group-custom">
                     <label>Precio de Venta ($) *</label>
                     <input type="number" step="0.01" id="prodPrecio" placeholder="250.00" required>
                 </div>
-
-                <div class="form-group">
+                <div class="form-group-custom">
                     <label>Stock Inicial *</label>
                     <input type="number" id="prodStock" placeholder="1" value="1" min="0" required>
                 </div>
+            </div>
 
-                <div class="form-group">
+            <div class="form-row">
+                <div class="form-group-custom">
                     <label>Categoría</label>
                     <input type="text" id="prodCategoria" placeholder="Blusas, Accesorios, etc." list="categoriesList">
                     <datalist id="categoriesList"></datalist>
                 </div>
-
-                <div class="form-group">
+                <div class="form-group-custom">
                     <label>Costo de Compra ($)</label>
                     <input type="number" step="0.01" id="prodCosto" placeholder="120.00">
                 </div>
             </div>
 
             <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" onclick="cerrarModal('modalProducto')" style="padding: 10px 18px; border: 1px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
+                <button type="button" onclick="cerrarModal('modalProducto')" style="padding: 10px 15px; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer;">Cancelar</button>
                 <button type="submit" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Guardar Producto</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- 2. MODAL INVENTARIO COMPLETO (ADMINISTRACIÓN) -->
-<div class="modal" id="modalInventario">
-    <div class="modal-content" style="max-width: 850px;">
-        <div class="modal-header">
-            <h2>Administración de Inventario</h2>
-            <button class="close-btn" onclick="cerrarModal('modalInventario')">&times;</button>
+<!-- 2. MODAL GESTOR DE INVENTARIO -->
+<div class="modal-overlay" id="modalInventario">
+    <div class="modal-body" style="max-width: 750px;">
+        <div class="modal-header-title">
+            <h2>Control de Inventario</h2>
+            <button class="close-modal" onclick="cerrarModal('modalInventario')">&times;</button>
         </div>
-        
-        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-            <input type="text" id="invSearchInput" placeholder="Filtrar por nombre o código SH..." style="flex:1; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px;" oninput="renderInventarioTabla()">
-            <button onclick="abrirModalAgregarProducto()" style="background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+        <div style="display:flex; gap:10px; margin-bottom: 10px;">
+            <input type="text" id="invSearchInput" placeholder="Buscar por código SH o nombre..." style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px;" oninput="renderTablaInventario()">
+            <button onclick="abrirModalNuevoProducto()" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer;">
                 <i class="fas fa-plus"></i> Nuevo
             </button>
         </div>
-
-        <div class="inv-table-container">
+        <div class="inv-table-wrap">
             <table class="inv-table">
                 <thead>
                     <tr>
                         <th>Código</th>
                         <th>Nombre</th>
-                        <th>Categoría</th>
                         <th>Precio</th>
                         <th>Stock</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="invTableBody">
-                    <!-- Registros dinámicos -->
-                </tbody>
+                <tbody id="invTableBody"></tbody>
             </table>
         </div>
     </div>
 </div>
 
-<!-- 3. MODAL COBRAR -->
-<div class="modal" id="modalCobrar">
-    <div class="modal-content" style="max-width: 480px;">
-        <div class="modal-header">
+<!-- 3. MODAL COBRAR ORIGINAL -->
+<div class="modal-overlay" id="modalCobrar">
+    <div class="modal-body">
+        <div class="modal-header-title">
             <h2>Finalizar Venta</h2>
-            <button class="close-btn" onclick="cerrarModal('modalCobrar')">&times;</button>
+            <button class="close-modal" onclick="cerrarModal('modalCobrar')">&times;</button>
         </div>
-
-        <div style="text-align: center; margin: 10px 0;">
-            <span style="font-size: 0.9rem; color: #64748b;">Total a Pagar</span>
-            <div id="modalTotal" style="font-size: 2.6rem; font-weight: 700; color: var(--primary-dark);">$0.00</div>
+        <div style="text-align: center; margin: 15px 0;">
+            <span style="font-size: 0.9rem; color: #666;">Total a Pagar</span>
+            <div id="modalTotal" style="font-size: 2.5rem; font-weight: 600; color: var(--primary);">$0.00</div>
         </div>
 
         <div class="cash-input-group">
-            <label>Monto Recibido:</label>
+            <label>Efectivo Recibido:</label>
             <input type="number" id="cashReceived" placeholder="0.00" oninput="calculateChange()">
             <div class="quick-cash" id="quickCashContainer"></div>
         </div>
@@ -412,28 +385,28 @@
         </div>
 
         <div style="margin-top: 15px;">
-            <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Método de Pago:</label>
-            <select id="paymentMethod" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); margin-top:4px;" onchange="calculateChange()">
+            <label style="font-size:0.85rem; font-weight:600;">Método de Pago:</label>
+            <select id="paymentMethod" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-top:5px;" onchange="calculateChange()">
                 <option value="Efectivo">Efectivo</option>
                 <option value="Transferencia">Transferencia</option>
-                <option value="Tarjeta">Tarjeta de Débito/Crédito</option>
+                <option value="Tarjeta">Tarjeta</option>
             </select>
         </div>
 
-        <button class="btn-checkout" id="btnFinalizar" onclick="processSale()" style="background: var(--success); margin-top: 20px;">
-            <i class="fas fa-check-circle"></i> CONFIRMAR Y IMPRIMIR
+        <button class="btn-checkout" id="btnFinalizar" onclick="processSale()" style="background: var(--success); margin-top:20px;">
+            CONFIRMAR VENTA
         </button>
     </div>
 </div>
 
-<!-- 4. MODAL HISTORIAL DE VENTAS -->
-<div class="modal" id="modalVentas">
-    <div class="modal-content" style="max-width: 750px;">
-        <div class="modal-header">
+<!-- 4. MODAL HISTORIAL VENTAS -->
+<div class="modal-overlay" id="modalVentas">
+    <div class="modal-body" style="max-width: 700px;">
+        <div class="modal-header-title">
             <h2>Historial de Ventas</h2>
-            <button class="close-btn" onclick="cerrarModal('modalVentas')">&times;</button>
+            <button class="close-modal" onclick="cerrarModal('modalVentas')">&times;</button>
         </div>
-        <div class="inv-table-container">
+        <div class="inv-table-wrap">
             <table class="inv-table">
                 <thead>
                     <tr>
@@ -451,24 +424,24 @@
 </div>
 
 <!-- 5. MODAL CLIENTES -->
-<div class="modal" id="modalClientes">
-    <div class="modal-content">
-        <div class="modal-header">
+<div class="modal-overlay" id="modalClientes">
+    <div class="modal-body">
+        <div class="modal-header-title">
             <h2>Gestión de Clientes</h2>
-            <button class="close-btn" onclick="cerrarModal('modalClientes')">&times;</button>
+            <button class="close-modal" onclick="cerrarModal('modalClientes')">&times;</button>
         </div>
         <form id="formCliente" onsubmit="guardarCliente(event)">
-            <div class="form-group">
-                <label>Nombre Completo</label>
+            <div class="form-group-custom" style="margin-bottom:10px;">
+                <label>Nombre del Cliente</label>
                 <input type="text" id="cliNombre" required>
             </div>
-            <div class="form-group">
+            <div class="form-group-custom" style="margin-bottom:10px;">
                 <label>Teléfono</label>
                 <input type="text" id="cliTelefono">
             </div>
-            <button type="submit" style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; margin-top: 10px;">Guardar Cliente</button>
+            <button type="submit" style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600;">Guardar Cliente</button>
         </form>
-        <div class="inv-table-container" style="margin-top: 15px;">
+        <div class="inv-table-wrap" style="margin-top: 15px;">
             <table class="inv-table">
                 <thead>
                     <tr>
@@ -483,69 +456,67 @@
     </div>
 </div>
 
-<!-- 6. MODAL LOYVERSE CSV IMPORT / WIPE DB -->
-<div class="modal" id="modalConfig">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h2>Importador Loyverse CSV</h2>
-            <button class="close-btn" onclick="cerrarModal('modalConfig')">&times;</button>
+<!-- 6. MODAL IMPORTAR CSV Y VACIAR BASE DE DATOS -->
+<div class="modal-overlay" id="modalConfig">
+    <div class="modal-body">
+        <div class="modal-header-title">
+            <h2>Importar CSV de Loyverse</h2>
+            <button class="close-modal" onclick="cerrarModal('modalConfig')">&times;</button>
         </div>
-        <p style="font-size: 0.88rem; color: #64748b;">Selecciona el archivo CSV exportado desde Loyverse:</p>
-        <input type="file" id="csvFile" accept=".csv" style="width: 100%; margin-bottom: 20px; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px;">
-        
-        <div style="background: #fffbeeb0; border: 1px solid #fde68a; padding: 12px; border-radius: 8px; font-size: 0.82rem; color: #b45309; margin-bottom: 20px;">
-            <i class="fas fa-exclamation-triangle"></i> <strong>Opción de Limpieza:</strong> Puedes vaciar el inventario viejo de Firestore antes de importar para evitar productos duplicados.
+        <p style="font-size:0.85rem; color:#666;">Selecciona tu archivo .csv exportado de Loyverse:</p>
+        <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 20px; width:100%;">
+        <div style="background: #fff3cd; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px;">
+            <i class="fas fa-exclamation-triangle"></i> Puedes vaciar el inventario anterior para evitar registros viejos o solo actualizar.
         </div>
-
         <div style="display: flex; gap: 10px;">
-            <button onclick="importCSV(true)" style="flex:1; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight: 600; cursor:pointer;">
+            <button onclick="importCSV(true)" style="flex:1; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
                 Vaciar Todo e Importar
             </button>
-            <button onclick="importCSV(false)" style="flex:1; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight: 600; cursor:pointer;">
+            <button onclick="importCSV(false)" style="flex:1; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
                 Solo Actualizar
             </button>
         </div>
     </div>
 </div>
 
-<!-- 7. MODAL SCANNER CÁMARA -->
+<!-- 7. SCANNER CÁMARA -->
 <div id="modalScanner" style="position:fixed; top:0; left:0; width:100%; height:100%; background:black; display:none; flex-direction:column; z-index:3000;">
     <div id="reader" style="width: 100%; flex: 1;"></div>
-    <button onclick="stopScanner()" style="padding: 18px; background: var(--danger); color: white; border: none; font-weight: bold; font-size: 1rem;">CERRAR CÁMARA</button>
+    <button onclick="stopScanner()" style="padding: 20px; background: var(--danger); color: white; border: none; font-weight: bold;">CERRAR CÁMARA</button>
 </div>
 
-<!-- TICKET IMPRESIÓN IMPERDIBLE DE SARAY HA -->
+<!-- TICKET IMPRESIÓN -->
 <div id="ticket">
     <div style="text-align: center;">
         <svg viewBox="0 0 100 100" style="width: 35mm; height: 35mm;">
-            <circle cx="50" cy="50" r="46" fill="none" stroke="black" stroke-width="3"/>
-            <text x="50%" y="46%" text-anchor="middle" fill="black" font-size="28" font-family="Serif" dy=".3em">S</text>
-            <text x="50%" y="66%" text-anchor="middle" fill="black" font-size="10" font-family="Poppins">SARAY HA</text>
+            <circle cx="50" cy="50" r="48" fill="none" stroke="black" stroke-width="2"/>
+            <text x="50%" y="45%" text-anchor="middle" fill="black" font-size="28" font-family="Serif" dy=".3em">S</text>
+            <text x="50%" y="65%" text-anchor="middle" fill="black" font-size="12" font-family="Poppins">SARAY HA</text>
         </svg>
-        <h2 style="margin: 4px 0 2px 0; font-size: 14px;">SARAY HA</h2>
-        <p style="margin:0;">Ropa & Accesorios</p>
-        <p id="ticketDate" style="margin: 4px 0; font-size: 10px;"></p>
+        <h2 style="margin: 5px 0;">SARAY HA</h2>
+        <p style="margin:0;">Venta de Ropa y Accesorios</p>
+        <p id="ticketDate" style="font-size: 10px; margin: 5px 0;"></p>
     </div>
-    <hr style="border: none; border-top: 1px dashed #000; margin: 6px 0;">
+    <hr style="border:none; border-top:1px dashed #000;">
     <div id="ticketItems"></div>
-    <hr style="border: none; border-top: 1px dashed #000; margin: 6px 0;">
+    <hr style="border:none; border-top:1px dashed #000;">
     <div style="display:flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
         <span>TOTAL:</span>
         <span id="ticketTotal"></span>
     </div>
     <div style="margin-top: 8px; font-size: 10px;">
-        <p style="margin: 2px 0;">Método Pago: <span id="ticketPayment"></span></p>
-        <p style="margin: 2px 0;">Cliente: <span id="ticketClient"></span></p>
+        <p style="margin:2px 0;">Pago: <span id="ticketPayment"></span></p>
+        <p style="margin:2px 0;">Cliente: <span id="ticketClient"></span></p>
     </div>
-    <hr style="border: none; border-top: 1px dashed #000; margin: 6px 0;">
-    <div style="text-align: center; font-size: 10px; margin-top: 8px;">
-        <p style="margin:2px 0;">¡Gracias por tu compra! 💖 Saray HA</p>
-        <p style="margin:2px 0; font-weight: bold;">NOTA: No hay cambios ni devoluciones</p>
+    <hr style="border:none; border-top:1px dashed #000;">
+    <div style="text-align: center; font-size: 10px;">
+        <p>¡Gracias por tu compra! 💖 Saray HA</p>
+        <p><strong>NOTA: No hay cambios ni devoluciones</strong></p>
     </div>
 </div>
 
 <script>
-    // --- FIREBASE CONFIGURATION ---
+    // --- CONEXIÓN FIREBASE ---
     const firebaseConfig = {
         apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
         authDomain: "saray-ha-pos.firebaseapp.com",
@@ -558,14 +529,13 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // --- VARIABLES GLOBALES ---
     let allProducts = [];
     let allClients = [];
     let cart = [];
     let html5QrCode = null;
     let barcodeBuffer = "";
 
-    // --- UTILIDADES DE FORMATO ---
+    // --- FORMATEO Y PARSEO DE DATOS ---
     function cleanName(str) {
         if (!str) return '';
         return str.replace(/[-_]/g, ' ')
@@ -593,8 +563,8 @@
         return isNaN(num) ? 0 : num;
     }
 
-    // GENERADOR AUTOMÁTICO DE CÓDIGOS DE BARRAS SECUENCIALES (SH0001, SH0002...)
-    function generateNextBarcode() {
+    // GENERAR CÓDIGO SECUENCIAL AUTOMÁTICO SH0001, SH0002...
+    function generarCodigoSecuencialSH() {
         let maxNum = 0;
         allProducts.forEach(p => {
             if (p.codigo && typeof p.codigo === 'string') {
@@ -609,21 +579,19 @@
         return 'SH' + String(nextNum).padStart(4, '0');
     }
 
-    function setGeneratedBarcode() {
-        document.getElementById('prodCodigo').value = generateNextBarcode();
+    function asignarCodigoSecuencialSH() {
+        document.getElementById('prodCodigo').value = generarCodigoSecuencialSH();
     }
 
-    // --- CARGA DE DATOS EN TIEMPO REAL ---
-    function initDatabaseListeners() {
-        // Carga Productos
+    // --- CARGAR DATOS FIRESTORE ---
+    function initApp() {
         db.collection("pos_productos").onSnapshot(snapshot => {
             allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderProducts(allProducts);
-            renderInventarioTabla();
-            updateCategoryOptions();
+            renderTablaInventario();
+            updateCategories();
         });
 
-        // Carga Clientes
         db.collection("pos_clientes").onSnapshot(snapshot => {
             allClients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             renderClientesCombo();
@@ -631,20 +599,11 @@
         });
     }
 
-    // --- RENDERIZADO DE PRODUCTOS ---
     function renderProducts(products) {
         const grid = document.getElementById('productGrid');
-        if (products.length === 0) {
-            grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px 0;">
-                <i class="fas fa-box-open" style="font-size: 3rem; margin-bottom: 10px;"></i>
-                <p>No hay productos registrados en la base de datos.</p>
-            </div>`;
-            return;
-        }
-
         grid.innerHTML = products.map(p => `
             <div class="product-card" onclick="addToCart('${p.id}')">
-                <span class="stock-badge ${p.stock <= 0 ? 'low' : ''}">${p.stock} pz</span>
+                <span class="stock-badge ${p.stock <= 0 ? 'text-danger' : ''}">${p.stock} pz</span>
                 <div>
                     <span class="code-tag">${p.codigo || 'S/C'}</span>
                     <div class="name">${p.nombre}</div>
@@ -654,7 +613,7 @@
         `).join('');
     }
 
-    function updateCategoryOptions() {
+    function updateCategories() {
         const cats = [...new Set(allProducts.map(p => p.categoria).filter(Boolean))];
         const select = document.getElementById('categoryFilter');
         select.innerHTML = '<option value="">Todas las categorías</option>' + 
@@ -668,15 +627,14 @@
         const query = document.getElementById('searchInput').value.toLowerCase();
         const cat = document.getElementById('categoryFilter').value;
         const filtered = allProducts.filter(p => {
-            const matchesSearch = p.nombre.toLowerCase().includes(query) || 
-                                  (p.codigo && p.codigo.toLowerCase().includes(query));
+            const matchesSearch = p.nombre.toLowerCase().includes(query) || (p.codigo && p.codigo.toLowerCase().includes(query));
             const matchesCat = cat === "" || p.categoria === cat;
             return matchesSearch && matchesCat;
         });
         renderProducts(filtered);
     }
 
-    // --- MANEJO DE CARRITO ---
+    // --- CARRITO ---
     function addToCart(productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
@@ -686,16 +644,9 @@
         if (index > -1) {
             cart[index].qty++;
         } else {
-            cart.push({
-                id: product.id,
-                nombre: product.nombre,
-                precio: product.precio,
-                codigo: product.codigo || '',
-                qty: 1
-            });
+            cart.push({ ...product, qty: 1 });
         }
-
-        // Sonido BEEP
+        
         try {
             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
             audio.play().catch(()=>{});
@@ -706,24 +657,20 @@
 
     function updateCartUI() {
         const container = document.getElementById('cartItems');
-        if (cart.length === 0) {
-            container.innerHTML = `<div style="text-align: center; color: #94a3b8; padding: 40px 0;">Carrito vacío</div>`;
-        } else {
-            container.innerHTML = cart.map((item, idx) => `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <div class="cart-item-title">${item.nombre}</div>
-                        <div class="cart-item-sub">$${item.precio.toFixed(2)} c/u</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <button onclick="changeQty(${idx}, -1)">-</button>
-                        <span>${item.qty}</span>
-                        <button onclick="changeQty(${idx}, 1)">+</button>
-                        <button onclick="removeFromCart(${idx})" style="color:var(--danger); border:none; background:none;"><i class="fas fa-trash"></i></button>
-                    </div>
+        container.innerHTML = cart.map((item, idx) => `
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <div style="font-weight:600;">${item.nombre}</div>
+                    <div style="color:var(--primary); font-size:0.85rem;">$${item.precio.toFixed(2)}</div>
                 </div>
-            `).join('');
-        }
+                <div class="cart-item-controls">
+                    <button onclick="changeQty(${idx}, -1)">-</button>
+                    <span>${item.qty}</span>
+                    <button onclick="changeQty(${idx}, 1)">+</button>
+                    <button onclick="removeFromCart(${idx})" style="color:var(--danger); background:none;"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+        `).join('');
 
         const total = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
         document.getElementById('cartTotal').innerText = `$${total.toFixed(2)}`;
@@ -748,22 +695,18 @@
 
     // --- PROCESO DE VENTA & COBRO ---
     function abrirCobro() {
-        if (cart.length === 0) return Swal.fire("Carrito vacío", "Agrega productos antes de cobrar", "warning");
+        if (cart.length === 0) return Swal.fire("Carrito vacío", "", "warning");
         const total = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
         document.getElementById('modalTotal').innerText = `$${total.toFixed(2)}`;
         document.getElementById('cashReceived').value = "";
-        
-        // Botones de Pago Rápido
-        const quick = document.getElementById('quickCashContainer');
-        const exact = Math.ceil(total);
-        const vals = [exact, 50, 100, 200, 500, 1000].filter(v => v >= exact || v === 50 || v === 100 || v === 200 || v === 500 || v === 1000);
-        quick.innerHTML = [...new Set(vals)].sort((a,b)=>a-b).map(v => `
-            <button onclick="setCash(${v})">$${v}</button>
-        `).join('');
-
         document.getElementById('modalCobrar').style.display = 'flex';
+        
+        const quick = document.getElementById('quickCashContainer');
+        const vals = [Math.ceil(total), 50, 100, 200, 500, 1000];
+        quick.innerHTML = [...new Set(vals)].map(v => `<button onclick="setCash(${v})">$${v}</button>`).join('');
+        
         calculateChange();
-        setTimeout(() => document.getElementById('cashReceived').focus(), 200);
+        setTimeout(() => document.getElementById('cashReceived').focus(), 300);
     }
 
     function setCash(val) {
@@ -773,29 +716,19 @@
 
     function calculateChange() {
         const total = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
+        const received = parseFloat(document.getElementById('cashReceived').value) || 0;
         const method = document.getElementById('paymentMethod').value;
-        const receivedInput = document.getElementById('cashReceived');
-        const received = parseFloat(receivedInput.value) || 0;
+        const change = received - total;
         const display = document.getElementById('changeDisplay');
         const btn = document.getElementById('btnFinalizar');
 
-        if (method !== 'Efectivo') {
-            display.innerText = "Pago con " + method;
-            display.classList.remove('insufficient');
-            btn.disabled = false;
-            btn.style.opacity = "1";
-            return;
-        }
-
-        const change = received - total;
-
-        if (received < total) {
+        if (received < total && method === 'Efectivo') {
             display.innerText = `Faltan: $${Math.abs(change).toFixed(2)}`;
             display.classList.add('insufficient');
             btn.disabled = true;
             btn.style.opacity = "0.5";
         } else {
-            display.innerText = `Cambio: $${change.toFixed(2)}`;
+            display.innerText = `Cambio: $${Math.max(0, change).toFixed(2)}`;
             display.classList.remove('insufficient');
             btn.disabled = false;
             btn.style.opacity = "1";
@@ -810,7 +743,7 @@
 
         const saleData = {
             fecha: firebase.firestore.Timestamp.now(),
-            items: cart.map(i => ({ id: i.id, nombre: i.nombre, precio: i.precio, qty: i.qty, codigo: i.codigo })),
+            items: cart,
             total: total,
             pago: method,
             recibido: received,
@@ -818,10 +751,8 @@
         };
 
         try {
-            // 1. Guardar Venta
             await db.collection("pos_ventas").add(saleData);
-
-            // 2. Descontar Stock
+            
             const batch = db.batch();
             cart.forEach(item => {
                 const ref = db.collection("pos_productos").doc(item.id);
@@ -831,42 +762,38 @@
             });
             await batch.commit();
 
-            // 3. Imprimir Ticket
-            imprimirTicket(saleData);
+            prepararTicket(saleData);
+            window.print();
 
-            Swal.fire({ icon: 'success', title: '¡Venta Realizada!', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Venta Exitosa', timer: 1200, showConfirmButton: false });
             clearCart();
             cerrarModal('modalCobrar');
         } catch (e) {
-            console.error(e);
-            Swal.fire("Error al registrar venta", e.message, "error");
+            Swal.fire("Error al procesar", e.message, "error");
         }
     }
 
-    function imprimirTicket(data) {
-        document.getElementById('ticketDate').innerText = new Date().toLocaleString('es-MX');
+    function prepararTicket(data) {
+        document.getElementById('ticketDate').innerText = new Date().toLocaleString();
         document.getElementById('ticketTotal').innerText = `$${data.total.toFixed(2)}`;
         document.getElementById('ticketPayment').innerText = data.pago;
         document.getElementById('ticketClient').innerText = data.cliente;
-
+        
         const itemsHtml = data.items.map(i => `
             <div style="display:flex; justify-content:space-between; margin-bottom: 3px;">
-                <span>${i.qty}x ${i.nombre.substring(0,18)}</span>
+                <span>${i.qty} x ${i.nombre.substring(0,18)}</span>
                 <span>$${(i.qty * i.precio).toFixed(2)}</span>
             </div>
         `).join('');
         document.getElementById('ticketItems').innerHTML = itemsHtml;
-
-        window.print();
     }
 
-    // --- MÓDULO ADMINISTRADOR DE PRODUCTOS (CRUD COMPLETO) ---
-    function abrirModalAgregarProducto() {
+    // --- NUEVO PRODUCTO Y EDICIÓN (CRUD PRODUCTOS) ---
+    function abrirModalNuevoProducto() {
         document.getElementById('formProducto').reset();
         document.getElementById('prodDocId').value = "";
         document.getElementById('modalProductoTitle').innerText = "Agregar Nuevo Producto";
-        // Pre-generar código SH automático
-        setGeneratedBarcode();
+        asignarCodigoSecuencialSH();
         document.getElementById('modalProducto').style.display = 'flex';
     }
 
@@ -883,78 +810,57 @@
         document.getElementById('prodCosto').value = p.costo || '';
 
         document.getElementById('modalProductoTitle').innerText = "Editar Producto";
-        document.getElementById('modalInventario').style.display = 'none';
+        cerrarModal('modalInventario');
         document.getElementById('modalProducto').style.display = 'flex';
     }
 
     async function guardarProducto(e) {
         e.preventDefault();
         const docId = document.getElementById('prodDocId').value;
-        const nombreRaw = document.getElementById('prodNombre').value;
-        const codigoRaw = document.getElementById('prodCodigo').value.trim();
-        const precioRaw = document.getElementById('prodPrecio').value;
-        const stockRaw = document.getElementById('prodStock').value;
-        const categoriaRaw = document.getElementById('prodCategoria').value;
-        const costoRaw = document.getElementById('prodCosto').value;
+        const nombre = cleanName(document.getElementById('prodNombre').value);
+        const codigo = document.getElementById('prodCodigo').value.trim() || generarCodigoSecuencialSH();
+        const precio = parsePrice(document.getElementById('prodPrecio').value);
+        let stock = parseInt(document.getElementById('prodStock').value);
+        if (isNaN(stock) || stock <= 0) stock = 1;
 
-        const nombreLimpio = cleanName(nombreRaw);
-        const precio = parsePrice(precioRaw);
-        let stock = parseInt(stockRaw);
-        if (isNaN(stock) || stock <= 0) stock = 1; // Asignación por defecto de 1 pieza
+        const categoria = cleanName(document.getElementById('prodCategoria').value) || "General";
+        const costo = parsePrice(document.getElementById('prodCosto').value);
 
-        const barcode = codigoRaw || generateNextBarcode();
-
-        const payload = {
-            nombre: nombreLimpio,
-            codigo: barcode,
-            precio: precio,
-            stock: stock,
-            categoria: cleanName(categoriaRaw) || "General",
-            costo: parsePrice(costoRaw)
-        };
+        const payload = { nombre, codigo, precio, stock, categoria, costo };
 
         try {
             if (docId) {
                 await db.collection("pos_productos").doc(docId).update(payload);
             } else {
-                // Se usa el código de barras como ID del documento para sincronización perfecta
-                await db.collection("pos_productos").doc(barcode).set(payload, { merge: true });
+                await db.collection("pos_productos").doc(codigo).set(payload, { merge: true });
             }
-
             Swal.fire({ icon: 'success', title: 'Producto Guardado', timer: 1200, showConfirmButton: false });
             cerrarModal('modalProducto');
-        } catch (error) {
-            Swal.fire("Error guardando producto", error.message, "error");
+        } catch (err) {
+            Swal.fire("Error guardando producto", err.message, "error");
         }
     }
 
     async function eliminarProducto(id) {
         const confirm = await Swal.fire({
-            title: '¿Eliminar Producto?',
-            text: "Esta acción no se puede deshacer",
+            title: '¿Eliminar producto?',
+            text: "No podrás deshacer esta acción",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#e63946'
         });
-
-        if (confirm.isConfirmed) {
+        if(confirm.isConfirmed) {
             await db.collection("pos_productos").doc(id).delete();
-            Swal.fire('Eliminado', '', 'success');
+            Swal.fire("Eliminado", "", "success");
         }
     }
 
-    async function ajustarStock(id, delta) {
-        await db.collection("pos_productos").doc(id).update({
-            stock: firebase.firestore.FieldValue.increment(delta)
-        });
-    }
-
     function abrirModalInventario() {
-        renderInventarioTabla();
+        renderTablaInventario();
         document.getElementById('modalInventario').style.display = 'flex';
     }
 
-    function renderInventarioTabla() {
+    function renderTablaInventario() {
         const query = (document.getElementById('invSearchInput')?.value || '').toLowerCase();
         const filtered = allProducts.filter(p => p.nombre.toLowerCase().includes(query) || (p.codigo && p.codigo.toLowerCase().includes(query)));
         
@@ -963,80 +869,68 @@
             <tr>
                 <td><strong>${p.codigo || '-'}</strong></td>
                 <td>${p.nombre}</td>
-                <td>${p.categoria || 'General'}</td>
                 <td>$${p.precio.toFixed(2)}</td>
+                <td>${p.stock}</td>
                 <td>
-                    <span style="font-weight:bold; ${p.stock <= 0 ? 'color:red;' : ''}">${p.stock}</span>
-                </td>
-                <td class="inv-actions">
-                    <button class="btn-tbl btn-tbl-stock" onclick="ajustarStock('${p.id}', 1)">+1</button>
-                    <button class="btn-tbl btn-tbl-stock" style="background:#f59e0b;" onclick="ajustarStock('${p.id}', -1)">-1</button>
-                    <button class="btn-tbl btn-tbl-edit" onclick="editarProducto('${p.id}')"><i class="fas fa-edit"></i></button>
-                    <button class="btn-tbl btn-tbl-del" onclick="eliminarProducto('${p.id}')"><i class="fas fa-trash"></i></button>
+                    <button class="btn-act" style="background:#3b82f6;" onclick="editarProducto('${p.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-act" style="background:var(--danger);" onclick="eliminarProducto('${p.id}')"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
     }
 
-    // --- HISTORIAL DE VENTAS & CANCELACIONES ---
+    // --- VENTAS & CLIENTES ---
     async function abrirModalVentas() {
         const snapshot = await db.collection("pos_ventas").orderBy("fecha", "desc").limit(30).get();
         const tbody = document.getElementById('ventasTableBody');
-        
         tbody.innerHTML = snapshot.docs.map(doc => {
             const v = doc.data();
-            const fechaStr = v.fecha ? new Date(v.fecha.toDate()).toLocaleString('es-MX') : '-';
+            const fechaStr = v.fecha ? new Date(v.fecha.toDate()).toLocaleString() : '-';
             return `
                 <tr>
                     <td>${fechaStr}</td>
                     <td>${v.cliente || 'Público General'}</td>
                     <td>${v.pago}</td>
-                    <td><strong>$${v.total.toFixed(2)}</strong></td>
+                    <td>$${v.total.toFixed(2)}</td>
                     <td>
-                        <button class="btn-tbl btn-tbl-del" onclick="cancelarVenta('${doc.id}')">Eliminar & Restaurar Stock</button>
+                        <button class="btn-act" style="background:var(--danger);" onclick="cancelarVenta('${doc.id}')">Eliminar</button>
                     </td>
                 </tr>
             `;
         }).join('');
-
         document.getElementById('modalVentas').style.display = 'flex';
     }
 
     async function cancelarVenta(ventaId) {
         const confirm = await Swal.fire({
-            title: '¿Cancelar Venta?',
-            text: "Se eliminará la venta y los productos volverán automáticamente al stock de inventario.",
+            title: '¿Eliminar venta?',
+            text: "Se regresará el stock a los productos correspondientes.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#e63946'
         });
-
         if(!confirm.isConfirmed) return;
 
         try {
             const doc = await db.collection("pos_ventas").doc(ventaId).get();
             const venta = doc.data();
-
             const batch = db.batch();
-            // Restablecer Stock
+
             venta.items.forEach(item => {
                 const ref = db.collection("pos_productos").doc(item.id);
-                batch.update(ref, {
-                    stock: firebase.firestore.FieldValue.increment(item.qty)
-                });
+                batch.update(ref, { stock: firebase.firestore.FieldValue.increment(item.qty) });
             });
 
             batch.delete(db.collection("pos_ventas").doc(ventaId));
             await batch.commit();
 
-            Swal.fire("Venta Cancelada", "El inventario ha sido restaurado", "success");
+            Swal.fire("Venta eliminada y stock restaurado", "", "success");
             abrirModalVentas();
         } catch(e) {
             Swal.fire("Error", e.message, "error");
         }
     }
 
-    // --- MÓDULO CLIENTES ---
     function abrirModalClientes() {
         document.getElementById('modalClientes').style.display = 'flex';
     }
@@ -1054,7 +948,7 @@
                 <td>${c.nombre}</td>
                 <td>${c.telefono || '-'}</td>
                 <td>
-                    <button class="btn-tbl btn-tbl-del" onclick="eliminarCliente('${c.id}')"><i class="fas fa-trash"></i></button>
+                    <button class="btn-act" style="background:var(--danger);" onclick="eliminarCliente('${c.id}')"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
         `).join('');
@@ -1063,67 +957,65 @@
     async function guardarCliente(e) {
         e.preventDefault();
         const nombre = cleanName(document.getElementById('cliNombre').value);
-        const tel = document.getElementById('cliTelefono').value;
-
-        await db.collection("pos_clientes").add({ nombre, telefono: tel });
+        const telefono = document.getElementById('cliTelefono').value;
+        await db.collection("pos_clientes").add({ nombre, telefono });
         document.getElementById('formCliente').reset();
-        Swal.fire("Cliente Agregado", "", "success");
+        Swal.fire("Cliente Guardado", "", "success");
     }
 
     async function eliminarCliente(id) {
         await db.collection("pos_clientes").doc(id).delete();
     }
 
-    // --- IMPORTADOR CSV & LECTURA DE LOYVERSE ---
+    // --- IMPORTADOR CSV CON OPCIÓN VACIAR TODO Y LIMPIEZA BOM ---
     async function importCSV(clearOld) {
-        const fileInput = document.getElementById('csvFile');
-        if (!fileInput.files.length) return Swal.fire("Selecciona un archivo CSV", "", "warning");
+        const file = document.getElementById('csvFile').files[0];
+        if(!file) return Swal.fire("Elige un archivo CSV", "", "warning");
 
-        if (clearOld) {
+        if(clearOld) {
             const confirm = await Swal.fire({
-                title: '¿Vaciar Todo el Inventario?',
-                text: "Se eliminarán permanentemente los productos actuales.",
+                title: '¿Borrar todo el inventario anterior?',
+                text: "Esta acción borrará los productos viejos de la base de datos",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e63946'
             });
-            if (!confirm.isConfirmed) return;
-
+            if(!confirm.isConfirmed) return;
+            
             const snapshot = await db.collection("pos_productos").get();
             const batch = db.batch();
             snapshot.docs.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
         }
 
-        Papa.parse(fileInput.files[0], {
+        Papa.parse(file, {
             header: true,
             transformHeader: h => h.replace(/^\ufeff/, '').trim(),
             complete: async (results) => {
                 let count = 0;
-                for (let row of results.data) {
-                    if (!row.Nombre) continue;
+                for(let row of results.data) {
+                    if(!row.Nombre) continue;
 
-                    const nombreLimpio = cleanName(row.Nombre);
-                    const precio = parsePrice(row.Precio);
-                    let stock = parseInt(row.Stock);
-                    if (isNaN(stock) || stock <= 0) stock = 1; // Asignación de 1 por defecto
+                    let nombreLimpio = cleanName(row.Nombre);
+                    let precioNum = parsePrice(row.Precio);
+                    let stockNum = parseInt(row.Stock);
+                    if(isNaN(stockNum) || stockNum <= 0) stockNum = 1;
 
                     let barcode = row["Código de barras"] || row["Barcode"] || "";
-                    if (!barcode) barcode = generateNextBarcode();
+                    if (!barcode) barcode = generarCodigoSecuencialSH();
 
-                    const payload = {
+                    const productData = {
                         nombre: nombreLimpio,
                         codigo: barcode,
-                        precio: precio,
-                        stock: stock,
+                        precio: precioNum,
+                        stock: stockNum,
                         categoria: cleanName(row.Categoría) || "General"
                     };
 
-                    await db.collection("pos_productos").doc(barcode).set(payload, { merge: true });
+                    await db.collection("pos_productos").doc(barcode).set(productData, {merge: true});
                     count++;
                 }
-
-                Swal.fire("Importación Exitosa", `${count} productos procesados`, "success");
+                Swal.fire("Importación Completa", `${count} productos guardados`, "success");
                 cerrarModal('modalConfig');
             }
         });
@@ -1132,7 +1024,7 @@
     // --- ESCÁNER HARDWARE & CÁMARA ---
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-
+        
         if (e.key === 'F10') {
             e.preventDefault();
             abrirCobro();
@@ -1140,14 +1032,10 @@
         }
 
         if (e.key === 'Enter') {
-            if (barcodeBuffer.length >= 2) {
-                const scannedCode = barcodeBuffer.trim();
-                const p = allProducts.find(x => x.codigo && x.codigo.toLowerCase() === scannedCode.toLowerCase());
-                if (p) {
-                    addToCart(p.id);
-                } else {
-                    Swal.fire("Producto No Encontrado", `Código: ${scannedCode}`, "error");
-                }
+            if (barcodeBuffer.length > 1) {
+                const code = barcodeBuffer.trim();
+                const p = allProducts.find(x => x.codigo && x.codigo.toLowerCase() === code.toLowerCase());
+                if (p) addToCart(p.id);
                 barcodeBuffer = "";
             }
         } else if (e.key.length === 1) {
@@ -1159,7 +1047,7 @@
     function startScanner() {
         html5QrCode = new Html5Qrcode("reader");
         html5QrCode.start(
-            { facingMode: "environment" },
+            { facingMode: "environment" }, 
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (text) => {
                 const p = allProducts.find(x => x.codigo && x.codigo.toLowerCase() === text.trim().toLowerCase());
@@ -1172,7 +1060,7 @@
     }
 
     function stopScanner() {
-        if (html5QrCode) {
+        if(html5QrCode) {
             html5QrCode.stop().then(() => {
                 document.getElementById('modalScanner').style.display = 'none';
             }).catch(() => {
@@ -1191,8 +1079,8 @@
         document.getElementById(id).style.display = 'none';
     }
 
-    // --- INICIALIZACIÓN ---
-    initDatabaseListeners();
+    // Inicializar
+    initApp();
 </script>
 </body>
 </html>
