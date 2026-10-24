@@ -15,6 +15,9 @@
     <!-- PapaParse para CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
+    <!-- Html5Qrcode para Escáner de Cámara -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
     <style>
         :root {
             --primary: #d63384;
@@ -142,11 +145,20 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 25px;
+            gap: 15px;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
         }
 
         .search-box {
             position: relative;
-            width: 350px;
+            width: 100%;
         }
 
         .search-box input {
@@ -169,6 +181,26 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
+        }
+
+        .btn-scan-cam {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(111, 66, 193, 0.3);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-scan-cam:hover {
+            transform: scale(1.05);
         }
 
         /* Content Area (Grid & Cart) */
@@ -244,7 +276,6 @@
             font-size: 14px;
             color: var(--text-main);
             margin-bottom: 6px;
-
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -506,6 +537,32 @@
             color: var(--text-muted);
         }
 
+        /* Toast Notifications */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--text-main);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInOut 2.5s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+
         /* Buttons & Forms */
         .btn {
             padding: 10px 18px;
@@ -560,7 +617,7 @@
                 transform: translateX(0);
             }
             .top-header { padding: 0 15px; }
-            .search-box { width: 100%; }
+            .search-container { max-width: 100%; }
         }
 
         /* Ticket Printable Styles */
@@ -601,9 +658,14 @@
         <div class="main-workspace">
             <!-- Top Header -->
             <div class="top-header">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Buscar producto por nombre o código..." oninput="filterProducts()">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar producto por nombre o escanear código..." oninput="filterProducts()">
+                    </div>
+                    <button class="btn-scan-cam" onclick="openCameraScanner()" title="Escanear con Cámara">
+                        <i class="fa-solid fa-barcode" style="font-size: 18px;"></i>
+                    </button>
                 </div>
                 <div id="statusIndicator" style="font-size: 12px; color: var(--success); font-weight: 600;">
                     <i class="fa-solid fa-cloud"></i> Firebase Conectado
@@ -660,6 +722,9 @@
         <div class="bottom-nav-item active" onclick="switchTab('pos')">
             <i class="fa-solid fa-cash-register"></i> POS
         </div>
+        <div class="bottom-nav-item" onclick="openCameraScanner()">
+            <i class="fa-solid fa-barcode"></i> Escanear
+        </div>
         <div class="bottom-nav-item" onclick="openModal('modalVentas')">
             <i class="fa-solid fa-receipt"></i> Ventas
         </div>
@@ -671,6 +736,20 @@
         </div>
     </div>
 
+    <!-- Modal: Escáner de Cámara -->
+    <div class="modal" id="modalCameraScanner">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-barcode"></i> Escáner de Código de Barras</h3>
+                <i class="fa-solid fa-xmark close-modal" onclick="closeCameraScanner()"></i>
+            </div>
+            <div id="cameraReader" style="width: 100%; border-radius: var(--radius); overflow: hidden; background: #000;"></div>
+            <div id="cameraStatus" style="margin-top: 15px; font-size: 13px; text-align: center; color: var(--text-muted);">
+                Apunta el código de barras hacia la cámara.
+            </div>
+        </div>
+    </div>
+
     <!-- Modal: Loyverse CSV Importer & Wiping -->
     <div class="modal" id="modalLoyverse">
         <div class="modal-content">
@@ -679,7 +758,7 @@
                 <i class="fa-solid fa-xmark close-modal" onclick="closeModal('modalLoyverse')"></i>
             </div>
             <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
-                Carga tu archivo <b>export_items.csv</b> de Loyverse. Se corregirán automáticamente los precios en $0, los nombres en Title Case y se asignará 1 pieza de stock predeterminado si el artículo carece de inventario.
+                Carga tu archivo <b>export_items.csv</b> de Loyverse. Se corregirán automáticamente los precios en $0, los nombres en Title Case, códigos de barra y stock.
             </p>
             <div class="form-group">
                 <label>Seleccionar archivo CSV:</label>
@@ -846,6 +925,41 @@
         let cart = [];
         let activeCategory = 'all';
 
+        // Escáner Cámara Variables
+        let html5QrcodeScanner = null;
+        let scanCoolDown = false;
+
+        // Escáner Físico USB Variables
+        let barcodeBuffer = '';
+        let lastKeyTime = Date.now();
+
+        // Helper: Sonido Beep para Escáner de Código de Barras
+        function playBeepSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } catch(e) { console.log("Audio Context Error:", e); }
+        }
+
+        // Helper: Toast Visual Notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #20c997;"></i> ${message}`;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 2500);
+        }
+
         // Helper: Formato Title Case para Nombres
         function cleanName(str) {
             if (!str) return "Prenda Saray";
@@ -866,7 +980,6 @@
                 return 0;
             }
 
-            // Encabezados comunes de precio en Loyverse (Español e Inglés)
             const priceKeys = [
                 'Precio', 'Precio de venta', 'Price', 'Sale price', 'Sale Price',
                 'Precio 1', 'Price 1', 'Precio sugerido', 'Precio con IVA', 
@@ -874,8 +987,6 @@
             ];
 
             let rawVal = null;
-
-            // Búsqueda directa por coincidencia exacta de columna
             for (let key of priceKeys) {
                 if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
                     rawVal = row[key];
@@ -883,7 +994,6 @@
                 }
             }
 
-            // Búsqueda secundaria insensible a mayúsculas/minúsculas
             if (rawVal === null || rawVal === undefined) {
                 for (let k in row) {
                     const lowerK = k.toLowerCase().trim();
@@ -904,16 +1014,12 @@
             let s = String(val).trim();
             if (!s || s.toLowerCase().includes('variable')) return 0;
 
-            // Conservar solo números, puntos y comas
             s = s.replace(/[^0-9.,]/g, '');
             if (!s) return 0;
 
-            // Formatos mixtos de punto y coma
             if (s.includes(',') && s.includes('.')) {
-                // Formato 1,250.00
                 s = s.replace(/,/g, '');
             } else if (s.includes(',')) {
-                // Formato 250,00 o 1,000
                 const parts = s.split(',');
                 if (parts.length === 2 && parts[1].length <= 2) {
                     s = parts[0] + '.' + parts[1];
@@ -983,7 +1089,7 @@
 
             let num = parseFloat(String(rawVal).replace(/[^0-9.-]/g, ''));
             if (isNaN(num) || num <= 0) {
-                return 1; // Stock predeterminado de 1 pieza para habilitar venta
+                return 1;
             }
             return Math.floor(num);
         }
@@ -1034,7 +1140,7 @@
                         id: doc.id,
                         nombre: cleanName(data.nombre),
                         precio: parseFloat(data.precio) || 0,
-                        codigo: data.codigo || '',
+                        codigo: data.codigo ? String(data.codigo).trim() : '',
                         categoria: data.categoria || 'General',
                         stock: (data.stock !== undefined && data.stock !== null && data.stock > 0) ? parseInt(data.stock) : 1
                     });
@@ -1045,6 +1151,114 @@
             }, err => {
                 console.error("Error al sincronizar productos:", err);
             });
+        }
+
+        // 4. Lógica de Procesamiento del Escáner (Hardware USB / Bluetooth & Cámara)
+        function processScannedBarcode(barcode) {
+            if (!barcode) return;
+            const codeClean = String(barcode).trim().toLowerCase();
+            
+            // Buscar por coincidencia exacta de código de barras
+            let product = rawProductsList.find(p => p.codigo && p.codigo.toLowerCase() === codeClean);
+            
+            // Si no coincide exactamente con código, buscar por nombre exacto
+            if (!product) {
+                product = rawProductsList.find(p => p.nombre.toLowerCase() === codeClean);
+            }
+
+            if (product) {
+                addToCart(product);
+                playBeepSound();
+                showToast(`Agregado: ${product.nombre}`);
+                document.getElementById('searchInput').value = '';
+                filterProducts();
+            } else {
+                playBeepSound();
+                alert(`No se encontró ningún producto registrado con el código "${barcode}".`);
+            }
+        }
+
+        // Escucha Global para Pistola de Código de Barras USB / Teclado
+        document.addEventListener('keydown', function(e) {
+            const activeElem = document.activeElement;
+            const isEditingField = activeElem && (activeElem.tagName === 'TEXTAREA' || (activeElem.tagName === 'INPUT' && activeElem.id !== 'searchInput'));
+            
+            // Ignorar eventos si el usuario está editando un formulario de edición
+            if (isEditingField) return;
+
+            // Manejo del Enter en la barra de búsqueda principal
+            if (activeElem && activeElem.id === 'searchInput' && e.key === 'Enter') {
+                e.preventDefault();
+                const textVal = activeElem.value.trim();
+                if (textVal) {
+                    processScannedBarcode(textVal);
+                }
+                return;
+            }
+
+            const currentTime = Date.now();
+            if (currentTime - lastKeyTime > 100) {
+                barcodeBuffer = '';
+            }
+            lastKeyTime = currentTime;
+
+            if (e.key === 'Enter') {
+                if (barcodeBuffer.length >= 2) {
+                    processScannedBarcode(barcodeBuffer);
+                    barcodeBuffer = '';
+                }
+            } else if (e.key.length === 1) {
+                barcodeBuffer += e.key;
+            }
+        });
+
+        // Controles de Escáner por Cámara HTML5
+        function openCameraScanner() {
+            openModal('modalCameraScanner');
+            startCameraScanner();
+        }
+
+        function closeCameraScanner() {
+            stopCameraScanner();
+            closeModal('modalCameraScanner');
+        }
+
+        function startCameraScanner() {
+            if (html5QrcodeScanner) return;
+            
+            html5QrcodeScanner = new Html5Qrcode("cameraReader");
+            const config = { fps: 10, qrbox: { width: 250, height: 160 } };
+
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    if (scanCoolDown) return;
+                    scanCoolDown = true;
+                    
+                    processScannedBarcode(decodedText);
+                    
+                    setTimeout(() => {
+                        scanCoolDown = false;
+                    }, 1500);
+                },
+                () => {} // Ignorar errores de frames en blanco
+            ).catch(err => {
+                console.error("No se pudo iniciar la cámara:", err);
+                document.getElementById('cameraStatus').innerText = "Error: Permiso de cámara no concedido o cámara no disponible.";
+            });
+        }
+
+        function stopCameraScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    html5QrcodeScanner = null;
+                }).catch(err => {
+                    console.error("Error deteniendo el escáner:", err);
+                    html5QrcodeScanner = null;
+                });
+            }
         }
 
         // Renderizado del Grid de Productos en POS
@@ -1109,7 +1323,7 @@
             `).join('');
         }
 
-        // 4. Carrito de Compras
+        // 5. Carrito de Compras
         function addToCart(product) {
             const existing = cart.find(item => item.id === product.id);
             if (existing) {
@@ -1185,7 +1399,7 @@
             }
         }
 
-        // 5. Cobro y Registro de Ventas
+        // 6. Cobro y Registro de Ventas
         async function checkout() {
             if (cart.length === 0) {
                 alert('El carrito está vacío.');
@@ -1197,7 +1411,6 @@
             try {
                 const batch = db.batch();
                 
-                // Actualizar inventario en Firestore
                 for (let item of cart) {
                     const ref = db.collection('pos_productos').doc(item.id);
                     const prod = rawProductsList.find(p => p.id === item.id);
@@ -1207,7 +1420,6 @@
                     }
                 }
 
-                // Crear Documento de Venta
                 const saleRef = db.collection('pos_ventas').doc();
                 const saleData = {
                     fecha: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1218,7 +1430,6 @@
 
                 await batch.commit();
 
-                // Generar Ticket
                 renderTicket(saleData, totalAmount);
                 cart = [];
                 updateCartUI();
@@ -1251,7 +1462,7 @@
             window.print();
         }
 
-        // 6. Procesamiento de CSV de Loyverse (Garantía contra precios $0)
+        // 7. Procesamiento de CSV de Loyverse
         async function processLoyverseCSV() {
             const fileInput = document.getElementById('csvFileInput');
             const progress = document.getElementById('importProgress');
@@ -1267,7 +1478,7 @@
             Papa.parse(file, {
                 header: true,
                 skipEmptyLines: true,
-                transformHeader: h => h.replace(/^\ufeff/, '').trim(), // Eliminación de BOM UTF-8
+                transformHeader: h => h.replace(/^\ufeff/, '').trim(),
                 complete: async function(results) {
                     const rows = results.data;
                     if (!rows || rows.length === 0) {
@@ -1302,7 +1513,6 @@
                             count++;
                             imported++;
 
-                            // Límite de batch en Firestore (500 ops)
                             if (count === 400) {
                                 await batch.commit();
                                 batch = db.batch();
@@ -1325,7 +1535,7 @@
             });
         }
 
-        // 7. Borrado completo de Colecciones ("Vaciar Todo")
+        // 8. Borrado completo de Colecciones ("Vaciar Todo")
         async function clearAllProducts(confirmFirst = true) {
             if (confirmFirst) {
                 if (!confirm("¿Está seguro de eliminar TODOS los productos del inventario en Firestore? Esta acción no se puede deshacer.")) {
@@ -1364,7 +1574,7 @@
             }
         }
 
-        // 8. CRUD Inventario Manual
+        // 9. CRUD Inventario Manual
         function renderInventoryTable() {
             const tbody = document.getElementById('inventoryTableBody');
             if (!tbody) return;
