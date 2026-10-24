@@ -578,6 +578,7 @@
             font-size: 13px;
             font-weight: 600;
             margin-bottom: 5px;
+            color: var(--text-main);
         }
 
         .form-group input, .form-group select, .form-group textarea {
@@ -586,6 +587,13 @@
             border: 1px solid var(--border);
             border-radius: 6px;
             outline: none;
+            font-size: 14px;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
         /* Responsive Breakpoints */
@@ -606,6 +614,9 @@
             }
             .top-header { padding: 0 15px; }
             .search-container { max-width: 100%; }
+        }
+        @media (max-width: 650px) {
+            .checkout-grid { grid-template-columns: 1fr; gap: 10px; }
         }
 
         /* Printable Ticket Styles */
@@ -711,35 +722,78 @@
         <div class="bottom-nav-item" onclick="openModal('modalClientes')"><i class="fa-solid fa-users"></i> Clientes</div>
     </div>
 
-    <!-- Modal: Cobro Profesional -->
+    <!-- Modal: Cobro Profesional Mejorado -->
     <div class="modal" id="modalCobrar">
-        <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-content" style="max-width: 680px;">
             <div class="modal-header">
-                <h3>Completar Venta</h3>
+                <h3><i class="fa-solid fa-cash-register"></i> Completar Venta</h3>
                 <i class="fa-solid fa-xmark close-modal" onclick="closeModal('modalCobrar')"></i>
             </div>
-            <div style="text-align: center; margin-bottom: 25px;">
-                <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 5px;">Total a Cobrar</div>
-                <div id="cobrarTotalText" style="font-size: 38px; font-weight: 800; color: var(--primary);">$0.00</div>
+            
+            <div class="checkout-grid">
+                <!-- Columna Izquierda: Finanzas y Descuentos -->
+                <div style="background: var(--bg-light); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px;">
+                        <span style="color: var(--text-muted);">Subtotal:</span>
+                        <span id="cobrarSubtotalText" style="font-weight: 600;">$0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 15px; color: var(--danger);">
+                        <span>Descuento:</span>
+                        <span id="cobrarDescuentoText">-$0.00</span>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 20px; border-top: 2px dashed var(--border); padding-top: 20px;">
+                        <div style="font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Total a Cobrar</div>
+                        <div id="cobrarTotalText" style="font-size: 42px; font-weight: 800; color: var(--primary); line-height: 1;">$0.00</div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label><i class="fa-solid fa-tag"></i> Aplicar Descuento</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="cobrarDescuentoTipo" style="width: 45%; font-weight: 600;" onchange="calculateCheckoutTotals()">
+                                <option value="porcentaje">% Porcentaje</option>
+                                <option value="monto">$ Monto Fijo</option>
+                            </select>
+                            <input type="number" id="cobrarDescuentoValor" style="width: 55%; font-weight: bold; font-size: 16px;" placeholder="0" min="0" oninput="calculateCheckoutTotals()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Configuración de Pago y Cliente -->
+                <div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> Cliente (Opcional)</label>
+                        <select id="cobrarCliente"></select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-wallet"></i> Método de Pago</label>
+                        <select id="cobrarMetodoPago" onchange="calculateCheckoutTotals()">
+                            <option value="Efectivo">💵 Efectivo</option>
+                            <option value="Tarjeta">💳 Tarjeta (Crédito / Débito)</option>
+                            <option value="Transferencia">📱 Transferencia / SPEI</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="divMontoRecibido">
+                        <label>Monto Recibido ($ MXN)</label>
+                        <input type="number" id="cobrarMontoRecibido" step="0.01" placeholder="Ej. 500" style="font-size: 16px; font-weight: bold;" oninput="calculateCheckoutTotals()">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-note-sticky"></i> Notas de la Venta (Opcional)</label>
+                        <textarea id="cobrarNotas" rows="2" placeholder="Ej. Envuelto para regalo..."></textarea>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Método de Pago</label>
-                <select id="cobrarMetodoPago" onchange="handlePaymentMethod()">
-                    <option value="Efectivo">Efectivo</option>
-                    <option value="Tarjeta">Tarjeta de Crédito / Débito</option>
-                    <option value="Transferencia">Transferencia</option>
-                </select>
+
+            <!-- Fila Inferior: Cambio y Botón -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 15px 20px; background: #eef2ff; border-radius: 8px; border: 1px solid #c7d2fe;" id="divCambio">
+                <span style="font-weight: 600; font-size: 16px; color: var(--secondary);"><i class="fa-solid fa-hand-holding-dollar"></i> Cambio a entregar:</span>
+                <span id="cobrarCambioText" style="font-size: 26px; font-weight: 800; color: var(--secondary);">$0.00</span>
             </div>
-            <div class="form-group" id="divMontoRecibido">
-                <label>Monto Recibido ($ MXN)</label>
-                <input type="number" id="cobrarMontoRecibido" step="0.01" placeholder="Ej. 500" oninput="calculateChange()">
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 15px; background: #eef2ff; border-radius: 8px;" id="divCambio">
-                <span style="font-weight: 600; color: var(--secondary);">Cambio a entregar:</span>
-                <span id="cobrarCambioText" style="font-size: 22px; font-weight: 800; color: var(--secondary);">$0.00</span>
-            </div>
-            <button class="btn btn-primary" style="width: 100%; font-size: 16px; padding: 14px;" onclick="processSale()">
-                <i class="fa-solid fa-check-circle"></i> Procesar Pago
+
+            <button class="btn btn-primary" style="width: 100%; font-size: 16px; padding: 15px; margin-top: 15px; text-transform: uppercase; letter-spacing: 1px;" onclick="processSale()">
+                <i class="fa-solid fa-check-circle"></i> Procesar Pago e Imprimir Ticket
             </button>
         </div>
     </div>
@@ -903,16 +957,24 @@
                 <img id="ticketLogoImg" class="ticket-logo" alt="Saray HA">
                 <div class="ticket-subtitle">Moda que te hace brillar ✨</div>
                 <div class="ticket-divider"></div>
-                <div id="ticketDate" style="font-size: 10px; margin-bottom: 5px;"></div>
+                
+                <div id="ticketDate" style="font-size: 11px; margin-bottom: 5px;"></div>
+                <div id="ticketCustomer" style="font-size: 11px; margin-bottom: 5px; font-weight: bold;"></div>
+                
                 <div class="ticket-divider"></div>
                 <div id="ticketItems"></div>
                 <div class="ticket-divider"></div>
-                <div class="ticket-row" style="font-weight: bold; font-size: 14px;">
-                    <span>TOTAL:</span>
-                    <span id="ticketTotal">$0.00</span>
+                
+                <div id="ticketFinancials" style="font-size: 13px;">
+                    <!-- Calculos financieros del ticket -->
                 </div>
-                <div id="ticketPaymentDetails" style="font-size: 11px; margin-top: 5px;"></div>
+                
                 <div class="ticket-divider"></div>
+                <div id="ticketPaymentDetails" style="font-size: 11px; margin-top: 5px;"></div>
+                
+                <div id="ticketNotes" style="font-size: 11px; font-style: italic; margin-top: 10px; text-align: center;"></div>
+
+                <div class="ticket-divider" style="margin-top: 15px;"></div>
                 <div class="ticket-footer">
                     ¡Gracias por tu compra! 💖 Saray HA<br><br>
                     <b>NOTA: No hay cambios ni devoluciones</b>
@@ -926,8 +988,8 @@
 
     <!-- Application Logic -->
     <script>
-        // Logotipo Oficial de Saray HA en SVG Data URI de Alta Calidad
-        const SARAY_HA_LOGO_URL = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 380' width='100%' height='100%'><defs><linearGradient id='gold' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ffe885'/><stop offset='30%' stop-color='%23f5b731'/><stop offset='70%' stop-color='%23b87b10'/><stop offset='100%' stop-color='%23ffe066'/></linearGradient><linearGradient id='pink' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ff94db'/><stop offset='50%' stop-color='%23e61980'/><stop offset='100%' stop-color='%2399004d'/></linearGradient><linearGradient id='black' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%23333333'/><stop offset='100%' stop-color='%23000000'/></linearGradient><filter id='glow'><feDropShadow dx='0' dy='3' stdDeviation='4' flood-color='%23000' flood-opacity='0.25'/></filter></defs><g filter='url(%23glow)' align='center'><path d='M400,25 L435,95 L490,45 L500,120 L300,120 L310,45 L365,95 Z' fill='url(%23gold)' stroke='%23ffffff' stroke-width='2'/><circle cx='300' cy='45' r='10' fill='url(%23gold)'/><circle cx='400' cy='25' r='12' fill='url(%23gold)'/><circle cx='500' cy='45' r='10' fill='url(%23gold)'/><circle cx='355' cy='70' r='7' fill='url(%23gold)'/><circle cx='445' cy='70' r='7' fill='url(%23gold)'/><path d='M400,60 C390,48 375,55 375,68 C375,82 400,96 400,96 C400,96 425,82 425,68 C425,55 410,48 400,60 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='2'/><path d='M350,110 Q400,128 450,110' fill='none' stroke='url(%23gold)' stroke-width='6'/><g transform='translate(25, 130)'><text x='20' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23black)' stroke='url(%23gold)' stroke-width='3.5'>SARAY</text><circle cx='422' cy='85' r='7' fill='url(%23gold)'/><text x='445' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='3.5'>H'A</text></g><path d='M60,260 Q400,300 740,260' fill='none' stroke='url(%23gold)' stroke-width='4'/><path d='M400,252 C393,242 380,247 380,254 C380,263 400,272 400,272 C400,272 420,263 420,254 C420,247 407,242 400,252 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='1.5'/><text x='400' y='320' font-family='Arial, sans-serif' font-size='30' font-weight='bold' letter-spacing='12' fill='%23111111' text-anchor='middle'>MODA FEMENINA</text></g></svg>";
+        // Logotipo Oficial de Saray HA en SVG Data URI
+        const SARAY_HA_LOGO_URL = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 380' width='100%' height='100%'><defs><linearGradient id='gold' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ffe885'/><stop offset='30%' stop-color='%23f5b731'/><stop offset='70%' stop-color='%23b87b10'/><stop offset='100%' stop-color='%23ffe066'/></linearGradient><linearGradient id='pink' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ff94db'/><stop offset='50%' stop-color='%23e61980'/><stop offset='100%' stop-color='%2399004d'/></linearGradient><linearGradient id='black' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%23333333'/><stop offset='100%' stop-color='%23000000'/></linearGradient><filter id='glow'><feDropShadow dx='0' dy='3' stdDeviation='4' flood-color='%23000' flood-opacity='0.25'/></filter></defs><g filter='url(%23glow)' align='center'><path d='M400,25 L435,95 L490,45 L500,120 L300,120 L310,45 L365,95 Z' fill='url(%23gold)' stroke='%23ffffff' stroke-width='2'/><circle cx='300' cy='45' r='10' fill='url(%23gold)'/><circle cx='400' cy='25' r='12' fill='url(%23gold)'/><circle cx='500' cy='45' r='10' fill='url(%23gold)'/><circle cx='355' cy='70' r='7' fill='url(%23gold)'/><circle cx='445' cy='70' r='7' fill='url(%23gold)'/><path d='M400,60 C390,48 375,55 375,68 C375,82 400,96 400,96 C400,96 425,82 425,68 C425,55 410,48 400,60 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='2'/><path d='M350,110 Q400,128 450,110' fill='none' stroke='url(%23gold)' stroke-width='6'/><g transform='translate(25, 130)'><text x='20' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23black)' stroke='url(%23gold)' stroke-width='3.5'>SARAY</text><circle cx='422' cy='85' r='7' fill='url(%23gold)'/><text x='445' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='3.5'>H'A</text></g><path d='M60,260 Q400,300 740,260' fill='none' stroke='url(%23gold)' stroke-width='4'/><path d='M400,252 C393,242 380,247 380,254 C380,263 400,272 400,272 C400,272 420,263 420,247 407,242 400,252 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='1.5'/><text x='400' y='320' font-family='Arial, sans-serif' font-size='30' font-weight='bold' letter-spacing='12' fill='%23111111' text-anchor='middle'>MODA FEMENINA</text></g></svg>";
 
         const firebaseConfig = {
             apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
@@ -946,7 +1008,11 @@
         let cart = [];
         let activeCategory = 'all';
         let clientesList = [];
-        let currentCheckoutTotal = 0;
+        
+        // Variables de Cobro
+        let currentCheckoutSubtotal = 0;
+        let currentCheckoutDiscountAmount = 0;
+        let currentCheckoutFinalTotal = 0;
 
         // Cargar Logotipo
         function loadBrandLogos() {
@@ -1084,52 +1150,102 @@
             document.getElementById('closeCartBtn').style.display = p.classList.contains('open') ? 'block' : 'none';
         }
 
-        // 3. Módulo de Cobro
+        // 3. Módulo de Cobro Avanzado
         function openCheckoutModal() {
             if (cart.length === 0) return alert('El carrito está vacío.');
-            currentCheckoutTotal = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
-            document.getElementById('cobrarTotalText').innerText = `$${currentCheckoutTotal.toFixed(2)}`;
+            
+            currentCheckoutSubtotal = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
+            
+            // Llenar select de clientes
+            const clientSelect = document.getElementById('cobrarCliente');
+            clientSelect.innerHTML = '<option value="">-- Cliente de Mostrador --</option>';
+            clientesList.forEach(c => {
+                clientSelect.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+            });
+
+            // Resetear campos
             document.getElementById('cobrarMetodoPago').value = 'Efectivo';
+            document.getElementById('cobrarDescuentoTipo').value = 'porcentaje';
+            document.getElementById('cobrarDescuentoValor').value = '';
             document.getElementById('cobrarMontoRecibido').value = '';
-            document.getElementById('cobrarCambioText').innerText = '$0.00';
-            handlePaymentMethod();
+            document.getElementById('cobrarNotas').value = '';
+            
+            calculateCheckoutTotals();
             openModal('modalCobrar');
         }
 
-        function handlePaymentMethod() {
+        function calculateCheckoutTotals() {
+            let subtotal = currentCheckoutSubtotal;
+            let descVal = parseFloat(document.getElementById('cobrarDescuentoValor').value) || 0;
+            let descType = document.getElementById('cobrarDescuentoTipo').value;
+            let discountAmount = 0;
+
+            if (descVal > 0) {
+                if (descType === 'porcentaje') {
+                    discountAmount = subtotal * (descVal / 100);
+                } else {
+                    discountAmount = descVal;
+                }
+            }
+
+            let total = subtotal - discountAmount;
+            if (total < 0) total = 0;
+
+            // Mostrar/Ocultar campos de cambio si es efectivo
             const method = document.getElementById('cobrarMetodoPago').value;
             const divRecibido = document.getElementById('divMontoRecibido');
             const divCambio = document.getElementById('divCambio');
+
             if (method === 'Efectivo') {
                 divRecibido.style.display = 'block';
                 divCambio.style.display = 'flex';
-                setTimeout(() => document.getElementById('cobrarMontoRecibido').focus(), 100);
             } else {
                 divRecibido.style.display = 'none';
                 divCambio.style.display = 'none';
             }
-        }
 
-        function calculateChange() {
-            const recibido = parseFloat(document.getElementById('cobrarMontoRecibido').value) || 0;
-            let cambio = recibido - currentCheckoutTotal;
+            // Calcular Cambio
+            let recibido = total;
+            if (method === 'Efectivo') {
+                const recInput = parseFloat(document.getElementById('cobrarMontoRecibido').value);
+                if (!isNaN(recInput)) recibido = recInput;
+            }
+            let cambio = recibido - total;
             if (cambio < 0) cambio = 0;
+
+            // Actualizar Textos
+            document.getElementById('cobrarSubtotalText').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cobrarDescuentoText').innerText = `-$${discountAmount.toFixed(2)}`;
+            document.getElementById('cobrarTotalText').innerText = `$${total.toFixed(2)}`;
             document.getElementById('cobrarCambioText').innerText = `$${cambio.toFixed(2)}`;
+            
+            currentCheckoutFinalTotal = total;
+            currentCheckoutDiscountAmount = discountAmount;
         }
 
         async function processSale() {
             const method = document.getElementById('cobrarMetodoPago').value;
-            let recibido = currentCheckoutTotal;
+            let recibido = currentCheckoutFinalTotal;
             let cambio = 0;
 
             if (method === 'Efectivo') {
                 const valInput = parseFloat(document.getElementById('cobrarMontoRecibido').value);
-                if (isNaN(valInput) || valInput < currentCheckoutTotal) {
-                    return alert('El monto recibido debe ser mayor o igual al total.');
+                if (isNaN(valInput) || valInput < currentCheckoutFinalTotal) {
+                    return alert('El monto recibido es inválido o insuficiente.');
                 }
                 recibido = valInput;
-                cambio = valInput - currentCheckoutTotal;
+                cambio = valInput - currentCheckoutFinalTotal;
             }
+
+            // Datos del cliente
+            const clienteId = document.getElementById('cobrarCliente').value;
+            let clienteNombre = "Público en General";
+            if (clienteId) {
+                const c = clientesList.find(x => x.id === clienteId);
+                if (c) clienteNombre = c.nombre;
+            }
+
+            const notas = document.getElementById('cobrarNotas').value.trim();
 
             try {
                 const batch = db.batch();
@@ -1141,10 +1257,15 @@
                 const saleRef = db.collection('pos_ventas').doc();
                 const saleData = {
                     fecha: firebase.firestore.FieldValue.serverTimestamp(),
-                    total: currentCheckoutTotal,
+                    subtotal: currentCheckoutSubtotal,
+                    descuento: currentCheckoutDiscountAmount,
+                    total: currentCheckoutFinalTotal,
                     metodoPago: method,
                     recibido: recibido,
                     cambio: cambio,
+                    clienteId: clienteId,
+                    clienteNombre: clienteNombre,
+                    notas: notas,
                     items: cart.map(i => ({ id: i.id, nombre: i.nombre, precio: i.precio, qty: i.qty }))
                 };
                 batch.set(saleRef, saleData);
@@ -1165,14 +1286,36 @@
 
         function renderTicket(sale) {
             document.getElementById('ticketDate').innerText = "Fecha: " + new Date().toLocaleString('es-MX');
+            
+            // Cliente
+            const customerEl = document.getElementById('ticketCustomer');
+            if (sale.clienteId) {
+                customerEl.innerHTML = `Cliente: ${sale.clienteNombre}`;
+                customerEl.style.display = 'block';
+            } else {
+                customerEl.style.display = 'none';
+            }
+
+            // Artículos
             const itemsCont = document.getElementById('ticketItems');
             itemsCont.innerHTML = '';
-            
             sale.items.forEach(i => {
                 itemsCont.innerHTML += `<div class="ticket-row"><span>${i.qty}x ${i.nombre}</span><span>$${(i.precio * i.qty).toFixed(2)}</span></div>`;
             });
-            document.getElementById('ticketTotal').innerText = `$${sale.total.toFixed(2)}`;
 
+            // Resumen Financiero
+            const finCont = document.getElementById('ticketFinancials');
+            if (sale.descuento && sale.descuento > 0) {
+                finCont.innerHTML = `
+                    <div class="ticket-row"><span>Subtotal:</span><span>$${sale.subtotal.toFixed(2)}</span></div>
+                    <div class="ticket-row"><span>Descuento:</span><span>-$${sale.descuento.toFixed(2)}</span></div>
+                    <div class="ticket-row" style="font-weight: bold; font-size: 14px; margin-top: 5px;"><span>TOTAL:</span><span>$${sale.total.toFixed(2)}</span></div>
+                `;
+            } else {
+                finCont.innerHTML = `<div class="ticket-row" style="font-weight: bold; font-size: 14px;"><span>TOTAL:</span><span>$${sale.total.toFixed(2)}</span></div>`;
+            }
+
+            // Detalles de Pago
             const payCont = document.getElementById('ticketPaymentDetails');
             if (sale.metodoPago === 'Efectivo') {
                 payCont.innerHTML = `
@@ -1182,6 +1325,15 @@
                 `;
             } else {
                 payCont.innerHTML = `<div class="ticket-row"><span>Pago con:</span><span>${sale.metodoPago||'Tarjeta'}</span></div>`;
+            }
+
+            // Notas
+            const notesCont = document.getElementById('ticketNotes');
+            if (sale.notas && sale.notas.trim() !== "") {
+                notesCont.innerHTML = `Notas: ${sale.notas}`;
+                notesCont.style.display = 'block';
+            } else {
+                notesCont.style.display = 'none';
             }
         }
 
@@ -1353,7 +1505,7 @@
             if (confirm("¿Eliminar este producto?")) await db.collection('pos_productos').doc(id).delete();
         }
 
-        // Modales
+        // 7. Modales y Controladores de UI
         function openModal(id) {
             if (id === 'modalVentas') loadSalesHistory();
             document.getElementById(id).style.display = 'flex';
@@ -1434,7 +1586,7 @@
             }
         }
 
-        // Inicialización
+        // Inicialización General
         window.onload = function() {
             loadBrandLogos();
             initRealtimeProducts();
