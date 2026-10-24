@@ -39,19 +39,19 @@
         .logo-container h1 { margin: 0; font-size: 1.2rem; color: var(--dark); text-transform: uppercase; letter-spacing: 1px; }
 
         .header-actions { display: flex; gap: 8px; align-items: center; }
-        .btn-header-act {
+        .header-actions button {
             background: white; border: 1px solid #ddd; padding: 8px 12px;
             border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
             display: flex; align-items: center; gap: 6px; color: var(--dark); transition: 0.2s;
         }
-        .btn-header-act:hover { background: var(--secondary); border-color: var(--primary); }
-        .btn-header-act.btn-main { background: var(--primary); color: white; border: none; }
-        .btn-header-act.btn-main:hover { background: #bc8a5f; }
+        .header-actions button:hover { background: var(--secondary); border-color: var(--primary); }
+        .header-actions button.btn-primary-action { background: var(--primary); color: white; border: none; }
+        .header-actions button.btn-primary-action:hover { background: #bc8a5f; }
 
         /* LAYOUT PRINCIPAL POS */
         main { display: flex; flex: 1; overflow: hidden; }
 
-        /* PANEL IZQUIERDO: PRODUCTOS */
+        /* PANEL IZQUIERDO: BUSCADOR Y TARJETAS DE PRODUCTOS */
         .inventory-panel { flex: 1; display: flex; flex-direction: column; background: #fff; border-right: 1px solid #ddd; }
         .search-bar { padding: 15px; border-bottom: 1px solid #eee; display: flex; gap: 10px; }
         .search-bar input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
@@ -103,7 +103,7 @@
         .btn-checkout:hover { background: #bc8a5f; }
 
         /* MODALES */
-        .modal-bg {
+        .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
         }
@@ -133,7 +133,7 @@
         }
         .change-display.insufficient { background: #ffdada; color: var(--danger); }
 
-        /* FORMULARIO AGREGAR / EDITAR PRODUCTO */
+        /* FORMULARIO PRODUCTO Y TABLAS */
         .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
         .form-field { display: flex; flex-direction: column; gap: 4px; }
         .form-field.full { grid-column: span 2; }
@@ -141,7 +141,6 @@
         .form-field input, .form-field select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 0.9rem; }
         .form-field input:focus { border-color: var(--primary); }
 
-        /* TABLAS DE INVENTARIO Y VENTAS */
         .table-wrap { max-height: 380px; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-top: 10px; }
         .custom-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .custom-table th, .custom-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
@@ -177,7 +176,7 @@
 
 <header>
     <div class="logo-container">
-        <!-- Logo Saray HA SVG Integrado -->
+        <!-- Logo Saray HA SVG -->
         <svg viewBox="0 0 100 100" id="brandLogo">
             <circle cx="50" cy="50" r="48" fill="none" stroke="#d4a373" stroke-width="2"/>
             <text x="50%" y="45%" text-anchor="middle" fill="#d4a373" font-size="28" font-family="Serif" dy=".3em">S</text>
@@ -187,29 +186,29 @@
     </div>
     
     <div class="header-actions">
-        <button class="btn-header-act btn-main" onclick="abrirModalNuevoProducto()">
+        <button class="btn-primary-action" onclick="abrirModalNuevoProducto()">
             <i class="fas fa-plus-circle"></i> <span>Nuevo Producto</span>
         </button>
-        <button class="btn-header-act" onclick="abrirModalInventario()">
+        <button onclick="abrirModalInventario()">
             <i class="fas fa-boxes"></i> <span>Inventario</span>
         </button>
-        <button class="btn-header-act" onclick="abrirModalVentas()">
+        <button onclick="abrirModalVentas()">
             <i class="fas fa-history"></i> <span>Ventas</span>
         </button>
-        <button class="btn-header-act" onclick="abrirModalClientes()">
+        <button onclick="abrirModalClientes()">
             <i class="fas fa-users"></i> <span>Clientes</span>
         </button>
-        <button class="btn-header-act" onclick="document.getElementById('modalScanner').style.display='flex'; startScanner();">
+        <button onclick="document.getElementById('modalScanner').style.display='flex'; startScanner();">
             <i class="fas fa-camera"></i> <span>Escanear</span>
         </button>
-        <button class="btn-header-act" onclick="document.getElementById('modalConfig').style.display='flex'">
+        <button onclick="document.getElementById('modalConfig').style.display='flex'">
             <i class="fas fa-file-import"></i> <span>Importar CSV</span>
         </button>
     </div>
 </header>
 
 <main>
-    <!-- PANEL IZQUIERDO: BUSCADOR Y LISTA DE PRODUCTOS -->
+    <!-- PANEL IZQUIERDO: PRODUCTOS -->
     <section class="inventory-panel">
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Buscar por nombre o código SH..." oninput="filterProducts()">
@@ -218,7 +217,7 @@
             </select>
         </div>
         <div class="product-grid" id="productGrid">
-            <!-- Carga de Productos -->
+            <!-- Carga Dinámica de Productos -->
         </div>
     </section>
 
@@ -232,7 +231,7 @@
         </div>
         
         <div class="cart-items" id="cartItems">
-            <!-- Items en Carrito -->
+            <!-- Items del Carrito -->
         </div>
 
         <div class="cart-summary">
@@ -273,8 +272,8 @@
 
 <!-- ================= MODALES ================= -->
 
-<!-- 1. MODAL AGREGAR / EDITAR PRODUCTO CON CÓDIGO SECUENCIAL SH0001 AUTOMÁTICO -->
-<div class="modal-bg" id="modalProducto">
+<!-- 1. MODAL REGISTRAR / EDITAR PRODUCTO -->
+<div class="modal-overlay" id="modalProducto">
     <div class="modal-box">
         <div class="modal-head">
             <h2 id="modalProductoTitle">Agregar Nuevo Producto</h2>
@@ -333,8 +332,8 @@
     </div>
 </div>
 
-<!-- 2. MODAL GESTOR DE INVENTARIO COMPLETO -->
-<div class="modal-bg" id="modalInventario">
+<!-- 2. MODAL ADMINISTRACIÓN DE INVENTARIO -->
+<div class="modal-overlay" id="modalInventario">
     <div class="modal-box" style="max-width: 750px;">
         <div class="modal-head">
             <h2>Administración de Inventario</h2>
@@ -365,7 +364,7 @@
 </div>
 
 <!-- 3. MODAL COBRAR -->
-<div class="modal-bg" id="modalCobrar">
+<div class="modal-overlay" id="modalCobrar">
     <div class="modal-box">
         <div class="modal-head">
             <h2>Finalizar Venta</h2>
@@ -402,7 +401,7 @@
 </div>
 
 <!-- 4. MODAL HISTORIAL DE VENTAS -->
-<div class="modal-bg" id="modalVentas">
+<div class="modal-overlay" id="modalVentas">
     <div class="modal-box" style="max-width: 700px;">
         <div class="modal-head">
             <h2>Historial de Ventas</h2>
@@ -426,7 +425,7 @@
 </div>
 
 <!-- 5. MODAL CLIENTES -->
-<div class="modal-bg" id="modalClientes">
+<div class="modal-overlay" id="modalClientes">
     <div class="modal-box">
         <div class="modal-head">
             <h2>Gestión de Clientes</h2>
@@ -459,7 +458,7 @@
 </div>
 
 <!-- 6. MODAL IMPORTAR LOYVERSE CSV -->
-<div class="modal-bg" id="modalConfig">
+<div class="modal-overlay" id="modalConfig">
     <div class="modal-box">
         <div class="modal-head">
             <h2>Importar CSV de Loyverse</h2>
@@ -468,7 +467,7 @@
         <p style="font-size:0.85rem; color:#666;">Selecciona el archivo .csv exportado de Loyverse:</p>
         <input type="file" id="csvFile" accept=".csv" style="margin-bottom: 20px; width:100%;">
         <div style="background: #fff3cd; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px;">
-            <i class="fas fa-exclamation-triangle"></i> Puedes vaciar la base de datos previa antes de importar para evitar duplicados.
+            <i class="fas fa-exclamation-triangle"></i> Puedes vaciar el inventario anterior para eliminar registros viejos.
         </div>
         <div style="display: flex; gap: 10px;">
             <button onclick="importCSV(true)" style="flex:1; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">
@@ -487,7 +486,7 @@
     <button onclick="stopScanner()" style="padding: 20px; background: var(--danger); color: white; border: none; font-weight: bold;">CERRAR CÁMARA</button>
 </div>
 
-<!-- TICKET OFICIAL SARAY HA -->
+<!-- TICKET DE VENTA ORIGINAL SARAY HA -->
 <div id="ticket">
     <div style="text-align: center;">
         <svg viewBox="0 0 100 100" style="width: 35mm; height: 35mm;">
@@ -518,7 +517,7 @@
 </div>
 
 <script>
-    // --- CONEXIÓN FIREBASE FIRESTORE ---
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
         apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
         authDomain: "saray-ha-pos.firebaseapp.com",
@@ -537,7 +536,7 @@
     let html5QrCode = null;
     let barcodeBuffer = "";
 
-    // --- UTILERÍAS ---
+    // --- FUNCIONES DE LIMPIEZA ---
     function cleanName(str) {
         if (!str) return '';
         return str.replace(/[-_]/g, ' ')
@@ -584,7 +583,7 @@
         document.getElementById('prodCodigo').value = calcularSiguienteSH();
     }
 
-    // --- CARGA DE DATOS REALTIME ---
+    // --- CARGAR BASE DE DATOS EN TIEMPO REAL ---
     function initDatabase() {
         db.collection("pos_productos").onSnapshot(snapshot => {
             allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -635,7 +634,7 @@
         renderProducts(filtered);
     }
 
-    // --- CARRITO ---
+    // --- LÓGICA DE CARRITO SIN BLOQUEO POR STOCK ---
     function addToCart(productId) {
         const product = allProducts.find(p => p.id === productId);
         if (!product) return;
@@ -643,7 +642,7 @@
         const index = cart.findIndex(item => item.id === productId);
         
         if (index > -1) {
-            cart[index].qty++;
+            cart[index].qty++; // Sumar libremente sin bloquear
         } else {
             cart.push({ ...product, qty: 1 });
         }
@@ -694,7 +693,7 @@
         updateCartUI();
     }
 
-    // --- COBRO Y VENTA ---
+    // --- PROCESO DE COBRO ---
     function abrirCobro() {
         if (cart.length === 0) return Swal.fire("Carrito vacío", "", "warning");
         const total = cart.reduce((sum, item) => sum + (item.precio * item.qty), 0);
@@ -789,7 +788,7 @@
         document.getElementById('ticketItems').innerHTML = itemsHtml;
     }
 
-    // --- ADMINISTRACIÓN DE PRODUCTOS Y CÓDIGOS SH ---
+    // --- NUEVO PRODUCTO / EDICIÓN ---
     function abrirModalNuevoProducto() {
         document.getElementById('formProducto').reset();
         document.getElementById('prodDocId').value = "";
@@ -979,7 +978,7 @@
         await db.collection("pos_clientes").doc(id).delete();
     }
 
-    // --- IMPORTADOR CSV Y LIMPIEZA DE BASE DE DATOS ---
+    // --- IMPORTADOR CSV LOYVERSE ---
     async function importCSV(clearOld) {
         const file = document.getElementById('csvFile').files[0];
         if(!file) return Swal.fire("Elige un archivo CSV", "", "warning");
@@ -1033,7 +1032,7 @@
         });
     }
 
-    // --- ESCÁNER HARDWARE Y CÁMARA ---
+    // --- ESCÁNER USB / BLUETOOTH / CÁMARA ---
     window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
         
@@ -1091,7 +1090,7 @@
         document.getElementById(id).style.display = 'none';
     }
 
-    // Inicializar App
+    // Inicializar Sistema
     initDatabase();
 </script>
 </body>
