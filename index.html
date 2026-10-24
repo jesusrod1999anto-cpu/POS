@@ -6,7 +6,7 @@
     <title>Saray HA - Punto de Venta (POS)</title>
     <!-- FontAwesome & Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Firebase JS SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -60,7 +60,7 @@
 
         /* Sidebar Navigation */
         .sidebar {
-            width: 250px;
+            width: 260px;
             background: #ffffff;
             border-right: 1px solid var(--border);
             display: flex;
@@ -71,32 +71,20 @@
 
         .brand {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
-            padding-bottom: 20px;
+            justify-content: center;
+            padding-bottom: 15px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 20px;
         }
 
-        .brand-logo {
-            width: 42px;
-            height: 42px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .brand-title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 26px;
-            font-weight: 700;
-            color: var(--primary);
-            line-height: 1;
+        .brand-logo-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 75px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
         }
 
         .nav-menu {
@@ -203,7 +191,7 @@
             transform: scale(1.05);
         }
 
-        /* Content Area (Grid & Cart) */
+        /* Content Area */
         .pos-content {
             flex: 1;
             display: flex;
@@ -429,7 +417,7 @@
             opacity: 0.9;
         }
 
-        /* FAB Button & Mobile Overlay */
+        /* FAB & Mobile Navigation */
         .cart-fab {
             display: none;
             position: fixed;
@@ -620,7 +608,7 @@
             .search-container { max-width: 100%; }
         }
 
-        /* Ticket Printable Styles */
+        /* Printable Ticket Styles */
         #ticketArea {
             font-family: 'Courier New', Courier, monospace;
             font-size: 12px;
@@ -629,7 +617,13 @@
             padding: 10px;
             background: #fff;
         }
-        .ticket-title { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .ticket-logo {
+            width: 200px;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 8px auto;
+        }
         .ticket-subtitle { text-align: center; font-size: 11px; margin-bottom: 10px; }
         .ticket-divider { border-top: 1px dashed #000; margin: 8px 0; }
         .ticket-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
@@ -639,11 +633,10 @@
 <body>
 
     <div class="app-container">
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar Navigation con Logo Oficial -->
         <div class="sidebar">
             <div class="brand">
-                <div class="brand-logo">S</div>
-                <div class="brand-title">Saray HA</div>
+                <img id="brandLogo" class="brand-logo-img" alt="Saray HA Moda Femenina">
             </div>
             <ul class="nav-menu">
                 <li class="nav-item active" onclick="switchTab('pos')"><i class="fa-solid fa-cash-register"></i> Punto de Venta</li>
@@ -705,7 +698,7 @@
         </div>
     </div>
 
-    <!-- Mobile Navigation & Buttons -->
+    <!-- Mobile Navigation -->
     <div class="cart-fab" onclick="toggleCart()">
         <i class="fa-solid fa-bag-shopping" style="font-size: 22px;"></i>
         <div class="cart-badge" id="cartBadge">0</div>
@@ -718,7 +711,7 @@
         <div class="bottom-nav-item" onclick="openModal('modalClientes')"><i class="fa-solid fa-users"></i> Clientes</div>
     </div>
 
-    <!-- Modal: Módulo de Cobro Profesional -->
+    <!-- Modal: Cobro Profesional -->
     <div class="modal" id="modalCobrar">
         <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header">
@@ -899,7 +892,7 @@
         </div>
     </div>
 
-    <!-- Modal: Ticket Imprimible -->
+    <!-- Modal: Ticket Imprimible con Logo -->
     <div class="modal" id="modalTicket">
         <div class="modal-content" style="max-width: 340px;">
             <div class="modal-header">
@@ -907,7 +900,7 @@
                 <i class="fa-solid fa-xmark close-modal" onclick="closeModal('modalTicket')"></i>
             </div>
             <div id="ticketArea">
-                <div class="ticket-title">Saray HA</div>
+                <img id="ticketLogoImg" class="ticket-logo" alt="Saray HA">
                 <div class="ticket-subtitle">Moda que te hace brillar ✨</div>
                 <div class="ticket-divider"></div>
                 <div id="ticketDate" style="font-size: 10px; margin-bottom: 5px;"></div>
@@ -933,6 +926,9 @@
 
     <!-- Application Logic -->
     <script>
+        // Logotipo Oficial de Saray HA en SVG Data URI de Alta Calidad
+        const SARAY_HA_LOGO_URL = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 380' width='100%' height='100%'><defs><linearGradient id='gold' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ffe885'/><stop offset='30%' stop-color='%23f5b731'/><stop offset='70%' stop-color='%23b87b10'/><stop offset='100%' stop-color='%23ffe066'/></linearGradient><linearGradient id='pink' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ff94db'/><stop offset='50%' stop-color='%23e61980'/><stop offset='100%' stop-color='%2399004d'/></linearGradient><linearGradient id='black' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%23333333'/><stop offset='100%' stop-color='%23000000'/></linearGradient><filter id='glow'><feDropShadow dx='0' dy='3' stdDeviation='4' flood-color='%23000' flood-opacity='0.25'/></filter></defs><g filter='url(%23glow)' align='center'><path d='M400,25 L435,95 L490,45 L500,120 L300,120 L310,45 L365,95 Z' fill='url(%23gold)' stroke='%23ffffff' stroke-width='2'/><circle cx='300' cy='45' r='10' fill='url(%23gold)'/><circle cx='400' cy='25' r='12' fill='url(%23gold)'/><circle cx='500' cy='45' r='10' fill='url(%23gold)'/><circle cx='355' cy='70' r='7' fill='url(%23gold)'/><circle cx='445' cy='70' r='7' fill='url(%23gold)'/><path d='M400,60 C390,48 375,55 375,68 C375,82 400,96 400,96 C400,96 425,82 425,68 C425,55 410,48 400,60 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='2'/><path d='M350,110 Q400,128 450,110' fill='none' stroke='url(%23gold)' stroke-width='6'/><g transform='translate(25, 130)'><text x='20' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23black)' stroke='url(%23gold)' stroke-width='3.5'>SARAY</text><circle cx='422' cy='85' r='7' fill='url(%23gold)'/><text x='445' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='3.5'>H'A</text></g><path d='M60,260 Q400,300 740,260' fill='none' stroke='url(%23gold)' stroke-width='4'/><path d='M400,252 C393,242 380,247 380,254 C380,263 400,272 400,272 C400,272 420,263 420,254 C420,247 407,242 400,252 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='1.5'/><text x='400' y='320' font-family='Arial, sans-serif' font-size='30' font-weight='bold' letter-spacing='12' fill='%23111111' text-anchor='middle'>MODA FEMENINA</text></g></svg>";
+
         const firebaseConfig = {
             apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
             authDomain: "saray-ha-pos.firebaseapp.com",
@@ -951,6 +947,12 @@
         let activeCategory = 'all';
         let clientesList = [];
         let currentCheckoutTotal = 0;
+
+        // Cargar Logotipo
+        function loadBrandLogos() {
+            document.getElementById('brandLogo').src = SARAY_HA_LOGO_URL;
+            document.getElementById('ticketLogoImg').src = SARAY_HA_LOGO_URL;
+        }
 
         // Utilidades
         function cleanName(str) {
@@ -999,13 +1001,13 @@
 
         function renderProducts(items) {
             const grid = document.getElementById('productsGrid');
-            grid.innerHTML = items.length === 0 ? `<p style="text-align:center;width:100%;">Sin productos.</p>` : '';
+            grid.innerHTML = items.length === 0 ? `<p style="text-align:center;width:100%;color:var(--text-muted);padding:40px;">No hay productos disponibles.</p>` : '';
             items.forEach(p => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 card.onclick = () => addToCart(p);
                 card.innerHTML = `
-                    <div><div class="product-name">${p.nombre}</div><div class="product-barcode">${p.codigo || ''}</div></div>
+                    <div><div class="product-name">${p.nombre}</div><div class="product-barcode">${p.codigo ? `<i class="fa-solid fa-barcode"></i> ${p.codigo}` : ''}</div></div>
                     <div class="product-meta"><div class="product-price">$${p.precio.toFixed(2)}</div><div class="product-stock">${p.stock} disp.</div></div>
                 `;
                 grid.appendChild(card);
@@ -1033,7 +1035,7 @@
             bar.innerHTML = cats.map(c => `<button class="cat-btn ${c===activeCategory?'active':''}" onclick="filterCategory('${c}')">${c==='all'?'Todos':c}</button>`).join('');
         }
 
-        // 2. Carrito de Compras
+        // 2. Carrito
         function addToCart(p) {
             const ex = cart.find(i => i.id === p.id);
             if (ex) {
@@ -1082,9 +1084,9 @@
             document.getElementById('closeCartBtn').style.display = p.classList.contains('open') ? 'block' : 'none';
         }
 
-        // 3. Módulo de Cobro (Nuevo)
+        // 3. Módulo de Cobro
         function openCheckoutModal() {
-            if (cart.length === 0) return alert('Carrito vacío.');
+            if (cart.length === 0) return alert('El carrito está vacío.');
             currentCheckoutTotal = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
             document.getElementById('cobrarTotalText').innerText = `$${currentCheckoutTotal.toFixed(2)}`;
             document.getElementById('cobrarMetodoPago').value = 'Efectivo';
@@ -1098,7 +1100,6 @@
             const method = document.getElementById('cobrarMetodoPago').value;
             const divRecibido = document.getElementById('divMontoRecibido');
             const divCambio = document.getElementById('divCambio');
-            
             if (method === 'Efectivo') {
                 divRecibido.style.display = 'block';
                 divCambio.style.display = 'flex';
@@ -1124,7 +1125,7 @@
             if (method === 'Efectivo') {
                 const valInput = parseFloat(document.getElementById('cobrarMontoRecibido').value);
                 if (isNaN(valInput) || valInput < currentCheckoutTotal) {
-                    return alert('El monto recibido debe ser mayor o igual al total a cobrar.');
+                    return alert('El monto recibido debe ser mayor o igual al total.');
                 }
                 recibido = valInput;
                 cambio = valInput - currentCheckoutTotal;
@@ -1132,14 +1133,11 @@
 
             try {
                 const batch = db.batch();
-                
-                // Descontar inventario (Usando FieldValue.increment negativo por seguridad)
                 cart.forEach(item => {
                     const ref = db.collection('pos_productos').doc(item.id);
                     batch.update(ref, { stock: firebase.firestore.FieldValue.increment(-item.qty) });
                 });
 
-                // Crear Venta
                 const saleRef = db.collection('pos_ventas').doc();
                 const saleData = {
                     fecha: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1158,9 +1156,9 @@
                 cart = [];
                 updateCartUI();
                 openModal('modalTicket');
-                showToast("¡Venta procesada con éxito!");
+                showToast("¡Venta completada!");
             } catch (e) {
-                console.error("Error al cobrar:", e);
+                console.error("Error al procesar:", e);
                 alert("Ocurrió un error al procesar la venta.");
             }
         }
@@ -1187,7 +1185,7 @@
             }
         }
 
-        // 4. Historial de Ventas y Eliminación (Reversión de Stock)
+        // 4. Historial de Ventas y Eliminación
         function loadSalesHistory() {
             db.collection('pos_ventas').orderBy('fecha', 'desc').limit(30).get().then(snap => {
                 const tbody = document.getElementById('salesTableBody');
@@ -1210,29 +1208,23 @@
         }
 
         async function deleteSale(saleId, items) {
-            if (!confirm("¿Eliminar venta? El stock de estos artículos regresará al inventario automáticamente.")) return;
+            if (!confirm("¿Eliminar venta? El stock regresará automáticamente al inventario.")) return;
             try {
                 const batch = db.batch();
-                // Restaurar stock
                 items.forEach(item => {
                     if (item.id) {
                         const ref = db.collection('pos_productos').doc(item.id);
                         batch.update(ref, { stock: firebase.firestore.FieldValue.increment(item.qty) });
                     }
                 });
-                // Borrar documento de venta
                 batch.delete(db.collection('pos_ventas').doc(saleId));
                 await batch.commit();
-                
-                showToast("Venta eliminada y stock restaurado.");
+                showToast("Venta eliminada.");
                 loadSalesHistory();
-            } catch (err) {
-                console.error(err);
-                alert("Error al eliminar la venta.");
-            }
+            } catch (err) { alert("Error al eliminar."); }
         }
 
-        // 5. Módulo de Clientes (CRUD)
+        // 5. Clientes CRUD
         function initRealtimeCustomers() {
             db.collection('pos_clientes').onSnapshot(snap => {
                 clientesList = [];
@@ -1291,12 +1283,12 @@
                 if (id) await db.collection('pos_clientes').doc(id).update(data);
                 else await db.collection('pos_clientes').add(data);
                 closeModal('modalFormCliente');
-                showToast("Cliente guardado correctamente.");
+                showToast("Cliente guardado.");
             } catch (err) { alert("Error al guardar cliente."); }
         }
 
         async function deleteCustomer(id) {
-            if(confirm("¿Eliminar este cliente del directorio?")) {
+            if(confirm("¿Eliminar cliente?")) {
                 await db.collection('pos_clientes').doc(id).delete();
                 showToast("Cliente eliminado.");
             }
@@ -1361,7 +1353,7 @@
             if (confirm("¿Eliminar este producto?")) await db.collection('pos_productos').doc(id).delete();
         }
 
-        // Utilidades de Modales
+        // Modales
         function openModal(id) {
             if (id === 'modalVentas') loadSalesHistory();
             document.getElementById(id).style.display = 'flex';
@@ -1375,7 +1367,7 @@
             if (tab === 'pos') document.querySelectorAll('.nav-item')[0].classList.add('active');
         }
 
-        // Lector USB / Pistola Física
+        // Lector USB / Pistola
         let barcodeBuffer = '';
         let lastKeyTime = Date.now();
         document.addEventListener('keydown', function(e) {
@@ -1419,7 +1411,7 @@
             }
         }
 
-        // Lector de Cámara Móvil
+        // Escáner Cámara
         let html5QrcodeScanner = null;
         let scanCoolDown = false;
         function openCameraScanner() { openModal('modalCameraScanner'); startCameraScanner(); }
@@ -1442,8 +1434,9 @@
             }
         }
 
-        // Init
+        // Inicialización
         window.onload = function() {
+            loadBrandLogos();
             initRealtimeProducts();
             initRealtimeCustomers();
         };
