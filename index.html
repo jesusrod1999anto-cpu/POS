@@ -9,47 +9,28 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Saray HA POS">
     <title>Saray HA - Punto de Venta (POS)</title>
-    <script>window.APP_VERSION = 'v31-oct29-b';</script>
-    <!-- Avisos de diagnóstico: si algo falla al iniciar, se ve en pantalla en vez de quedar en blanco -->
-    <script>
-        (function () {
-            var msgs = [];
-            function banner(msg) {
-                if (msgs.indexOf(msg) < 0) msgs.push(msg);
-                msg = msgs.slice(0, 4).join('<br><br>');
-                try {
-                    var b = document.getElementById('diagBanner');
-                    if (!b) {
-                        b = document.createElement('div'); b.id = 'diagBanner';
-                        b.style.cssText = 'position:fixed;left:8px;right:8px;bottom:80px;z-index:99999;background:#842029;color:#fff;border-radius:12px;padding:12px 14px;font:13px/1.4 sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.35)';
-                        (document.body || document.documentElement).appendChild(b);
-                    }
-                    b.innerHTML = '<b>Aviso (versión ' + window.APP_VERSION + '):</b> ' + msg + '<div style="margin-top:8px"><button onclick="location.reload()" style="padding:7px 12px;border:0;border-radius:8px;font-weight:700">Recargar</button> <button onclick="this.parentNode.parentNode.remove()" style="padding:7px 12px;border:0;border-radius:8px;background:#ffffff33;color:#fff">Cerrar</button></div>';
-                } catch (e) {}
-            }
-            window.__diag = banner;
-            setTimeout(function () {
-                if (typeof firebase === 'undefined') banner('Sigue sin cargar Firebase (internet lento o bloqueado). Revisa tu conexión y recarga; si usas Brave, desactiva los escudos para este sitio.');
-            }, 10000);
-            window.addEventListener('error', function (e) {
-                if (e.target && e.target !== window && (e.target.src || e.target.href)) {
-                    var u = e.target.src || e.target.href;
-                    if (/firebase|gstatic/.test(u)) banner('No cargó Firebase (' + u.split('/').pop() + '). Revisa tu internet o desactiva los escudos de Brave/bloqueador para este sitio.');
-                    return;
-                }
-                if (/firebase is not defined/.test(e.message || '')) return banner('No cargó Firebase, por eso no aparecen los productos. Revisa tu internet o desactiva los escudos de Brave (el icono del león) para este sitio y recarga.');
-                banner('Error del programa: ' + (e.message || 'desconocido') + (e.lineno ? ' (línea ' + e.lineno + ')' : ''));
-            }, true);
-            window.addEventListener('unhandledrejection', function (e) {
-                var r = e.reason; banner('Error: ' + ((r && (r.message || r.code)) || r));
-            });
-        })();
-    </script>
     <!-- FontAwesome & Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <!-- PapaParse para CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <!-- Chart.js para Gráficas de Reportes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <!-- Html5Qrcode para Escáner de Cámara -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        if (typeof Html5Qrcode === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"><\/script>');
+        }
+    </script>
+
     <style>
         :root {
             --primary: #d63384;
@@ -1357,8 +1338,7 @@
         :root { --vvh: 100dvh; --vvt: 0px; }
         .modal { height: 100vh; height: var(--vvh, 100dvh); top: var(--vvt, 0px); width: 100%; }
         #cameraReader { width: 100%; min-height: 220px; border-radius: var(--radius); overflow: hidden; background: #000; }
-        #cameraReader.ok #qr-shaded-region { border-color: rgba(34,197,94,0.55) !important; }
-        #cameraReader.ok #qr-shaded-region > div { background-color: #22c55e !important; }
+        #cameraReader video { width: 100% !important; height: auto !important; }
         #cameraStatus { margin-top: 12px; font-size: 13px; text-align: center; color: var(--text-muted); line-height: 1.4; }
         .scan-manual { display: flex; gap: 8px; margin-top: 14px; }
         .scan-manual input { flex: 1; min-width: 0; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
@@ -1372,22 +1352,6 @@
                 position: sticky; bottom: -2px; z-index: 3; box-shadow: 0 -8px 12px -6px rgba(255,255,255,0.95), 0 -10px 0 8px #fff; margin-top: 10px;
             }
             #modalFormCliente .modal-content { padding-bottom: calc(40px + env(safe-area-inset-bottom)) !important; }
-        }
-
-        body.kb-open .btn-confirm-pay { position: static !important; }
-        body.kb-open .checkout-right { padding-bottom: 40vh !important; }
-        .scan-retry { display: none; width: 100%; margin-top: 10px; }
-        #modalCameraScanner .cam-off #cameraReader { display: none; }
-        #modalCameraScanner .cam-off .scan-retry { display: block; }
-        #modalCameraScanner .cam-off .scan-photo-btn { order: -1; background: var(--secondary); color: #fff; border-style: solid; padding: 16px; font-size: 15px; margin-top: 4px; }
-        #modalCameraScanner .modal-content { display: flex; flex-direction: column; }
-        #modalCameraScanner .modal-header { order: -2; width: 100%; flex-shrink: 0; }
-        #modalCameraScanner .modal-content > * { flex-shrink: 0; }
-        #modalCameraScanner .cam-off #cameraStatus { color: var(--danger); }
-        @media (max-width: 767px) {
-            .modal-content:not(.checkout-modal) { padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important; }
-            .modal-content form > button[type="submit"]:last-child, .modal-content form > .btn-primary:last-child { bottom: 0; }
-            #modalFormCliente .modal-content, #modalFormProducto .modal-content { padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important; }
         }
 
         /* Al imprimir: solo se imprime el ticket / corte */
@@ -1448,7 +1412,7 @@
                     <div class="category-bar" id="categoryBar">
                         <button class="cat-btn active" data-cat="all">Todos</button>
                     </div>
-                    <div id="productsGrid"><p id="loadingProducts" style="text-align:center;width:100%;color:var(--text-muted);padding:40px;"><i class="fa-solid fa-spinner fa-spin"></i> Cargando productos…</p></div>
+                    <div id="productsGrid"></div>
                 </div>
 
                 <!-- Cart Panel -->
@@ -1685,13 +1649,12 @@
             </div>
             <div id="cameraReader"></div>
             <div id="cameraStatus">Apunta el código de barras hacia la cámara.</div>
-            <button type="button" class="btn btn-secondary scan-retry" onclick="retryCamera()"><i class="fa-solid fa-rotate"></i> Reintentar cámara en vivo</button>
             <div class="scan-manual">
                 <input type="text" id="scanManualInput" inputmode="numeric" placeholder="O escribe el código y presiona Agregar" onkeydown="if(event.key==='Enter'){event.preventDefault();submitManualBarcode();}">
                 <button type="button" class="btn btn-primary" onclick="submitManualBarcode()">Agregar</button>
             </div>
             <label class="scan-photo-btn">
-                <i class="fa-solid fa-camera"></i> Escanear con la cámara del celular
+                <i class="fa-solid fa-camera"></i> Tomar foto del código
                 <input type="file" accept="image/*" capture="environment" onchange="scanFromPhoto(this)" hidden>
             </label>
         </div>
@@ -2070,6 +2033,63 @@
     </div>
 
     <!-- Application Logic -->
-    <!-- Librerías: van al final para que la pantalla se dibuje primero aunque el internet esté lento -->
-    <script>/* firebase/firebase-app-compat.js (incluida en el archivo) */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).firebase=t()}(this,function(){"use strict";const r=function(t){const r=[];let n=0;for(let a=0;a<t.length;a++){let e=t.charCodeAt(a);e<128?r[n++]=e:(e<2048?r[n++]=e>>6|192:(55296==(64512&e)&&a+1<t.length&&56320==(64512&t.charCodeAt(a+1))?(e=65536+((1023&e)<<10)+(1023&t.charCodeAt(++a)),r[n++]=e>>18|240,r[n++]=e>>12&63|128):r[n++]=e>>12|224,r[n++]=e>>6&63|128),r[n++]=63&e|128)}return r},n={byteToCharMap_:null,charToByteMap_:null,byteToCharMapWebSafe_:null,charToByteMapWebSafe_:null,ENCODED_VALS_BASE:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",get ENCODED_VALS(){return this.ENCODED_VALS_BASE+"+/="},get ENCODED
+    <script>
+        // Logotipo Oficial de Saray HA en SVG Data URI de Alta Calidad
+        const SARAY_HA_LOGO_URL = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 380' width='100%' height='100%'><defs><linearGradient id='gold' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ffe885'/><stop offset='30%' stop-color='%23f5b731'/><stop offset='70%' stop-color='%23b87b10'/><stop offset='100%' stop-color='%23ffe066'/></linearGradient><linearGradient id='pink' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23ff94db'/><stop offset='50%' stop-color='%23e61980'/><stop offset='100%' stop-color='%2399004d'/></linearGradient><linearGradient id='black' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='%23333333'/><stop offset='100%' stop-color='%23000000'/></linearGradient><filter id='glow'><feDropShadow dx='0' dy='3' stdDeviation='4' flood-color='%23000' flood-opacity='0.25'/></filter></defs><g filter='url(%23glow)' align='center'><path d='M400,25 L435,95 L490,45 L500,120 L300,120 L310,45 L365,95 Z' fill='url(%23gold)' stroke='%23ffffff' stroke-width='2'/><circle cx='300' cy='45' r='10' fill='url(%23gold)'/><circle cx='400' cy='25' r='12' fill='url(%23gold)'/><circle cx='500' cy='45' r='10' fill='url(%23gold)'/><circle cx='355' cy='70' r='7' fill='url(%23gold)'/><circle cx='445' cy='70' r='7' fill='url(%23gold)'/><path d='M400,60 C390,48 375,55 375,68 C375,82 400,96 400,96 C400,96 425,82 425,68 C425,55 410,48 400,60 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='2'/><path d='M350,110 Q400,128 450,110' fill='none' stroke='url(%23gold)' stroke-width='6'/><g transform='translate(25, 130)'><text x='20' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23black)' stroke='url(%23gold)' stroke-width='3.5'>SARAY</text><circle cx='422' cy='85' r='7' fill='url(%23gold)'/><text x='445' y='100' font-family='Georgia, serif' font-size='105' font-weight='bold' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='3.5'>H'A</text></g><path d='M60,260 Q400,300 740,260' fill='none' stroke='url(%23gold)' stroke-width='4'/><path d='M400,252 C393,242 380,247 380,254 C380,263 400,272 400,272 C400,272 420,263 420,254 C420,247 407,242 400,252 Z' fill='url(%23pink)' stroke='url(%23gold)' stroke-width='1.5'/><text x='400' y='320' font-family='Arial, sans-serif' font-size='30' font-weight='bold' letter-spacing='12' fill='%23111111' text-anchor='middle'>MODA FEMENINA</text></g></svg>";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyASur45ZbXtxNINBKGWMpGPIW-wzzPhgcY",
+            authDomain: "saray-ha-pos.firebaseapp.com",
+            projectId: "saray-ha-pos",
+            storageBucket: "saray-ha-pos.appspot.com",
+            messagingSenderId: "910404250860",
+            appId: "1:910404250860:web:9d3135a48f4bf7ac32c9c9"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Estado Global
+        let rawProductsList = [];
+        let filteredProductsList = [];
+        let cart = [];
+        let activeCategory = 'all';
+        let clientesList = [];
+        let currentCheckoutTotal = 0;
+        let salesCache = {};
+        let isProcessingSale = false;
+        let firestoreOk = true;
+
+        // Cargar Logotipo
+        function loadBrandLogos() {
+            document.getElementById('brandLogo').src = SARAY_HA_LOGO_URL;
+            document.getElementById('ticketLogoImg').src = SARAY_HA_LOGO_URL;
+        }
+
+        // Utilidades
+        function esc(str) {
+            return String(str === undefined || str === null ? '' : str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+        function round2(n) {
+            return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+        }
+        function cleanName(str) {
+            if (!str) return "Prenda Saray";
+            return str.replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim().split(' ').map(w => w ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : '').join(' ');
+        }
+        function playBeepSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.12);
+            } catch(e) {}
+        }
+        function showToast(msg, isEr
