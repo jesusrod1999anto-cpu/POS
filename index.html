@@ -9,10 +9,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Saray HA POS">
     <title>Saray HA - Punto de Venta (POS)</title>
+    <script>window.APP_VERSION = 'v31-oct29-b';</script>
     <!-- Avisos de diagnóstico: si algo falla al iniciar, se ve en pantalla en vez de quedar en blanco -->
     <script>
         (function () {
+            var msgs = [];
             function banner(msg) {
+                if (msgs.indexOf(msg) < 0) msgs.push(msg);
+                msg = msgs.slice(0, 4).join('<br><br>');
                 try {
                     var b = document.getElementById('diagBanner');
                     if (!b) {
@@ -20,7 +24,7 @@
                         b.style.cssText = 'position:fixed;left:8px;right:8px;bottom:80px;z-index:99999;background:#842029;color:#fff;border-radius:12px;padding:12px 14px;font:13px/1.4 sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.35)';
                         (document.body || document.documentElement).appendChild(b);
                     }
-                    b.innerHTML = '<b>Aviso:</b> ' + msg + '<div style="margin-top:8px"><button onclick="location.reload()" style="padding:7px 12px;border:0;border-radius:8px;font-weight:700">Recargar</button> <button onclick="this.parentNode.parentNode.remove()" style="padding:7px 12px;border:0;border-radius:8px;background:#ffffff33;color:#fff">Cerrar</button></div>';
+                    b.innerHTML = '<b>Aviso (versión ' + window.APP_VERSION + '):</b> ' + msg + '<div style="margin-top:8px"><button onclick="location.reload()" style="padding:7px 12px;border:0;border-radius:8px;font-weight:700">Recargar</button> <button onclick="this.parentNode.parentNode.remove()" style="padding:7px 12px;border:0;border-radius:8px;background:#ffffff33;color:#fff">Cerrar</button></div>';
                 } catch (e) {}
             }
             window.__diag = banner;
@@ -2068,4 +2072,4 @@
     <!-- Application Logic -->
     <!-- Librerías: van al final para que la pantalla se dibuje primero aunque el internet esté lento -->
     <script>/* firebase/firebase-app-compat.js (incluida en el archivo) */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).firebase=t()}(this,function(){"use strict";const r=function(t){const r=[];let n=0;for(let a=0;a<t.length;a++){let e=t.charCodeAt(a);e<128?r[n++]=e:(e<2048?r[n++]=e>>6|192:(55296==(64512&e)&&a+1<t.length&&56320==(64512&t.charCodeAt(a+1))?(e=65536+((1023&e)<<10)+(1023&t.charCodeAt(++a)),r[n++]=e>>18|240,r[n++]=e>>12&63|128):r[n++]=e>>12|224,r[n++]=e>>6&63|128),r[n++]=63&e|128)}return r},n={byteToCharMap_:null,charToByteMap_:null,byteToCharMapWebSafe_:null,charToByteMapWebSafe_:null,ENCODED_VALS_BASE:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",get ENCODED_VALS(){return this.ENCODED_VALS_BASE+"+/="},get ENCODED_VALS_WEBSAFE(){return this.ENCODED_VALS_BASE+"-_."},HAS_NATIVE_SUPPORT:"function"==typeof atob,encodeByteArray(r,e){if(!Array.isArray(r))throw Error("encodeByteArray takes an array as a parameter");this.init_();var n=e?this.byteToCharMa
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):(e="undefined"!=typeof globalThis?globalThis:e||self).firebase=t()}(this,function(){"use strict";const r=function(t){const r=[];let n=0;for(let a=0;a<t.length;a++){let e=t.charCodeAt(a);e<128?r[n++]=e:(e<2048?r[n++]=e>>6|192:(55296==(64512&e)&&a+1<t.length&&56320==(64512&t.charCodeAt(a+1))?(e=65536+((1023&e)<<10)+(1023&t.charCodeAt(++a)),r[n++]=e>>18|240,r[n++]=e>>12&63|128):r[n++]=e>>12|224,r[n++]=e>>6&63|128),r[n++]=63&e|128)}return r},n={byteToCharMap_:null,charToByteMap_:null,byteToCharMapWebSafe_:null,charToByteMapWebSafe_:null,ENCODED_VALS_BASE:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",get ENCODED_VALS(){return this.ENCODED_VALS_BASE+"+/="},get ENCODED
