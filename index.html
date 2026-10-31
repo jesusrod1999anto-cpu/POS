@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Saray HA POS">
     <title>Saray HA - Punto de Venta (POS)</title>
-    <script>window.APP_VERSION = 'v33-etiquetas';</script>
+    <script>window.APP_VERSION = 'v34-apartados';</script>
     <!-- Avisos de diagnóstico: si algo falla al iniciar, se ve en pantalla en vez de quedar en blanco -->
     <script>
         (function () {
@@ -1543,6 +1543,89 @@
         .pm-photo-btns .btn { padding: 8px 4px; font-size: 11px; min-width: 0; gap: 4px; }
         .pm2 .stepper input { border: 1px solid var(--border); border-left: 0; border-right: 0; border-radius: 0; padding: 10px 4px; }
 
+        /* ===== Formulario de cliente ===== */
+        .modal-content.cf2 { max-width: 460px; padding: 0 !important; display: flex; flex-direction: column; overflow: hidden !important; }
+        .cf2 .modal-header { margin: 0; padding: 16px 20px 12px; flex-shrink: 0; align-items: flex-start; }
+        .cf2 .modal-header h3 { margin: 0; }
+        .cf-head { display: flex; align-items: center; gap: 12px; }
+        .cf-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .cf2 form { padding: 16px 20px 0; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+        .cf-field { margin-bottom: 16px; }
+        .cf-field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .cf-input { display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--border); border-radius: 12px; padding: 0 12px; background: #fff; transition: border-color .15s, box-shadow .15s; }
+        .cf-input:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.12); }
+        .cf-input i { color: var(--text-muted); width: 18px; text-align: center; font-size: 16px; }
+        .cf-input:focus-within i { color: var(--primary); }
+        .cf-input input { flex: 1; min-width: 0; border: 0; outline: none; padding: 14px 0; font-size: 16px; font-family: inherit; background: transparent; }
+        .cf-hint { font-size: 12px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+        .cf-hint.warn { color: #b45309; font-weight: 600; }
+        .cf-footer { position: sticky; bottom: 0; background: #fff; margin: 0 -20px; padding: 12px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); }
+        .cf-footer .btn { width: 100%; justify-content: center; padding: 14px; font-size: 15px; }
+        .wa-link { color: #25d366; margin-left: 6px; font-size: 15px; text-decoration: none; }
+        @media (max-width: 767px) {
+            .modal-content.cf2 { padding-bottom: 0 !important; }
+            .cf2 form { padding: 14px 16px 0; }
+            .cf-footer { margin: 0 -16px; padding: 12px 16px calc(14px + env(safe-area-inset-bottom)); }
+        }
+
+        /* ===== Apartados ===== */
+        .modal-content.ap-modal { max-width: 860px; padding: 0 !important; display: flex; flex-direction: column; overflow: hidden !important; }
+        .ap-modal .modal-header { margin: 0; padding: 16px 20px 12px; flex-shrink: 0; align-items: flex-start; }
+        .ap-modal .modal-header h3 { margin: 0; }
+        .ap-body { padding: 14px 20px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+        .ap-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+        .ap-kpi { background: var(--bg-light); border-radius: 12px; padding: 10px 12px; }
+        .ap-kpi small { display: block; font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .ap-kpi b { font-size: 18px; }
+        .ap-kpi.red b { color: var(--danger); }
+        .ap-tools { margin-bottom: 12px; }
+        .ap-tools input { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-family: inherit; box-sizing: border-box; }
+        .ap-tools .chips-row { margin-top: 8px; }
+        .ap-list { display: flex; flex-direction: column; gap: 12px; }
+        .ap-card { border: 1px solid var(--border); border-radius: 14px; padding: 14px; background: #fff; border-left-width: 5px; }
+        .ap-card.ok { border-left-color: var(--success); }
+        .ap-card.pronto { border-left-color: #f59e0b; }
+        .ap-card.vencido { border-left-color: var(--danger); background: #fff8f8; }
+        .ap-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+        .ap-name { font-weight: 700; font-size: 15px; }
+        .ap-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .ap-due { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+        .ap-due.ok { background: #d1e7dd; color: #0f5132; }
+        .ap-due.pronto { background: #fff3cd; color: #8a5a00; }
+        .ap-due.vencido { background: #f8d7da; color: #842029; }
+        .ap-items { font-size: 13px; margin: 10px 0; line-height: 1.5; }
+        .ap-bar { height: 8px; background: #e9ecef; border-radius: 99px; overflow: hidden; }
+        .ap-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 99px; }
+        .ap-money { display: flex; justify-content: space-between; font-size: 13px; margin-top: 6px; }
+        .ap-money b.saldo { color: var(--danger); font-size: 15px; }
+        .ap-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+        .ap-acts .btn { padding: 8px 12px; font-size: 12px; }
+        .ap-acts .btn.main { flex: 1 1 140px; justify-content: center; }
+        .ap-empty { text-align: center; color: var(--text-muted); padding: 34px 10px; font-size: 14px; }
+        .ap-empty i { display: block; font-size: 40px; color: #dee2e6; margin-bottom: 10px; }
+        .ap-footer { padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); flex-shrink: 0; background: #fff; }
+        .ap-footer .btn { width: 100%; justify-content: center; padding: 13px; }
+        .nav-badge { background: var(--primary); color: #fff; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 1px 7px; margin-left: auto; display: none; }
+        .nav-badge.show { display: inline-block; }
+        .nav-badge.red { background: var(--danger); }
+        .bottom-nav-item { position: relative; }
+        .bottom-nav-item .nav-badge { position: absolute; top: 0; right: 50%; margin: 0 -26px 0 0; font-size: 9px; padding: 0 5px; }
+        .sidebar .nav-item { position: relative; }
+        .sidebar .nav-item .nav-badge { position: absolute; top: 50%; right: 12px; margin: 0; transform: translateY(-50%); }
+        @media (max-width: 1279px) { .sidebar .nav-item .nav-badge { top: 4px; right: 2px; transform: none; font-size: 9px; padding: 0 5px; } }
+        .ap-pick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .ap-limit-line { font-size: 12px; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: #eef2ff; color: var(--secondary); font-weight: 600; }
+        @media (max-width: 640px) {
+            .ap-kpis { gap: 6px; }
+            .ap-kpi { padding: 8px; }
+            .ap-kpi b { font-size: 15px; }
+            .ap-body { padding: 12px 14px; }
+            .ap-modal .modal-header { padding: 14px 16px 10px; }
+            .ap-footer { padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); }
+        }
+
+        #modalAbono, #modalTicket, #modalApFecha, #modalFormCliente { z-index: 1050; }
+
         /* Al imprimir: solo se imprime el ticket / corte */
         @page { margin: 4mm; }
         @media print {
@@ -1574,6 +1657,7 @@
                 <li class="nav-item" onclick="openModal('modalVentas')"><i class="fa-solid fa-chart-line"></i> <span class="nav-label">Ventas y Reportes</span></li>
                 <li class="nav-item" onclick="openModal('modalInventario')"><i class="fa-solid fa-boxes-stacked"></i> <span class="nav-label">Productos</span></li>
                 <li class="nav-item" onclick="openModal('modalLoyverse')"><i class="fa-solid fa-file-csv"></i> <span class="nav-label">Importar CSV</span></li>
+                <li class="nav-item" onclick="openApartados()"><i class="fa-solid fa-bookmark"></i> <span class="nav-label">Apartados</span><span class="nav-badge ap-badge"></span></li>
                 <li class="nav-item" onclick="openModal('modalClientes')"><i class="fa-solid fa-users"></i> <span class="nav-label">Clientes</span></li>
             </ul>
         </div>
@@ -1653,6 +1737,7 @@
         <div class="bottom-nav-item" onclick="openCameraScanner()"><i class="fa-solid fa-barcode"></i> Escanear</div>
         <div class="bottom-nav-item" onclick="openModal('modalVentas')"><i class="fa-solid fa-receipt"></i> Ventas</div>
         <div class="bottom-nav-item" onclick="openModal('modalInventario')"><i class="fa-solid fa-boxes-stacked"></i> Productos</div>
+        <div class="bottom-nav-item" onclick="openApartados()"><i class="fa-solid fa-bookmark"></i> Apartados<span class="nav-badge ap-badge"></span></div>
         <div class="bottom-nav-item" onclick="openModal('modalClientes')"><i class="fa-solid fa-users"></i> Clientes</div>
     </div>
 
@@ -1727,7 +1812,7 @@
                     <div class="co-field">
                         <label>Cliente (opcional)</label>
                         <div class="co-inline">
-                            <select id="coCliente" style="width:auto; flex:1;"><option value="">Cliente general</option></select>
+                            <select id="coCliente" style="width:auto; flex:1;" onchange="updateApartado()"><option value="">Cliente general</option></select>
                             <button type="button" class="btn btn-secondary" style="flex-shrink:0; padding:9px 14px;" title="Agregar cliente nuevo" onclick="toggleQuickCustomer(true)"><i class="fa-solid fa-user-plus"></i></button>
                         </div>
                         <div class="co-inline" id="coNuevoCliente" style="display:none; margin-top:8px;">
@@ -1802,10 +1887,26 @@
 
                     <!-- Apartado -->
                     <div class="pay-panel" id="panelApartado">
-                        <div class="pay-hint" style="margin-top:0;">El producto queda separado y el stock se descuenta. Requiere elegir un cliente; el saldo se liquida después con abonos desde Ventas y Reportes.</div>
+                        <div class="pay-hint" style="margin-top:0;">La prenda queda separada (el stock se descuenta) hasta la fecha límite. Elige un cliente; el saldo se liquida después con abonos desde <b>Apartados</b>.</div>
+                        <div class="co-field">
+                            <label>Fecha límite del apartado</label>
+                            <input type="date" id="coApLimite" oninput="updateApartado()">
+                            <div class="ap-pick">
+                                <button type="button" class="chip-btn sm" onclick="setApartadoDays(7)">7 días</button>
+                                <button type="button" class="chip-btn sm" onclick="setApartadoDays(15)">15 días</button>
+                                <button type="button" class="chip-btn sm" onclick="setApartadoDays(30)">30 días</button>
+                            </div>
+                            <div class="ap-limit-line" id="coApLimiteTxt"></div>
+                            <div class="pay-hint" id="coApCliHint" style="display:none;"></div>
+                        </div>
                         <div class="co-field">
                             <label>Anticipo ($)</label>
                             <input type="number" id="coAnticipo" step="0.01" min="0" placeholder="0.00" oninput="updateApartado()">
+                            <div class="ap-pick">
+                                <button type="button" class="chip-btn sm" onclick="setApartadoPct(20)">20%</button>
+                                <button type="button" class="chip-btn sm" onclick="setApartadoPct(30)">30%</button>
+                                <button type="button" class="chip-btn sm" onclick="setApartadoPct(50)">50%</button>
+                            </div>
                         </div>
                         <div class="co-field">
                             <label>Anticipo pagado con</label>
@@ -2085,7 +2186,7 @@
                         <tr style="background: var(--bg-light); text-align: left; border-bottom: 1px solid var(--border);">
                             <th style="padding: 10px;">Nombre</th>
                             <th style="padding: 10px;">Teléfono</th>
-                            <th style="padding: 10px;">Correo</th>
+                            <th style="padding: 10px;">Colonia</th>
                             <th style="padding: 10px;">Acciones</th>
                         </tr>
                     </thead>
@@ -2097,19 +2198,81 @@
 
     <!-- Modal: Formulario Cliente -->
     <div class="modal" id="modalFormCliente">
-        <div class="modal-content">
+        <div class="modal-content cf2">
             <div class="modal-header">
-                <h3 id="formClientTitle">Agregar Cliente</h3>
+                <div class="cf-head">
+                    <div class="cf-avatar"><i class="fa-solid fa-user-plus"></i></div>
+                    <div>
+                        <h3 id="formClientTitle">Agregar Cliente</h3>
+                        <div class="pm-sub">Solo lo necesario: nombre, teléfono y colonia.</div>
+                    </div>
+                </div>
                 <i class="fa-solid fa-xmark close-modal" onclick="closeModal('modalFormCliente')"></i>
             </div>
             <form id="clientForm" onsubmit="saveCustomer(event)">
                 <input type="hidden" id="clientEditId">
-                <div class="form-group"><label>Nombre Completo</label><input type="text" id="clientNombre" required></div>
-                <div class="form-group"><label>Teléfono</label><input type="tel" id="clientTelefono"></div>
-                <div class="form-group"><label>Correo Electrónico</label><input type="email" id="clientEmail"></div>
-                <div class="form-group"><label>Notas / Dirección</label><textarea id="clientNotas" rows="2"></textarea></div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Guardar Cliente</button>
+                <datalist id="dlColonias"></datalist>
+                <div class="cf-field">
+                    <label for="clientNombre">Nombre completo *</label>
+                    <div class="cf-input"><i class="fa-solid fa-user"></i><input type="text" id="clientNombre" required placeholder="Ej. María López" autocomplete="off"></div>
+                </div>
+                <div class="cf-field">
+                    <label for="clientTelefono">Teléfono / WhatsApp</label>
+                    <div class="cf-input"><i class="fa-brands fa-whatsapp"></i><input type="tel" id="clientTelefono" inputmode="tel" placeholder="10 dígitos, ej. 33 1234 5678" autocomplete="off" oninput="formatPhoneInput(this)"></div>
+                    <div class="cf-hint" id="clientPhoneHint">Con el teléfono puedes mandarle recordatorios de sus apartados por WhatsApp.</div>
+                </div>
+                <div class="cf-field">
+                    <label for="clientColonia">Colonia</label>
+                    <div class="cf-input"><i class="fa-solid fa-location-dot"></i><input type="text" id="clientColonia" list="dlColonias" placeholder="Ej. Santa Fe" autocomplete="off"></div>
+                    <div class="chips-row" id="coloniaChips"></div>
+                </div>
+                <div class="cf-footer">
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar cliente</button>
+                </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal: Apartados -->
+    <div class="modal" id="modalApartados">
+        <div class="modal-content ap-modal">
+            <div class="modal-header">
+                <div>
+                    <h3><i class="fa-solid fa-bookmark"></i> Apartados</h3>
+                    <div class="pm-sub">Prendas separadas para un cliente. El plazo normal es de 15 días.</div>
+                </div>
+                <i class="fa-solid fa-xmark close-modal" onclick="closeModal('modalApartados')"></i>
+            </div>
+            <div class="ap-body">
+                <div class="ap-kpis" id="apKpis"></div>
+                <div class="ap-tools">
+                    <input type="search" id="apSearch" placeholder="Buscar cliente, teléfono o prenda…" oninput="renderApartados()" autocomplete="off">
+                    <div class="chips-row" id="apFilters"></div>
+                </div>
+                <div class="ap-list" id="apList"></div>
+            </div>
+            <div class="ap-footer">
+                <button type="button" class="btn btn-primary" onclick="closeModal('modalApartados'); switchTab('pos'); showToast('Agrega las prendas, elige Apartado al cobrar.');"><i class="fa-solid fa-plus"></i> Nuevo apartado</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Cambiar fecha límite de un apartado -->
+    <div class="modal" id="modalApFecha">
+        <div class="modal-content" style="max-width:420px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-calendar-days"></i> Fecha límite</h3>
+                <i class="fa-solid fa-xmark close-modal" onclick="closeModal('modalApFecha')"></i>
+            </div>
+            <div id="apFechaInfo" style="font-size:13px; margin-bottom:12px; line-height:1.5;"></div>
+            <div class="form-group"><label>Nueva fecha límite</label><input type="date" id="apFechaInput" oninput="apFechaHint()"></div>
+            <div class="chips-row" style="margin:-4px 0 10px;">
+                <button type="button" class="chip-btn sm" onclick="apFechaPlus(7)">+7 días</button>
+                <button type="button" class="chip-btn sm" onclick="apFechaPlus(15)">+15 días</button>
+                <button type="button" class="chip-btn sm" onclick="apFechaPlus(30)">+30 días</button>
+            </div>
+            <div class="pm-note" id="apFechaHint" style="margin:0 0 14px;"></div>
+            <button class="btn btn-primary" style="width:100%;" onclick="apFechaGuardar()"><i class="fa-solid fa-check"></i> Guardar fecha</button>
         </div>
     </div>
 
@@ -2472,11 +2635,6 @@ License: MIT
         function initRealtimeProducts() {
             db.collection('pos_productos').onSnapshot(snapshot => {
                 firestoreOk = true;
-                if (!firstProductsLoad) {
-                    let bytes = 0; snapshot.forEach(d => { const f = d.data().foto; if (f) bytes += String(f).length; });
-                    const vt = document.getElementById('verTag');
-                    if (vt) vt.textContent = window.APP_VERSION + ' · ' + snapshot.size + ' prod · ' + (bytes / 1048576).toFixed(1) + ' MB fotos · ' + ((Date.now() - bootT0) / 1000).toFixed(1) + ' s';
-                }
                 firstProductsLoad = true;
                 const dg = document.getElementById('diagBanner'); if (dg) dg.remove();
                 updateConnectionStatus();
@@ -2812,7 +2970,7 @@ License: MIT
             let focusId = 'coReferencia';
             if (m === 'Efectivo') { panel = 'panelEfectivo'; focusId = 'cobrarMontoRecibido'; }
             else if (m === 'Mixto') { panel = 'panelMixto'; focusId = 'coMixEfectivo'; }
-            else if (m === 'Apartado') { panel = 'panelApartado'; focusId = 'coAnticipo'; }
+            else if (m === 'Apartado') { panel = 'panelApartado'; focusId = 'coAnticipo'; if (!document.getElementById('coApLimite').value) setApartadoDays(AP_DIAS); }
             document.getElementById(panel).classList.add('show');
             if (panel === 'panelReferencia') document.getElementById('refHint').innerText = REF_HINTS[m] || '';
             updateCheckoutTotals();
@@ -2891,6 +3049,23 @@ License: MIT
             const ant = parseFloat(document.getElementById('coAnticipo').value) || 0;
             const saldo = Math.max(0, round2(currentCheckoutTotal - ant));
             document.getElementById('coSaldo').innerText = `$${saldo.toFixed(2)}`;
+            const lim = apCheckoutLimit();
+            const txt = document.getElementById('coApLimiteTxt');
+            if (txt) {
+                if (!lim) txt.innerText = 'Elige hasta cuándo se aparta la prenda.';
+                else {
+                    const t = new Date(); t.setHours(0, 0, 0, 0);
+                    const n = Math.round((new Date(lim.getFullYear(), lim.getMonth(), lim.getDate()) - t) / 86400000);
+                    txt.innerText = n < 0 ? 'Esa fecha ya pasó.' : `Vence el ${apFmt(lim)} (en ${n} día${n === 1 ? '' : 's'})`;
+                }
+            }
+            const cl = clientesList.find(c => c.id === document.getElementById('coCliente').value);
+            const hint = document.getElementById('coApCliHint');
+            if (hint) {
+                if (payMethod === 'Apartado' && cl && !cl.telefono) { hint.style.display = 'block'; hint.innerHTML = `${esc(cl.nombre)} no tiene teléfono: no podrás mandarle recordatorios. <a href="#" onclick="event.preventDefault(); editCustomer('${esc(cl.id)}')">Agregar teléfono</a>`; }
+                else if (payMethod === 'Apartado' && !cl) { hint.style.display = 'block'; hint.innerText = 'Elige o agrega el cliente en “Descuento, cliente y notas”.'; }
+                else hint.style.display = 'none';
+            }
         }
 
         async function processSale() {
@@ -2913,6 +3088,7 @@ License: MIT
             let pagado = total;
             let saldo = 0;
             let metodoPago = payMethod;
+            let limiteAp = null;
 
             if (payMethod === 'Efectivo') {
                 const val = parseFloat(document.getElementById('cobrarMontoRecibido').value);
@@ -2931,6 +3107,8 @@ License: MIT
                 if (!cliente) return alert('Para un apartado selecciona un cliente.');
                 const ant = parseFloat(document.getElementById('coAnticipo').value) || 0;
                 if (ant <= 0 || ant >= total) return alert('El anticipo debe ser mayor a $0 y menor al total.');
+                limiteAp = apCheckoutLimit();
+                if (!limiteAp || limiteAp < new Date()) return alert('Elige una fecha límite que no haya pasado.');
                 const met = document.getElementById('coAntMetodo').value;
                 const ref = document.getElementById('coAntRef').value.trim();
                 pagos = [mkPago(met, ant, ref, firebase.firestore.Timestamp.now())];
@@ -2986,6 +3164,7 @@ License: MIT
                         qty: i.qty
                     }))
                 };
+                if (limiteAp) { saleData.fechaLimite = firebase.firestore.Timestamp.fromDate(limiteAp); saleData.esApartado = true; }
                 batch.set(saleRef, saleData);
 
                 await batch.commit();
@@ -3040,6 +3219,8 @@ License: MIT
             }
             if (sale.estado === 'Pendiente') {
                 html += `<div class="ticket-row" style="font-weight:bold;"><span>SALDO PENDIENTE:</span><span>$${Number(sale.saldo || 0).toFixed(2)}</span></div>`;
+                html += `<div class="ticket-row" style="font-weight:bold;"><span>APARTADO VENCE:</span><span>${apFmt(apLimit(sale))}</span></div>`;
+                html += `<div style="margin-top:5px;font-size:11px;">La prenda se conserva hasta la fecha límite. Pasada la fecha, el apartado puede cancelarse.</div>`;
             }
             if (sale.notas) html += `<div style="margin-top:5px;">Nota: ${esc(sale.notas)}</div>`;
             document.getElementById('ticketPaymentDetails').innerHTML = html;
@@ -3555,10 +3736,10 @@ License: MIT
             openModal('modalTicket');
         }
 
-        async function deleteSale(saleId) {
-            const sale = reportSales.find(x => x.id === saleId);
+        async function deleteSale(saleId, sinConfirmar) {
+            const sale = findSaleAny(saleId);
             if (!sale) return;
-            if (!confirm("¿Eliminar venta? El stock regresará automáticamente al inventario.")) return;
+            if (!sinConfirmar && !confirm("¿Eliminar venta? El stock regresará automáticamente al inventario.")) return;
             try {
                 const items = (sale.items || []).filter(i => i.id);
                 // Solo se regresa stock a productos que todavía existen
@@ -3571,8 +3752,8 @@ License: MIT
                 });
                 batch.delete(db.collection('pos_ventas').doc(saleId));
                 await batch.commit();
-                showToast("Venta eliminada.");
-                loadReports();
+                showToast(sinConfirmar ? "Apartado cancelado." : "Venta eliminada.");
+                if (document.getElementById('modalVentas').style.display === 'flex') loadReports();
             } catch (err) {
                 console.error("Error al eliminar venta:", err);
                 alert("Error al eliminar.");
@@ -3581,8 +3762,9 @@ License: MIT
 
         // ---- Abonos (apartados) ----
         function openAbono(saleId) {
-            const s = reportSales.find(x => x.id === saleId);
+            const s = findSaleAny(saleId);
             if (!s) return;
+            if (!document.getElementById('abonoMetodo').options.length) fillSelect('abonoMetodo', SINGLE_METHODS);
             abonoSaleId = saleId;
             document.getElementById('abonoInfo').innerHTML = `
                 <b>${esc(s.folio || 'Venta')}</b> · ${esc(s.clienteNombre || '')}<br>
@@ -3594,7 +3776,7 @@ License: MIT
         }
 
         async function saveAbono() {
-            const s = reportSales.find(x => x.id === abonoSaleId);
+            const s = findSaleAny(abonoSaleId);
             if (!s) return;
             const monto = round2(parseFloat(document.getElementById('abonoMonto').value) || 0);
             const saldo = round2(Number(s.saldo) || 0);
@@ -3611,8 +3793,8 @@ License: MIT
                     pagos: firebase.firestore.FieldValue.arrayUnion(mkPago(metodo, monto, ref, firebase.firestore.Timestamp.now()))
                 });
                 closeModal('modalAbono');
-                showToast(nuevoSaldo <= 0 ? 'Apartado liquidado.' : 'Abono registrado.');
-                loadReports();
+                showToast(nuevoSaldo <= 0 ? 'Apartado liquidado. ¡Entrega la prenda!' : 'Abono registrado.');
+                if (document.getElementById('modalVentas').style.display === 'flex') loadReports();
             } catch (err) {
                 console.error("Error al registrar abono:", err);
                 alert('No se pudo registrar el abono.');
@@ -3758,16 +3940,40 @@ License: MIT
             }, err => console.error("Error de conexión con clientes:", err));
         }
 
+        // ---- Clientes: solo nombre, teléfono y colonia ----
+        function formatPhoneInput(el) {
+            const d = el.value.replace(/\D/g, '').slice(0, 10);
+            el.value = d.length > 6 ? d.slice(0, 2) + ' ' + d.slice(2, 6) + ' ' + d.slice(6) : (d.length > 2 ? d.slice(0, 2) + ' ' + d.slice(2) : d);
+            const hint = document.getElementById('clientPhoneHint');
+            if (hint) {
+                if (d.length && d.length < 10) { hint.className = 'cf-hint warn'; hint.innerText = `Faltan ${10 - d.length} dígito(s) para completar los 10.`; }
+                else { hint.className = 'cf-hint'; hint.innerText = 'Con el teléfono puedes mandarle recordatorios de sus apartados por WhatsApp.'; }
+            }
+        }
+        function renderColoniaChips() {
+            const counts = {};
+            clientesList.forEach(c => { if (c.colonia) counts[c.colonia] = (counts[c.colonia] || 0) + 1; });
+            const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+            document.getElementById('dlColonias').innerHTML = top.map(c => `<option value="${esc(c)}">`).join('');
+            const cur = document.getElementById('clientColonia').value.trim().toLowerCase();
+            document.getElementById('coloniaChips').innerHTML = top.slice(0, 6).map(c => `<button type="button" class="chip-btn sm${cur === c.toLowerCase() ? ' on' : ''}" data-c="${esc(c)}" onclick="document.getElementById('clientColonia').value=this.dataset.c; renderColoniaChips()">${esc(c)}</button>`).join('');
+        }
+        function waLink(phone, text) {
+            let p = String(phone || '').replace(/\D/g, '');
+            if (p.length === 10) p = '52' + p;
+            return 'https://wa.me/' + p + (text ? '?text=' + encodeURIComponent(text) : '');
+        }
         function renderCustomersTable() {
             const tbody = document.getElementById('customersTableBody');
-            if(!tbody) return;
+            if (!tbody) return;
             tbody.innerHTML = '';
             clientesList.forEach(c => {
+                const tel = c.telefono ? esc(c.telefono) + ` <a class="wa-link" href="${esc(waLink(c.telefono))}" target="_blank" rel="noopener" title="Abrir WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>` : '-';
                 tbody.innerHTML += `
                     <tr style="border-bottom: 1px solid var(--border);">
                         <td data-label="Nombre" style="padding: 10px; font-weight:600;">${esc(c.nombre)}</td>
-                        <td data-label="Teléfono" style="padding: 10px;">${esc(c.telefono || '-')}</td>
-                        <td data-label="Correo" style="padding: 10px;">${esc(c.email || '-')}</td>
+                        <td data-label="Teléfono" style="padding: 10px;">${tel}</td>
+                        <td data-label="Colonia" style="padding: 10px;">${esc(c.colonia || '-')}</td>
                         <td style="padding: 10px;">
                             <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="editCustomer('${esc(c.id)}')"><i class="fa-solid fa-pen"></i></button>
                             <button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="deleteCustomer('${esc(c.id)}')"><i class="fa-solid fa-trash"></i></button>
@@ -3775,34 +3981,40 @@ License: MIT
                     </tr>`;
             });
         }
-
         function showAddCustomerForm() {
             document.getElementById('formClientTitle').innerText = "Agregar Cliente";
             document.getElementById('clientForm').reset();
             document.getElementById('clientEditId').value = "";
+            formatPhoneInput(document.getElementById('clientTelefono'));
+            renderColoniaChips();
             openModal('modalFormCliente');
+            setTimeout(() => document.getElementById('clientNombre').focus(), 150);
         }
-
         function editCustomer(id) {
             const c = clientesList.find(x => x.id === id);
-            if(!c) return;
+            if (!c) return;
             document.getElementById('formClientTitle').innerText = "Editar Cliente";
             document.getElementById('clientEditId').value = c.id;
-            document.getElementById('clientNombre').value = c.nombre;
+            document.getElementById('clientNombre').value = c.nombre || '';
             document.getElementById('clientTelefono').value = c.telefono || "";
-            document.getElementById('clientEmail').value = c.email || "";
-            document.getElementById('clientNotas').value = c.notas || "";
+            document.getElementById('clientColonia').value = c.colonia || "";
+            formatPhoneInput(document.getElementById('clientTelefono'));
+            renderColoniaChips();
             openModal('modalFormCliente');
         }
-
         async function saveCustomer(e) {
             e.preventDefault();
             const id = document.getElementById('clientEditId').value;
+            const tel = document.getElementById('clientTelefono').value.trim();
+            const digits = tel.replace(/\D/g, '');
+            if (digits && digits.length !== 10 && !confirm('El teléfono no tiene 10 dígitos. ¿Guardar así?')) return;
+            if (digits && clientesList.some(c => c.id !== id && String(c.telefono || '').replace(/\D/g, '') === digits)) {
+                if (!confirm('Ya hay un cliente con ese teléfono. ¿Guardar de todos modos?')) return;
+            }
             const data = {
                 nombre: cleanName(document.getElementById('clientNombre').value),
-                telefono: document.getElementById('clientTelefono').value.trim(),
-                email: document.getElementById('clientEmail').value.trim(),
-                notas: document.getElementById('clientNotas').value.trim()
+                telefono: tel,
+                colonia: cleanName(document.getElementById('clientColonia').value.trim())
             };
             try {
                 if (id) await db.collection('pos_clientes').doc(id).update(data);
@@ -3810,6 +4022,184 @@ License: MIT
                 closeModal('modalFormCliente');
                 showToast("Cliente guardado.");
             } catch (err) { alert("Error al guardar cliente."); }
+        }
+
+        // ===== Apartados (prendas separadas con fecha límite, normalmente 15 días) =====
+        let apartadosList = [];
+        let apFilter = 'todos';
+        let apFechaSaleId = null;
+        let apAlerted = false;
+        const AP_DIAS = 15;
+
+        function apLimit(v) {
+            if (v.fechaLimite && typeof v.fechaLimite.toDate === 'function') return v.fechaLimite.toDate();
+            const f = (v.fecha && typeof v.fecha.toDate === 'function') ? v.fecha.toDate() : new Date();
+            const d = new Date(f); d.setDate(d.getDate() + AP_DIAS); d.setHours(23, 59, 59, 0);
+            return d;
+        }
+        function apDaysLeft(v) {
+            const a = new Date(); a.setHours(0, 0, 0, 0);
+            const b = new Date(apLimit(v)); b.setHours(0, 0, 0, 0);
+            return Math.round((b - a) / 86400000);
+        }
+        function apState(v) { const d = apDaysLeft(v); return d < 0 ? 'vencido' : (d <= 3 ? 'pronto' : 'ok'); }
+        function apFmt(d) { return d.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' }); }
+        function apDueText(v) {
+            const d = apDaysLeft(v);
+            if (d < 0) return `Venció hace ${-d} día${d === -1 ? '' : 's'}`;
+            if (d === 0) return 'Vence HOY';
+            if (d === 1) return 'Vence mañana';
+            return `Vence en ${d} días`;
+        }
+        function findSaleAny(id) { return reportSales.find(x => x.id === id) || apartadosList.find(x => x.id === id); }
+
+        function initRealtimeApartados() {
+            db.collection('pos_ventas').where('estado', '==', 'Pendiente').onSnapshot(snap => {
+                apartadosList = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if (d.estado !== 'Pendiente') return;
+                    apartadosList.push(Object.assign({ id: doc.id }, d));
+                });
+                apartadosList.sort((a, b) => apLimit(a) - apLimit(b));
+                updateApartadosBadge();
+                if (document.getElementById('modalApartados').style.display === 'flex') renderApartados();
+                if (!apAlerted && apartadosList.length) {
+                    apAlerted = true;
+                    const urg = apartadosList.filter(v => apDaysLeft(v) <= 1).length;
+                    if (urg) showToast(`Tienes ${urg} apartado(s) vencido(s) o que vencen hoy/mañana.`, true);
+                }
+            }, err => console.error('Error al leer apartados:', err));
+        }
+        function updateApartadosBadge() {
+            const n = apartadosList.length;
+            const venc = apartadosList.filter(v => apDaysLeft(v) < 0).length;
+            document.querySelectorAll('.ap-badge').forEach(b => {
+                b.textContent = n; b.classList.toggle('show', n > 0); b.classList.toggle('red', venc > 0);
+            });
+        }
+
+        function openApartados() { apFilter = 'todos'; document.getElementById('apSearch').value = ''; renderApartados(); openModal('modalApartados'); }
+        function setApFilter(f) { apFilter = f; renderApartados(); }
+
+        function renderApartados() {
+            const all = apartadosList;
+            const venc = all.filter(v => apState(v) === 'vencido');
+            const pronto = all.filter(v => apState(v) === 'pronto');
+            const porCobrar = all.reduce((s, v) => s + (Number(v.saldo) || 0), 0);
+            document.getElementById('apKpis').innerHTML =
+                `<div class="ap-kpi"><small>Activos</small><b>${all.length}</b></div>
+                 <div class="ap-kpi"><small>Por cobrar</small><b>${money(porCobrar)}</b></div>
+                 <div class="ap-kpi ${venc.length ? 'red' : ''}"><small>Vencidos</small><b>${venc.length}</b></div>`;
+            const chip = (k, t, n) => `<button type="button" class="chip-btn sm${apFilter === k ? ' on' : ''}" onclick="setApFilter('${k}')">${t} (${n})</button>`;
+            document.getElementById('apFilters').innerHTML = chip('todos', 'Todos', all.length) + chip('pronto', 'Por vencer (3 días)', pronto.length) + chip('vencido', 'Vencidos', venc.length);
+            const q = document.getElementById('apSearch').value.toLowerCase().trim();
+            const rows = all.filter(v => {
+                if (apFilter === 'pronto' && apState(v) !== 'pronto') return false;
+                if (apFilter === 'vencido' && apState(v) !== 'vencido') return false;
+                if (!q) return true;
+                return [v.clienteNombre, v.clienteTelefono, v.folio, ...(v.items || []).map(i => i.nombre)].join(' ').toLowerCase().includes(q);
+            });
+            document.getElementById('apList').innerHTML = rows.length ? rows.map(v => {
+                const st = apState(v), lim = apLimit(v);
+                const total = Number(v.total) || 0, pagado = Number(v.pagado) || 0, saldo = Number(v.saldo) || 0;
+                const pct = total > 0 ? Math.max(0, Math.min(100, pagado / total * 100)) : 0;
+                const id = esc(v.id);
+                const prendas = (v.items || []).map(i => `${i.qty}× ${esc(i.nombre)}`).join('<br>');
+                return `<div class="ap-card ${st}">
+                    <div class="ap-top">
+                        <div>
+                            <div class="ap-name">${esc(v.clienteNombre || 'Sin nombre')}</div>
+                            <div class="ap-sub">${v.clienteTelefono ? esc(v.clienteTelefono) + ' · ' : ''}${esc(v.folio || '')}</div>
+                        </div>
+                        <span class="ap-due ${st}">${apDueText(v)}</span>
+                    </div>
+                    <div class="ap-sub" style="margin-top:6px;"><i class="fa-regular fa-calendar"></i> Fecha límite: <b>${apFmt(lim)}</b></div>
+                    <div class="ap-items">${prendas}</div>
+                    <div class="ap-bar"><span style="width:${pct}%"></span></div>
+                    <div class="ap-money"><span>Total ${money(total)}</span><span>Abonado ${money(pagado)}</span><b class="saldo">Falta ${money(saldo)}</b></div>
+                    <div class="ap-acts">
+                        <button class="btn btn-primary main" onclick="apAbonar('${id}')"><i class="fa-solid fa-hand-holding-dollar"></i> Abonar / Liquidar</button>
+                        <button class="btn btn-secondary" onclick="apRecordar('${id}')" title="Recordatorio por WhatsApp"><i class="fa-brands fa-whatsapp"></i> Recordar</button>
+                        <button class="btn btn-secondary" onclick="apFechaOpen('${id}')" title="Cambiar fecha límite"><i class="fa-solid fa-calendar-days"></i></button>
+                        <button class="btn btn-secondary" onclick="apTicket('${id}')" title="Ver ticket"><i class="fa-solid fa-receipt"></i></button>
+                        <button class="btn btn-danger" onclick="apCancelar('${id}')" title="Cancelar apartado"><i class="fa-solid fa-ban"></i></button>
+                    </div>
+                </div>`;
+            }).join('') : `<div class="ap-empty"><i class="fa-solid fa-bookmark"></i>${all.length ? 'No hay apartados con ese filtro.' : 'No tienes apartados activos.<br>Al cobrar elige “Apartado”: se separa la prenda y se da un plazo.'}</div>`;
+        }
+
+        function apAbonar(id) { openAbono(id); }
+        function apTicket(id) { const v = findSaleAny(id); if (v) { renderTicket(v); openModal('modalTicket'); } }
+        function apRecordar(id) {
+            const v = findSaleAny(id); if (!v) return;
+            const nombre = (v.clienteNombre || '').split(' ')[0];
+            const prendas = (v.items || []).map(i => `${i.qty}× ${i.nombre}`).join(', ');
+            const d = apDaysLeft(v);
+            const cuando = d < 0 ? `venció el ${apFmt(apLimit(v))}` : (d === 0 ? 'vence hoy' : `vence el ${apFmt(apLimit(v))}`);
+            const txt = `Hola ${nombre} 💖, te escribimos de SARAY HA. Tu apartado (${prendas}) ${cuando}. Tu saldo pendiente es de ${money(v.saldo)}. ¿Cuándo pasas a liquidarlo? ¡Te esperamos! ✨`;
+            window.open(waLink(v.clienteTelefono, txt), '_blank');
+        }
+        async function apCancelar(id) {
+            const v = findSaleAny(id); if (!v) return;
+            const pag = Number(v.pagado) || 0;
+            const msg = `¿Cancelar el apartado de ${v.clienteNombre || 'este cliente'}?\n\nLas prendas regresan al inventario.` + (pag > 0 ? `\n\nOJO: se borra el registro de lo abonado (${money(pag)}). Si lo devuelves al cliente, no hagas nada más; si te lo quedas, regístralo como ingreso aparte.` : '');
+            if (!confirm(msg)) return;
+            await deleteSale(id, true);
+        }
+
+        function apFechaOpen(id) {
+            const v = findSaleAny(id); if (!v) return;
+            apFechaSaleId = id;
+            document.getElementById('apFechaInfo').innerHTML = `<b>${esc(v.clienteNombre || '')}</b> · ${esc(v.folio || '')}<br>Fecha límite actual: <b>${apFmt(apLimit(v))}</b> (${apDueText(v).toLowerCase()})`;
+            document.getElementById('apFechaInput').value = toDateInput(apLimit(v));
+            apFechaHint();
+            openModal('modalApFecha');
+        }
+        function apFechaPlus(n) {
+            const v = findSaleAny(apFechaSaleId); if (!v) return;
+            const base = new Date(Math.max(apLimit(v).getTime(), Date.now()));
+            base.setDate(base.getDate() + n);
+            document.getElementById('apFechaInput').value = toDateInput(base);
+            apFechaHint();
+        }
+        function apFechaHint() {
+            const val = document.getElementById('apFechaInput').value;
+            const el = document.getElementById('apFechaHint');
+            if (!val) { el.innerText = ''; return; }
+            const [y, m, d] = val.split('-').map(Number);
+            const dt = new Date(y, m - 1, d);
+            const t = new Date(); t.setHours(0, 0, 0, 0);
+            const n = Math.round((dt - t) / 86400000);
+            el.innerText = n < 0 ? 'Esa fecha ya pasó.' : `${apFmt(dt)} · en ${n} día(s)`;
+        }
+        async function apFechaGuardar() {
+            const val = document.getElementById('apFechaInput').value;
+            if (!val || !apFechaSaleId) return alert('Elige una fecha.');
+            const [y, m, d] = val.split('-').map(Number);
+            const dt = new Date(y, m - 1, d, 23, 59, 59);
+            try {
+                await db.collection('pos_ventas').doc(apFechaSaleId).update({ fechaLimite: firebase.firestore.Timestamp.fromDate(dt) });
+                closeModal('modalApFecha');
+                showToast('Fecha límite actualizada.');
+            } catch (e) { alert('No se pudo guardar la fecha.'); }
+        }
+
+        // ---- En el cobro: fecha límite del apartado ----
+        function setApartadoDays(n) {
+            const d = new Date(); d.setDate(d.getDate() + n);
+            document.getElementById('coApLimite').value = toDateInput(d);
+            updateApartado();
+        }
+        function setApartadoPct(p) {
+            document.getElementById('coAnticipo').value = round2(currentCheckoutTotal * p / 100);
+            updateApartado();
+        }
+        function apCheckoutLimit() {
+            const val = document.getElementById('coApLimite').value;
+            if (!val) return null;
+            const [y, m, d] = val.split('-').map(Number);
+            return new Date(y, m - 1, d, 23, 59, 59);
         }
 
         async function deleteCustomer(id) {
@@ -4953,7 +5343,7 @@ License: MIT
             L.push('*TOTAL: ' + money(s.total) + '*');
             const pagos = (s.pagos && s.pagos.length) ? s.pagos : [{ metodo: s.metodoPago || 'Efectivo', monto: s.total }];
             pagos.forEach(p => L.push(`${p.metodo}: ${money(p.monto)}`));
-            if (s.estado === 'Pendiente') L.push('*Saldo pendiente: ' + money(s.saldo) + '*');
+            if (s.estado === 'Pendiente') { L.push('*Saldo pendiente: ' + money(s.saldo) + '*'); L.push('*Tu apartado vence: ' + apFmt(apLimit(s)) + '*'); }
             L.push('');
             L.push('¡Gracias por tu compra! 💖');
             L.push('No hay cambios ni devoluciones.');
@@ -5057,9 +5447,11 @@ License: MIT
                 addToCart(p);
                 document.getElementById('searchInput').value = '';
                 filterProducts();
+                return true;
             } else {
                 playBeepSound();
                 showToast(`Producto no encontrado con el código "${barcode}".`, true);
+                return false;
             }
         }
 
@@ -5115,7 +5507,8 @@ License: MIT
                 const rd = document.getElementById('cameraReader');
                 rd.classList.add('ok');
                 setTimeout(() => rd.classList.remove('ok'), 700);
-                processScannedBarcode(decodedText);
+                const found = processScannedBarcode(decodedText);
+                if (found) setTimeout(closeCameraScanner, 450);   // se cierra solo para escanear otro o cobrar
                 setTimeout(() => scanCoolDown = false, 1500);
             };
             // Misma configuración que funcionaba originalmente: cuadro marcado de 250x160
@@ -5157,8 +5550,9 @@ License: MIT
             const inp = document.getElementById('scanManualInput');
             const code = inp.value.trim();
             if (!code) return;
-            processScannedBarcode(code);
+            const ok = processScannedBarcode(code);
             inp.value = '';
+            if (ok) closeCameraScanner();
         }
         // Reduce la foto (las del celular son enormes y no se leen bien) y la gira si hace falta
         function imageToCanvas(file, maxSide, rotate) {
@@ -5217,7 +5611,7 @@ License: MIT
             const txt = await decodePhoto(file);
             if (txt) {
                 st.innerText = "Código leído: " + txt;
-                processScannedBarcode(txt);
+                if (processScannedBarcode(txt)) setTimeout(closeCameraScanner, 450);
             } else {
                 st.innerText = "No se pudo leer el código. Acércate hasta que el código llene la foto, con buena luz y sin movimiento, o escríbelo abajo.";
             }
@@ -5252,9 +5646,8 @@ License: MIT
             updateHeldBadge();
             initRealtimeProducts();
             initRealtimeCustomers();
+            initRealtimeApartados();
         };
     </script>
-    <div style="position:fixed;right:8px;bottom:calc(66px + env(safe-area-inset-bottom));font:10px sans-serif;color:#6c757d;opacity:.7;pointer-events:none;z-index:5" id="verTag"></div>
-    <script>document.getElementById('verTag').textContent = window.APP_VERSION;</script>
 </body>
 </html>
